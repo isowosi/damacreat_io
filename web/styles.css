@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 800px;
+  min-height: 450px;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#gamecontainer {
+  position: relative;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
