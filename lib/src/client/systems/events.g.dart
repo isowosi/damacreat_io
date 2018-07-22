@@ -15,3 +15,5 @@ abstract class _$ControllerSystem extends GenericInputHandlingSystem {
     controllerMapper = Mapper<Controller>(world);
   }
 }
+
+abstract class _$WebSocketListeningSystem extends VoidEntitySystem {}

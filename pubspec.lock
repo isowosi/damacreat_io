@@ -157,6 +157,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.4+1"
+  damacreat:
+    dependency: "direct main"
+    description:
+      path: "..\\damacreat"
+      relative: true
+    source: path
+    version: "0.0.0"
   dart2_constant:
     dependency: transitive
     description:
@@ -481,4 +488,4 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.0.0-dev.65 <=2.0.0-dev.69.1"
+  dart: ">=2.0.0-dev.69 <=2.0.0-dev.69.1"

@@ -3,6 +3,7 @@ library client;
 import 'dart:html';
 import 'package:damacreat_io/shared.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
+import 'package:damacreat/damacreat.dart';
 
 import 'src/client/systems/events.dart';
 import 'src/client/systems/rendering.dart';
@@ -40,12 +41,13 @@ class Game extends GameBase {
   Map<int, List<EntitySystem>> getSystems() {
     return {
       GameBase.rendering: [
+        WebSocketListeningSystem(),
         ControllerSystem(),
         ResetAccelerationSystem(),
         ControllerToActionSystem(),
         SimpleGravitySystem(),
         SimpleAccelerationSystem(),
-        SimpleMovementSystem(),
+        MovementSystem(),
         WebGlCanvasCleaningSystem(gl),
         PositionRenderingSystem(gl),
         CanvasCleaningSystem(hudCanvas),
