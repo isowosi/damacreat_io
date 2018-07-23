@@ -36,7 +36,13 @@ class ControllerSystem extends _$ControllerSystem {
   }
 }
 
-@Generate(VoidEntitySystem)
+@Generate(
+  EntitySystem,
+  allOf: [
+    Id,
+    Position,
+  ],
+)
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   List<Message> messages = [];
 
@@ -57,7 +63,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   @override
-  void processSystem() {
+  void processEntities(Iterable<Entity> entities) {
     for (final message in messages) {
       switch (message.type) {
         case MessageType.initFood:
@@ -66,16 +72,37 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         case MessageType.initPlayers:
           _initPlayers(message.data);
           break;
+        case MessageType.updatePosition:
+          _updatePosition(entities, message.data);
+          break;
       }
     }
 
     messages.clear();
   }
 
+  void _updatePosition(Iterable<Entity> entities, Uint8List data) {
+    final Map<int, Uint8List> mappedData = {};
+    for (int i = 0; i < data.length; i += 3) {
+      mappedData[data[i]] = data.sublist(i, i + 3);
+    }
+    for (final entity in entities) {
+      final id = idMapper[entity].value;
+      if (mappedData.containsKey(id)) {
+        final position = positionMapper[entity];
+        position.x = mappedData[id][1] / 100;
+        position.y = mappedData[id][2] / 100;
+      }
+    }
+  }
+
   void _initFood(Uint8List data) {
-    for (int i = 0; i < data.length; i += 2) {
-      world.createAndAddEntity(
-          [Position(data[i].toDouble() / 100.0, data[i + 1].toDouble() / 100.0)]);
+    for (int i = 0; i < data.length; i += 3) {
+      world.createAndAddEntity([
+        Id(data[i]),
+        Position(
+            data[i + 1].toDouble() / 100.0, data[i + 2].toDouble() / 100.0),
+      ]);
     }
   }
 
@@ -89,6 +116,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       ]);
     }
   }
+
+  @override
+  bool checkProcessing() => true;
 }
 
 class Message {
