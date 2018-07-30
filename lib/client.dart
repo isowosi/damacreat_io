@@ -3,7 +3,6 @@ library client;
 import 'dart:html';
 import 'package:damacreat_io/shared.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
-import 'package:damacreat/damacreat.dart';
 
 import 'src/client/systems/events.dart';
 import 'src/client/systems/rendering.dart';
@@ -12,8 +11,9 @@ class Game extends GameBase {
   CanvasElement hudCanvas;
   CanvasRenderingContext2D hudCtx;
   DivElement container;
+  final bool debug;
 
-  Game() : super.noAssets('damacreat_io', '#game', webgl: true) {
+  Game({this.debug}) : super.noAssets('damacreat_io', '#game', webgl: true) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
@@ -23,57 +23,49 @@ class Game extends GameBase {
   @override
   void createEntities() {
     final tagManager = TagManager();
-    world.addManager(tagManager);
-    world.addManager(WebGlViewProjectionMatrixManager());
-    addEntity([
-      Controller(),
-      Position(0.0, 0.0),
-      Acceleration(0.0, 0.0),
-      Velocity(0.0, 0.0),
-      Mass(),
-    ]);
+    world
+      ..addManager(tagManager)
+      ..addManager(WebGlViewProjectionMatrixManager());
 
     final player = addEntity([Position(0.0, 0.0)]);
     tagManager.register(player, playerTag);
   }
 
   @override
-  Map<int, List<EntitySystem>> getSystems() {
-    return {
-      GameBase.rendering: [
-        WebSocketListeningSystem(),
-        ControllerSystem(),
-        ResetAccelerationSystem(),
-        ControllerToActionSystem(),
-        SimpleGravitySystem(),
-        SimpleAccelerationSystem(),
-        MovementSystem(),
-        WebGlCanvasCleaningSystem(gl),
-        PositionRenderingSystem(gl),
-        CanvasCleaningSystem(hudCanvas),
-        FpsRenderingSystem(hudCtx, fillStyle: 'white'),
-      ],
-      GameBase.physics: [
-        // add at least one
-      ]
-    };
-  }
+  Map<int, List<EntitySystem>> getSystems() => {
+        GameBase.rendering: [
+          WebSocketListeningSystem(debug: debug),
+          ControllerSystem(),
+          ResetAccelerationSystem(),
+          ControllerToActionSystem(),
+          SimpleGravitySystem(),
+          SimpleAccelerationSystem(),
+          MovementSystem(),
+          WebGlCanvasCleaningSystem(gl),
+          PositionRenderingSystem(gl),
+          CanvasCleaningSystem(hudCanvas),
+          FpsRenderingSystem(hudCtx, fillStyle: 'white'),
+        ],
+        GameBase.physics: [
+          // add at least one
+        ]
+      };
 
   @override
   void handleResize(int width, int height) {
-    width = max(800, width);
-    height = max(450, height);
-    if (width / height > 16 / 9) {
-      width = (16 * height) ~/ 9;
-    } else if (width / height < 16 / 9) {
-      height = (9 * width) ~/ 16;
+    var calcWidth = max(800, width);
+    var calcHeight = max(450, height);
+    if (calcWidth / calcHeight > 16 / 9) {
+      calcWidth = (16 * calcHeight) ~/ 9;
+    } else if (calcWidth / calcHeight < 16 / 9) {
+      calcHeight = (9 * calcWidth) ~/ 16;
     }
     container.style
-      ..width = '${width}px'
-      ..height = '${height}px';
-    resizeCanvas(hudCanvas, width, height);
+      ..width = '${calcWidth}px'
+      ..height = '${calcHeight}px';
+    resizeCanvas(hudCanvas, calcWidth, calcHeight);
     _configureHud();
-    super.handleResize(width, height);
+    super.handleResize(calcWidth, calcHeight);
   }
 
   void _configureHud() {

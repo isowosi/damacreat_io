@@ -12,3 +12,4 @@ targets:
             - --trust-primitives
             - --minify
             - --no-source-maps
+            - -Ddebug=false

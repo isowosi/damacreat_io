@@ -22,7 +22,7 @@ class PositionRenderingSystem extends _$PositionRenderingSystem {
   Uint16List indices;
 
   PositionRenderingSystem(RenderingContext2 gl) : super(gl) {
-    attributes = [Attrib('pos', 2)];
+    attributes = const [Attrib('pos', 2)];
   }
 
   @override

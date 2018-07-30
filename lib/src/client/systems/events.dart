@@ -42,21 +42,29 @@ class ControllerSystem extends _$ControllerSystem {
     Id,
     Position,
   ],
+  manager: [
+    TagManager,
+  ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
-  List<Message> messages = [];
+  List<_Message> messages = [];
+  int playerId;
+  final bool debug;
 
-  WebSocketListeningSystem() {
+  WebSocketListeningSystem({this.debug}) {
     final webSocket = WebSocket('ws://localhost:8081');
     webSocket.onOpen.listen((openEvent) {
       webSocket.onMessage.listen((messageEvent) {
-        FileReader reader = FileReader();
+        final reader = FileReader();
         reader.onLoad.listen((progressEvent) {
           final Uint8List data = reader.result;
-          final type = MessageType.values[data[0]];
-          messages.add(Message(type, data.sublist(1)));
+          final type = MessageToClient.values[data[0]];
+          if (debug) {
+            print(type);
+          }
+          messages.add(_Message(type, data.sublist(1)));
         });
-        Blob blob = messageEvent.data;
+        final blob = messageEvent.data;
         reader.readAsArrayBuffer(blob);
       });
     });
@@ -66,14 +74,17 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void processEntities(Iterable<Entity> entities) {
     for (final message in messages) {
       switch (message.type) {
-        case MessageType.initFood:
+        case MessageToClient.initFood:
           _initFood(message.data);
           break;
-        case MessageType.initPlayers:
+        case MessageToClient.initPlayers:
           _initPlayers(message.data);
           break;
-        case MessageType.updatePosition:
+        case MessageToClient.updatePosition:
           _updatePosition(entities, message.data);
+          break;
+        case MessageToClient.initPlayerId:
+          _initPlayerId(message.data);
           break;
       }
     }
@@ -82,47 +93,57 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   void _updatePosition(Iterable<Entity> entities, Uint8List data) {
-    final Map<int, Uint8List> mappedData = {};
-    for (int i = 0; i < data.length; i += 3) {
+    final mappedData = <int, Uint8List>{};
+    for (var i = 0; i < data.length; i += 3) {
       mappedData[data[i]] = data.sublist(i, i + 3);
     }
     for (final entity in entities) {
       final id = idMapper[entity].value;
       if (mappedData.containsKey(id)) {
-        final position = positionMapper[entity];
-        position.x = mappedData[id][1] / 100;
-        position.y = mappedData[id][2] / 100;
+        positionMapper[entity]
+          ..x = mappedData[id][1] / 100
+          ..y = mappedData[id][2] / 100;
       }
     }
   }
 
   void _initFood(Uint8List data) {
-    for (int i = 0; i < data.length; i += 3) {
+    for (var i = 0; i < data.length; i += 3) {
       world.createAndAddEntity([
         Id(data[i]),
-        Position(
-            data[i + 1].toDouble() / 100.0, data[i + 2].toDouble() / 100.0),
+        Position(data[i + 1] / 100.0, data[i + 2] / 100.0),
+        Food(),
       ]);
     }
   }
 
   void _initPlayers(Uint8List data) {
-    for (int i = 0; i < data.length; i += 2) {
-      world.createAndAddEntity([
-        Position(data[i] / 100.0, data[i + 1] / 100.0),
-        Acceleration(0.0, 0.0),
-        Velocity(0.0, 0.0),
-        Mass()
-      ]);
+    for (var i = 0; i < data.length; i += 3) {
+      final id = data[i];
+      if (id != playerId) {
+        world.createAndAddEntity([
+          Id(id),
+          Position(data[i + 1] / 100.0, data[i + 2] / 100.0),
+          Player(),
+        ]);
+      }
     }
+  }
+
+  void _initPlayerId(Uint8List data) {
+    playerId = data[0];
+    tagManager.getEntity(playerTag)
+      ..addComponent(Id(playerId))
+      ..addComponent(Controller())
+      ..changedInWorld();
   }
 
   @override
   bool checkProcessing() => true;
 }
 
-class Message {
-  final MessageType type;
+class _Message {
+  final MessageToClient type;
   final Uint8List data;
-  Message(this.type, this.data);
+  _Message(this.type, this.data);
 }

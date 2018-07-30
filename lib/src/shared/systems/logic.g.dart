@@ -18,3 +18,15 @@ abstract class _$ControllerToActionSystem extends EntityProcessingSystem {
     accelerationMapper = Mapper<Acceleration>(world);
   }
 }
+
+abstract class _$MovementSystem extends EntityProcessingSystem {
+  Mapper<Position> positionMapper;
+  Mapper<Velocity> velocityMapper;
+  _$MovementSystem() : super(Aspect.empty()..allOf([Position, Velocity]));
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    velocityMapper = Mapper<Velocity>(world);
+  }
+}
