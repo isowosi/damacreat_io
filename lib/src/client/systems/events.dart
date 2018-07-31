@@ -8,32 +8,38 @@ import 'package:damacreat_io/src/shared/components.dart';
 
 part 'events.g.dart';
 
-@Generate(GenericInputHandlingSystem, allOf: [Controller])
+@Generate(
+  GenericInputHandlingSystem,
+  allOf: [
+    Controller,
+  ],
+)
 class ControllerSystem extends _$ControllerSystem {
+  WebSocketHandler _webSocketHandler;
+  CanvasElement canvas;
+  Point<num> offset = const Point<num>(0.0, 0.0);
+  ControllerSystem(this.canvas, this._webSocketHandler);
+
+  @override
+  void initialize() {
+    super.initialize();
+    canvas.onMouseMove.listen((event) {
+      offset = event.offset;
+    });
+  }
+
   @override
   void processEntity(Entity entity) {
-    final c = controllerMapper[entity]..reset();
-    if (up) {
-      if (left) {
-        c.upleft = true;
-      } else if (right) {
-        c.upright = true;
-      } else {
-        c.up = true;
-      }
-    } else if (down) {
-      if (left) {
-        c.downleft = true;
-      } else if (right) {
-        c.downright = true;
-      } else {
-        c.down = true;
-      }
-    } else if (left) {
-      c.left = true;
-    } else if (right) {
-      c.right = true;
-    }
+    final center = Point<num>(canvas.width / 2, canvas.height / 2);
+    final maxDistance = min(canvas.width / 3, canvas.height / 3);
+    final distance = center.distanceTo(offset);
+    final velocity = [
+      (min(maxDistance, distance) / maxDistance * 255).round(),
+      ((pi + atan2(center.y - offset.y, center.x - offset.x)) / (2 * pi) * 255)
+          .round()
+    ];
+    _webSocketHandler.sendData(
+        MessageToServer.updateVelocity, Uint8List.fromList(velocity));
   }
 }
 
