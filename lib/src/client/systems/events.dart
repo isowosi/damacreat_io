@@ -2,6 +2,7 @@ import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 import 'package:damacreat_io/src/shared/components.dart';
 
@@ -44,52 +45,56 @@ class ControllerSystem extends _$ControllerSystem {
   ],
   manager: [
     TagManager,
+    IdManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
-  List<_Message> messages = [];
+  final _messages = <MessageToClient, List<Uint8List>>{};
+  final WebSocketHandler _webSocketHandler;
   int playerId;
-  final bool debug;
 
-  WebSocketListeningSystem({this.debug}) {
-    final webSocket = WebSocket('ws://localhost:8081');
-    webSocket.onOpen.listen((openEvent) {
-      webSocket.onMessage.listen((messageEvent) {
-        final reader = FileReader();
-        reader.onLoad.listen((progressEvent) {
-          final Uint8List data = reader.result;
-          final type = MessageToClient.values[data[0]];
-          if (debug) {
-            print(type);
-          }
-          messages.add(_Message(type, data.sublist(1)));
-        });
-        final blob = messageEvent.data;
-        reader.readAsArrayBuffer(blob);
-      });
-    });
+  WebSocketListeningSystem(this._webSocketHandler) {
+    MessageToClient.values.forEach(_storeMessages);
+  }
+
+  void _storeMessages(MessageToClient type) {
+    _messages[type] = <Uint8List>[];
+    _webSocketHandler.on(type).listen((data) => _messages[type].add(data));
   }
 
   @override
   void processEntities(Iterable<Entity> entities) {
-    for (final message in messages) {
-      switch (message.type) {
-        case MessageToClient.initFood:
-          _initFood(message.data);
-          break;
-        case MessageToClient.initPlayers:
-          _initPlayers(message.data);
-          break;
-        case MessageToClient.updatePosition:
-          _updatePosition(entities, message.data);
-          break;
-        case MessageToClient.initPlayerId:
-          _initPlayerId(message.data);
-          break;
-      }
+    final messages = _messages.entries.where((entry) => entry.value.isNotEmpty);
+    for (final entry in messages) {
+      _handleMessages(entities, entry.key, entry.value);
+      entry.value.clear();
     }
+  }
 
-    messages.clear();
+  void _handleMessages(
+      Iterable<Entity> entities, MessageToClient type, List<Uint8List> data) {
+    switch (type) {
+      case MessageToClient.initFood:
+        data.forEach(_initFood);
+        break;
+      case MessageToClient.initPlayers:
+        data.forEach(_initPlayers);
+        break;
+      case MessageToClient.updatePosition:
+        for (final value in data) {
+          _updatePosition(entities, value);
+        }
+        break;
+      case MessageToClient.initPlayerId:
+        data.forEach(_initPlayerId);
+        break;
+      case MessageToClient.removePlayers:
+        for (final value in data) {
+          value.forEach(idManager.deleteEntity);
+        }
+        break;
+    }
+    data.clear();
   }
 
   void _updatePosition(Iterable<Entity> entities, Uint8List data) {
@@ -140,10 +145,4 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   @override
   bool checkProcessing() => true;
-}
-
-class _Message {
-  final MessageToClient type;
-  final Uint8List data;
-  _Message(this.type, this.data);
 }

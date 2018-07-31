@@ -20,6 +20,7 @@ abstract class _$WebSocketListeningSystem extends EntitySystem {
   Mapper<Id> idMapper;
   Mapper<Position> positionMapper;
   TagManager tagManager;
+  IdManager idManager;
   _$WebSocketListeningSystem() : super(Aspect.empty()..allOf([Id, Position]));
   @override
   void initialize() {
@@ -27,5 +28,6 @@ abstract class _$WebSocketListeningSystem extends EntitySystem {
     idMapper = Mapper<Id>(world);
     positionMapper = Mapper<Position>(world);
     tagManager = world.getManager<TagManager>();
+    idManager = world.getManager<IdManager>();
   }
 }

@@ -1,7 +1,9 @@
 library client;
 
 import 'dart:html';
+import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 import 'src/client/systems/events.dart';
@@ -11,9 +13,10 @@ class Game extends GameBase {
   CanvasElement hudCanvas;
   CanvasRenderingContext2D hudCtx;
   DivElement container;
-  final bool debug;
+  WebSocketHandler webSocketHandler;
 
-  Game({this.debug}) : super.noAssets('damacreat_io', '#game', webgl: true) {
+  Game(this.webSocketHandler)
+      : super.noAssets('damacreat_io', '#game', webgl: true) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
@@ -25,7 +28,8 @@ class Game extends GameBase {
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
-      ..addManager(WebGlViewProjectionMatrixManager());
+      ..addManager(WebGlViewProjectionMatrixManager())
+      ..addManager(IdManager());
 
     final player = addEntity([Position(0.0, 0.0)]);
     tagManager.register(player, playerTag);
@@ -34,10 +38,9 @@ class Game extends GameBase {
   @override
   Map<int, List<EntitySystem>> getSystems() => {
         GameBase.rendering: [
-          WebSocketListeningSystem(debug: debug),
-          ControllerSystem(),
+          WebSocketListeningSystem(webSocketHandler),
+          ControllerSystem(hudCanvas, webSocketHandler),
           ResetAccelerationSystem(),
-          ControllerToActionSystem(),
           SimpleGravitySystem(),
           SimpleAccelerationSystem(),
           MovementSystem(),
