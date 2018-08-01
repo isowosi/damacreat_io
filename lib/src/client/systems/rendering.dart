@@ -32,14 +32,14 @@ class PositionRenderingSystem extends _$PositionRenderingSystem {
     final indexOffset = index * 3 * 2;
     final vertexOffset = index * 4;
 
-    items[itemOffset] = position.x * cameraManager.width;
-    items[itemOffset + 1] = position.y * cameraManager.height;
-    items[itemOffset + 2] = (position.x + 0.01) * cameraManager.width;
-    items[itemOffset + 3] = position.y * cameraManager.height;
-    items[itemOffset + 4] = position.x * cameraManager.width;
-    items[itemOffset + 5] = (position.y + 0.01) * cameraManager.height;
-    items[itemOffset + 6] = (position.x + 0.01) * cameraManager.width;
-    items[itemOffset + 7] = (position.y + 0.01) * cameraManager.height;
+    items[itemOffset] = position.x;
+    items[itemOffset + 1] = position.y;
+    items[itemOffset + 2] = position.x + 0.01 * cameraManager.width;
+    items[itemOffset + 3] = position.y;
+    items[itemOffset + 4] = position.x;
+    items[itemOffset + 5] = position.y + 0.01 * cameraManager.height;
+    items[itemOffset + 6] = position.x + 0.01 * cameraManager.width;
+    items[itemOffset + 7] = position.y + 0.01 * cameraManager.height;
 
     indices[indexOffset] = vertexOffset;
     indices[indexOffset + 1] = vertexOffset + 1;

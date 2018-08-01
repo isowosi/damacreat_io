@@ -112,8 +112,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final id = idMapper[entity].value;
       if (mappedData.containsKey(id)) {
         positionMapper[entity]
-          ..x = mappedData[id][1] / 100
-          ..y = mappedData[id][2] / 100;
+          ..x = mappedData[id][1].toDouble()
+          ..y = mappedData[id][2].toDouble();
       }
     }
   }
@@ -122,7 +122,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     for (var i = 0; i < data.length; i += 3) {
       world.createAndAddEntity([
         Id(data[i]),
-        Position(data[i + 1] / 100.0, data[i + 2] / 100.0),
+        Position(data[i + 1].toDouble(), data[i + 2].toDouble()),
         Food(),
       ]);
     }
@@ -134,7 +134,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
-          Position(data[i + 1] / 100.0, data[i + 2] / 100.0),
+          Position(data[i + 1].toDouble(), data[i + 2].toDouble()),
           Player(),
         ]);
       }
