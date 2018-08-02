@@ -16,16 +16,13 @@ abstract class _$ControllerSystem extends GenericInputHandlingSystem {
   }
 }
 
-abstract class _$WebSocketListeningSystem extends EntitySystem {
-  Mapper<Id> idMapper;
+abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Position> positionMapper;
   TagManager tagManager;
   IdManager idManager;
-  _$WebSocketListeningSystem() : super(Aspect.empty()..allOf([Id, Position]));
   @override
   void initialize() {
     super.initialize();
-    idMapper = Mapper<Id>(world);
     positionMapper = Mapper<Position>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();

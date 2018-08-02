@@ -44,9 +44,8 @@ class ControllerSystem extends _$ControllerSystem {
 }
 
 @Generate(
-  EntitySystem,
-  allOf: [
-    Id,
+  VoidEntitySystem,
+  mapper: [
     Position,
   ],
   manager: [
@@ -69,16 +68,15 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   @override
-  void processEntities(Iterable<Entity> entities) {
+  void processSystem() {
     final messages = _messages.entries.where((entry) => entry.value.isNotEmpty);
     for (final entry in messages) {
-      _handleMessages(entities, entry.key, entry.value);
+      _handleMessages(entry.key, entry.value);
       entry.value.clear();
     }
   }
 
-  void _handleMessages(
-      Iterable<Entity> entities, MessageToClient type, List<Uint8List> data) {
+  void _handleMessages(MessageToClient type, List<Uint8List> data) {
     switch (type) {
       case MessageToClient.initFood:
         data.forEach(_initFood);
@@ -87,9 +85,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         data.forEach(_initPlayers);
         break;
       case MessageToClient.updatePosition:
-        for (final value in data) {
-          _updatePosition(entities, value);
-        }
+        data.forEach(_updatePosition);
         break;
       case MessageToClient.initPlayerId:
         data.forEach(_initPlayerId);
@@ -103,18 +99,15 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     data.clear();
   }
 
-  void _updatePosition(Iterable<Entity> entities, Uint8List data) {
-    final mappedData = <int, Uint8List>{};
+  void _updatePosition(Uint8List data) {
     for (var i = 0; i < data.length; i += 3) {
-      mappedData[data[i]] = data.sublist(i, i + 3);
-    }
-    for (final entity in entities) {
-      final id = idMapper[entity].value;
-      if (mappedData.containsKey(id)) {
-        positionMapper[entity]
-          ..x = mappedData[id][1].toDouble()
-          ..y = mappedData[id][2].toDouble();
-      }
+      final id = data[i];
+      final entity = idManager.getEntity(id);
+      final x = data[i + 1];
+      final y = data[i + 2];
+      positionMapper[entity]
+        ..x = x.toDouble()
+        ..y = y.toDouble();
     }
   }
 
