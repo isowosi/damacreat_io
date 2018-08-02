@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
@@ -18,6 +17,7 @@ class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   CanvasElement canvas;
   Point<num> offset = const Point<num>(0.0, 0.0);
+
   ControllerSystem(this.canvas, this._webSocketHandler);
 
   @override
@@ -33,13 +33,15 @@ class ControllerSystem extends _$ControllerSystem {
     final center = Point<num>(canvas.width / 2, canvas.height / 2);
     final maxDistance = min(canvas.width / 3, canvas.height / 3);
     final distance = center.distanceTo(offset);
-    final velocity = [
-      (min(maxDistance, distance) / maxDistance * 255).round(),
-      ((pi + atan2(center.y - offset.y, center.x - offset.x)) / (2 * pi) * 255)
-          .round()
-    ];
+    final velocity = (min(maxDistance, distance) / maxDistance * 255).floor();
+    final angle = ((pi + atan2(center.y - offset.y, center.x - offset.x)) /
+            (2 * pi) *
+            255)
+        .floor();
     _webSocketHandler.sendData(
-        MessageToServer.updateVelocity, Uint8List.fromList(velocity));
+        Uint8ListWriter.clientToServer(MessageToServer.updateVelocity, 2)
+          ..writeUint8(velocity)
+          ..writeUint8(angle));
   }
 }
 
@@ -54,7 +56,7 @@ class ControllerSystem extends _$ControllerSystem {
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
-  final _messages = <MessageToClient, List<Uint8List>>{};
+  final _messages = <MessageToClient, List<Uint8ListReader>>{};
   final WebSocketHandler _webSocketHandler;
   int playerId;
 
@@ -63,7 +65,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   void _storeMessages(MessageToClient type) {
-    _messages[type] = <Uint8List>[];
+    _messages[type] = <Uint8ListReader>[];
     _webSocketHandler.on(type).listen((data) => _messages[type].add(data));
   }
 
@@ -76,66 +78,69 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
-  void _handleMessages(MessageToClient type, List<Uint8List> data) {
+  void _handleMessages(MessageToClient type, List<Uint8ListReader> readers) {
     switch (type) {
       case MessageToClient.initFood:
-        data.forEach(_initFood);
+        readers.forEach(_initFood);
         break;
       case MessageToClient.initPlayers:
-        data.forEach(_initPlayers);
+        readers.forEach(_initPlayers);
         break;
       case MessageToClient.updatePosition:
-        data.forEach(_updatePosition);
+        readers.forEach(_updatePosition);
         break;
       case MessageToClient.initPlayerId:
-        data.forEach(_initPlayerId);
+        readers.forEach(_initPlayerId);
         break;
       case MessageToClient.removePlayers:
-        for (final value in data) {
-          value.forEach(idManager.deleteEntity);
+        for (final reader in readers) {
+          while (reader.hasNext) {
+            idManager.deleteEntity(reader.readUint16());
+          }
         }
         break;
     }
-    data.clear();
+    readers.clear();
   }
 
-  void _updatePosition(Uint8List data) {
-    for (var i = 0; i < data.length; i += 3) {
-      final id = data[i];
+  void _updatePosition(Uint8ListReader reader) {
+    for (var i = 0; i < reader.length; i += 4) {
+      final id = reader.readUint16();
       final entity = idManager.getEntity(id);
-      final x = data[i + 1];
-      final y = data[i + 2];
+      final x = reader.readUint8();
+      final y = reader.readUint8();
       positionMapper[entity]
         ..x = x.toDouble()
         ..y = y.toDouble();
     }
   }
 
-  void _initFood(Uint8List data) {
-    for (var i = 0; i < data.length; i += 3) {
+  void _initFood(Uint8ListReader reader) {
+    for (var i = 0; i < reader.length; i += 4) {
       world.createAndAddEntity([
-        Id(data[i]),
-        Position(data[i + 1].toDouble(), data[i + 2].toDouble()),
+        Id(reader.readUint16()),
+        Position(reader.readUint8().toDouble(), reader.readUint8().toDouble()),
         Food(),
       ]);
     }
   }
 
-  void _initPlayers(Uint8List data) {
-    for (var i = 0; i < data.length; i += 3) {
-      final id = data[i];
+  void _initPlayers(Uint8ListReader reader) {
+    for (var i = 0; i < reader.length; i += 4) {
+      final id = reader.readUint16();
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
-          Position(data[i + 1].toDouble(), data[i + 2].toDouble()),
+          Position(
+              reader.readUint8().toDouble(), reader.readUint8().toDouble()),
           Player(),
         ]);
       }
     }
   }
 
-  void _initPlayerId(Uint8List data) {
-    playerId = data[0];
+  void _initPlayerId(Uint8ListReader reader) {
+    playerId = reader.readUint16();
     tagManager.getEntity(playerTag)
       ..addComponent(Id(playerId))
       ..addComponent(Controller())
