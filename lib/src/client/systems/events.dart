@@ -104,11 +104,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   void _updatePosition(Uint8ListReader reader) {
-    for (var i = 0; i < reader.length; i += 4) {
+    while (reader.hasNext) {
       final id = reader.readUint16();
       final entity = idManager.getEntity(id);
-      final x = reader.readUint8();
-      final y = reader.readUint8();
+      final x = reader.readUint16();
+      final y = reader.readUint16();
       positionMapper[entity]
         ..x = x.toDouble()
         ..y = y.toDouble();
@@ -116,25 +116,29 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   }
 
   void _initFood(Uint8ListReader reader) {
-    for (var i = 0; i < reader.length; i += 4) {
+    while (reader.hasNext) {
       world.createAndAddEntity([
         Id(reader.readUint16()),
-        Position(reader.readUint8().toDouble(), reader.readUint8().toDouble()),
+        Position(
+            reader.readUint16().toDouble(), reader.readUint16().toDouble()),
         Food(),
       ]);
     }
   }
 
   void _initPlayers(Uint8ListReader reader) {
-    for (var i = 0; i < reader.length; i += 4) {
+    while (reader.hasNext) {
       final id = reader.readUint16();
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
           Position(
-              reader.readUint8().toDouble(), reader.readUint8().toDouble()),
+              reader.readUint16().toDouble(), reader.readUint16().toDouble()),
           Player(),
         ]);
+      } else {
+        // skipp position.x and position.y
+        reader..readUint16()..readUint16();
       }
     }
   }
