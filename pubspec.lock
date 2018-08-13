@@ -14,14 +14,14 @@ packages:
       name: archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.2"
   args:
     dependency: transitive
     description:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.4"
+    version: "1.5.0"
   async:
     dependency: transitive
     description:
@@ -51,7 +51,7 @@ packages:
       name: build
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.7+2"
+    version: "0.12.7+3"
   build_config:
     dependency: transitive
     description:
@@ -72,7 +72,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+1"
+    version: "0.2.2+1"
   build_runner:
     dependency: "direct dev"
     description:
@@ -93,7 +93,7 @@ packages:
       name: build_web_compilers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.1"
+    version: "0.4.2+1"
   built_collection:
     dependency: transitive
     description:
@@ -175,8 +175,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/ddc"
-      resolved-ref: e9856d3452869b876b42a3b42d17f37332257d5e
+      ref: HEAD
+      resolved-ref: ee16b4a8dadad6cee013e3db6ffca20fb4b1e6b1
       url: "git://github.com/denniskaselow/dartemis.git"
     source: git
     version: "0.8.0-dev"
@@ -185,7 +185,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: bfe58f632e8b0c808593af34d0a41ee2a48b1890
+      resolved-ref: "8d3898b68c3e5f14672750c58bb7f84a1f9781ab"
       url: "git://github.com/denniskaselow/dartemis_builder.git"
     source: git
     version: "0.0.1-dev"
@@ -214,8 +214,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/ddc"
-      resolved-ref: "10cb9de4624a4830adc6db8f703f50c376a6e90d"
+      ref: HEAD
+      resolved-ref: dc4323077d5846e630483dbc2c9709c132ef870b
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -281,7 +281,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   kernel:
     dependency: transitive
     description:
@@ -351,7 +351,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.0+1"
+    version: "0.9.1"
   pub_semver:
     dependency: transitive
     description:
@@ -393,7 +393,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.3+1"
+    version: "0.9.0+1"
   source_maps:
     dependency: transitive
     description:
@@ -441,7 +441,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "607ccac888e00bbe49369384b5b2a18dec817656"
+      resolved-ref: "995da8ab24788d631ed6d131e6d26c925ddca8a8"
       url: "git://github.com/KayZGames/tween-engine-dart.git"
     source: git
     version: "0.12.0"
@@ -481,4 +481,4 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.0.0-dev.69 <2.0.0"
+  dart: ">=2.0.0 <3.0.0"
