@@ -79,14 +79,14 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.2"
+    version: "0.10.1"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2+2"
+    version: "0.3.1+2"
   build_web_compilers:
     dependency: "direct dev"
     description:
@@ -185,7 +185,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "8d3898b68c3e5f14672750c58bb7f84a1f9781ab"
+      resolved-ref: "4d978b36fe0eba11e98222d299c8304a2cf2f8bf"
       url: "git://github.com/denniskaselow/dartemis_builder.git"
     source: git
     version: "0.0.1-dev"
@@ -387,6 +387,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.3+3"
+  shelf_web_socket:
+    dependency: transitive
+    description:
+      name: shelf_web_socket
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2+4"
   source_gen:
     dependency: transitive
     description:
@@ -473,6 +480,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7+10"
+  web_socket_channel:
+    dependency: transitive
+    description:
+      name: web_socket_channel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.9"
   yaml:
     dependency: transitive
     description:
