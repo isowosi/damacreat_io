@@ -6,6 +6,19 @@ part of 'rendering.dart';
 // SystemGenerator
 // **************************************************************************
 
+abstract class _$PlayerRenderingSystem extends CircleRenderingSystem {
+  Mapper<Player> playerMapper;
+  Mapper<CellWall> cellWallMapper;
+  _$PlayerRenderingSystem(RenderingContext2 gl)
+      : super(gl, Aspect.empty()..allOf([Player, CellWall]));
+  @override
+  void initialize() {
+    super.initialize();
+    playerMapper = Mapper<Player>(world);
+    cellWallMapper = Mapper<CellWall>(world);
+  }
+}
+
 abstract class _$FoodRenderingSystem extends CircleRenderingSystem {
   Mapper<Food> foodMapper;
   _$FoodRenderingSystem(RenderingContext2 gl)

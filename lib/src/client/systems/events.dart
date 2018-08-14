@@ -138,6 +138,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           Id(id),
           Position(
               reader.readUint16().toDouble(), reader.readUint16().toDouble()),
+          Size(20.0),
+          Color.fromHsl(random.nextDouble(), 0.9, 0.6, 0.4),
+          Orientation(pi / 2),
+          Wobble(),
+          CellWall(5.0),
           Player(),
         ]);
       } else {
@@ -152,6 +157,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     tagManager.getEntity(playerTag)
       ..addComponent(Id(playerId))
       ..addComponent(Controller())
+      ..addComponent(Size(20.0))
+      ..addComponent(Color.fromHsl(random.nextDouble(), 0.9, 0.6, 0.4))
+      ..addComponent(Orientation(pi / 2))
+      ..addComponent(Wobble())
+      ..addComponent(CellWall(5.0))
+      ..addComponent(Player())
       ..changedInWorld();
   }
 

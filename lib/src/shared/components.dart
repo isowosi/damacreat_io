@@ -15,3 +15,11 @@ class Wobble extends Component {
     wobbleFactor = List.filled(circleFragments, 1.0);
   }
 }
+
+class CellWall extends Component {
+  List<double> strengthFactor;
+  double baseStrength;
+  CellWall(this.baseStrength) {
+    strengthFactor = List.filled(circleFragments, 1.0);
+  }
+}

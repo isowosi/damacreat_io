@@ -10,16 +10,126 @@ part 'rendering.g.dart';
 @Generate(
   CircleRenderingSystem,
   allOf: [
+    Player,
+    CellWall,
+  ],
+)
+class PlayerRenderingSystem extends _$PlayerRenderingSystem {
+  final int trianglePerFragment = 3;
+
+  PlayerRenderingSystem(RenderingContext2 gl) : super(gl);
+
+  @override
+  int get verticeCount => circleFragments * 2;
+
+  @override
+  void processEntity(int index, Entity entity) {
+    final p = positionMapper[entity];
+    final s = sizeMapper[entity];
+    final c = colorMapper[entity];
+    final o = orientationMapper[entity];
+    final w = wobbleMapper[entity];
+    final cw = cellWallMapper[entity];
+
+    final itemOffset = index * (verticeCount + 1);
+    final offset = index * (verticeCount + 1) * valuesPerItem;
+    final indicesOffset = index * verticeCount * 3 * trianglePerFragment;
+
+    items[offset] = p.x;
+    items[offset + 1] = p.y;
+    items[offset + 2] = c.r;
+    items[offset + 3] = c.g;
+    items[offset + 4] = c.b;
+    items[offset + 5] = c.a / 2;
+    for (var i = 0; i < circleFragments; i++) {
+      var baseOffset = offset + valuesPerItem + valuesPerItem * i;
+      var radius = (s.radius - cw.baseStrength * cw.strengthFactor[i]) *
+          w.wobbleFactor[i];
+      final angle = o.angle + 2 * pi * i / circleFragments;
+      createCircleVertex(
+          baseOffset, p, radius, angle, c, i, indicesOffset, itemOffset);
+      items[baseOffset + 5] /= w.wobbleFactor[i];
+
+      // inner triangle
+      indices[indicesOffset + i * 9] = itemOffset;
+      indices[indicesOffset + i * 9 + 1] = itemOffset + 1 + i;
+      indices[indicesOffset + i * 9 + 2] = itemOffset + 2 + i;
+
+      baseOffset = offset +
+          valuesPerItem +
+          valuesPerItem * i +
+          circleFragments * valuesPerItem;
+      radius = s.radius * w.wobbleFactor[i];
+      createCircleVertex(
+          baseOffset, p, radius, angle, c, i, indicesOffset, itemOffset);
+      items[baseOffset + 5] = 1.0 * cw.strengthFactor[i];
+
+      // triangle 1 of cell wall
+      indices[indicesOffset + i * 9 + 3] = itemOffset + 1 + i;
+      indices[indicesOffset + i * 9 + 4] = itemOffset + circleFragments + 1 + i;
+      indices[indicesOffset + i * 9 + 5] = itemOffset + circleFragments + 2 + i;
+      // triangle 2 of cell wall
+      indices[indicesOffset + i * 9 + 6] = itemOffset + 1 + i;
+      indices[indicesOffset + i * 9 + 7] = itemOffset + 2 + i;
+      indices[indicesOffset + i * 9 + 8] = itemOffset + circleFragments + 2 + i;
+    }
+    createThrusters(offset, s, w, cw, o, p);
+
+    indices[indicesOffset + circleFragments * 9 - 1] =
+        itemOffset + circleFragments + 1;
+    indices[indicesOffset + circleFragments * 9 - 2] = itemOffset + 1;
+    indices[indicesOffset + circleFragments * 9 - 4] =
+        itemOffset + circleFragments + 1;
+    indices[indicesOffset + circleFragments * 9 - 7] = itemOffset + 1;
+  }
+
+  void createThrusters(
+      int offset, Size s, Wobble w, CellWall cw, Orientation o, Position p) {
+    var i = (3 / 8 * circleFragments).truncate();
+    createThruster(offset, i, s, w, cw, o, p);
+    i = (5 / 8 * circleFragments).truncate();
+    createThruster(offset, i, s, w, cw, o, p);
+  }
+
+  void createThruster(int offset, int i, Size s, Wobble w, CellWall cw,
+      Orientation o, Position p) {
+    var baseOffset = offset + valuesPerItem + valuesPerItem * i;
+    var radius =
+        (s.radius - cw.baseStrength * cw.strengthFactor[i]) * w.wobbleFactor[i];
+    final angle = o.angle + 2 * pi * i / circleFragments;
+    items[baseOffset] = p.x + radius * 1.1 * cos(angle);
+    items[baseOffset + 1] = p.y + radius * 1.1 * sin(angle);
+
+    baseOffset = offset +
+        valuesPerItem +
+        valuesPerItem * i +
+        circleFragments * valuesPerItem;
+    radius = s.radius * w.wobbleFactor[i];
+    items[baseOffset] = p.x + radius * 1.1 * cos(angle);
+    items[baseOffset + 1] = p.y + radius * 1.1 * sin(angle);
+  }
+
+  @override
+  void updateLength(int length) {
+    items = Float32List(length * (verticeCount + 1) * valuesPerItem);
+    indices = Uint16List(length * circleFragments * 3 * trianglePerFragment);
+  }
+}
+
+@Generate(
+  CircleRenderingSystem,
+  allOf: [
     Food,
   ],
 )
 class FoodRenderingSystem extends _$FoodRenderingSystem {
   FoodRenderingSystem(RenderingContext2 gl) : super(gl);
 
+  @override
   void processEntity(int index, Entity entity) {
     super.processEntity(index, entity);
-    var offset = index * (verticeCount + 1) * valuesPerItem;
-    var c = colorMapper[entity];
+    final offset = index * (verticeCount + 1) * valuesPerItem;
+    final c = colorMapper[entity];
     items[offset + 5] = c.a;
   }
 }
