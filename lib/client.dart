@@ -45,7 +45,7 @@ class Game extends GameBase {
           SimpleAccelerationSystem(),
           MovementSystem(),
           WebGlCanvasCleaningSystem(gl),
-          PositionRenderingSystem(gl),
+          FoodRenderingSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
           CanvasCleaningSystem(hudCanvas),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),

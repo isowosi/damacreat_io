@@ -121,6 +121,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Id(reader.readUint16()),
         Position(
             reader.readUint16().toDouble(), reader.readUint16().toDouble()),
+        Size(1.0 + random.nextDouble() * 10.0),
+        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Orientation(0.0),
+        Wobble(),
         Food(),
       ]);
     }

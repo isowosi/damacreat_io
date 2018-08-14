@@ -6,17 +6,34 @@ part of 'rendering.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$PositionRenderingSystem extends WebGlRenderingSystem {
+abstract class _$FoodRenderingSystem extends CircleRenderingSystem {
+  Mapper<Food> foodMapper;
+  _$FoodRenderingSystem(RenderingContext2 gl)
+      : super(gl, Aspect.empty()..allOf([Food]));
+  @override
+  void initialize() {
+    super.initialize();
+    foodMapper = Mapper<Food>(world);
+  }
+}
+
+abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Position> positionMapper;
-  CameraManager cameraManager;
+  Mapper<Size> sizeMapper;
+  Mapper<Color> colorMapper;
+  Mapper<Orientation> orientationMapper;
+  Mapper<Wobble> wobbleMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
-  _$PositionRenderingSystem(RenderingContext2 gl)
-      : super(gl, Aspect.empty()..allOf([Position]));
+  _$CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
+      : super(gl, aspect..allOf([Position, Size, Color, Orientation, Wobble]));
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
-    cameraManager = world.getManager<CameraManager>();
+    sizeMapper = Mapper<Size>(world);
+    colorMapper = Mapper<Color>(world);
+    orientationMapper = Mapper<Orientation>(world);
+    wobbleMapper = Mapper<Wobble>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
   }
