@@ -49,6 +49,7 @@ class ControllerSystem extends _$ControllerSystem {
   VoidEntitySystem,
   mapper: [
     Position,
+    Orientation,
   ],
   manager: [
     TagManager,
@@ -109,9 +110,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final entity = idManager.getEntity(id);
       final x = reader.readUint16() / positionFactor;
       final y = reader.readUint16() / positionFactor;
-      positionMapper[entity]
+      final position = positionMapper[entity];
+      final oldX = position.x;
+      final oldY = position.y;
+      position
         ..x = x
         ..y = y;
+      orientationMapper[entity].angle = atan2(y - oldY, x - oldX);
     }
   }
 
