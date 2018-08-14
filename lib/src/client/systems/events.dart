@@ -107,11 +107,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final entity = idManager.getEntity(id);
-      final x = reader.readUint16();
-      final y = reader.readUint16();
+      final x = reader.readUint16() / positionFactor;
+      final y = reader.readUint16() / positionFactor;
       positionMapper[entity]
-        ..x = x.toDouble()
-        ..y = y.toDouble();
+        ..x = x
+        ..y = y;
     }
   }
 
@@ -119,8 +119,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     while (reader.hasNext) {
       world.createAndAddEntity([
         Id(reader.readUint16()),
-        Position(
-            reader.readUint16().toDouble(), reader.readUint16().toDouble()),
+        Position(reader.readUint16() / positionFactor,
+            reader.readUint16() / positionFactor),
         Size(1.0 + random.nextDouble() * 10.0),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Orientation(0.0),
@@ -136,8 +136,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
-          Position(
-              reader.readUint16().toDouble(), reader.readUint16().toDouble()),
+          Position(reader.readUint16() / positionFactor,
+              reader.readUint16() / positionFactor),
           Size(20.0),
           Color.fromHsl(random.nextDouble(), 0.9, 0.6, 0.4),
           Orientation(pi / 2),
