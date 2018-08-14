@@ -72,3 +72,78 @@ class PositionRenderingSystem extends _$PositionRenderingSystem {
   @override
   String get fShaderFile => 'PositionRenderingSystem';
 }
+
+@Generate(
+  VoidWebGlRenderingSystem,
+  manager: [
+    WebGlViewProjectionMatrixManager,
+    TagManager,
+    CameraManager,
+  ],
+  mapper: [
+    Position,
+  ],
+)
+class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
+  double offsetX = -500000 + random.nextDouble() * 1000000.0;
+  double offsetY = -500000 + random.nextDouble() * 1000000.0;
+  Float32List rgb = new Float32List.fromList([0.0, 0.0, 0.0]);
+  double parallaxFactor = 1.0;
+
+  BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+
+  @override
+  void render() {
+    final p = positionMapper[tagManager.getEntity(playerTag)];
+    final zoom = 1.0;
+    final size = max(cameraManager.width, cameraManager.height) / zoom;
+    final px = p.x * parallaxFactor;
+    final py = p.y * parallaxFactor;
+    final background = Float32List.fromList([
+      -size / 2 + px + offsetX,
+      -size / 2 + py + offsetY,
+      -size / 2 + px + offsetX,
+      size / 2 + py + offsetY,
+      size / 2 + px + offsetX,
+      size / 2 + py + offsetY,
+      size / 2 + px + offsetX,
+      -size / 2 + py + offsetY
+    ]);
+    final viewProjectionMatrix = webGlViewProjectionMatrixManager
+        .create2dViewProjectionMatrixForPosition(px, py)
+          ..translate(px, py)
+          ..scale(zoom, zoom)
+          ..translate(-px, -py)
+          ..translate(-offsetX, -offsetY);
+
+    gl
+      ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
+          false, viewProjectionMatrix.storage)
+      ..uniform4f(
+          gl.getUniformLocation(program, 'uDimension'),
+          cameraManager.width.toDouble(),
+          cameraManager.height.toDouble(),
+          0.0,
+          0.0)
+      ..uniform4f(
+          gl.getUniformLocation(program, 'uPosition'), p.x, p.y, 0.0, 0.0)
+      ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
+      ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
+    buffer('aPosition', background, 2);
+    gl.drawArrays(WebGL.TRIANGLE_FAN, 0, 4);
+  }
+
+  @override
+  String get vShaderFile => 'BackgroundRenderingSystem';
+  @override
+  String get fShaderFile => 'BackgroundRenderingSystem';
+}
+
+class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
+  BackgroundRenderingSystemLayer0(RenderingContext2 gl) : super(gl) {
+    rgb[0] = random.nextDouble();
+    rgb[1] = random.nextDouble();
+    rgb[2] = random.nextDouble();
+    parallaxFactor = 0.4;
+  }
+}

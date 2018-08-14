@@ -21,3 +21,21 @@ abstract class _$PositionRenderingSystem extends WebGlRenderingSystem {
         world.getManager<WebGlViewProjectionMatrixManager>();
   }
 }
+
+abstract class _$BackgroundRenderingSystemBase
+    extends VoidWebGlRenderingSystem {
+  Mapper<Position> positionMapper;
+  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  TagManager tagManager;
+  CameraManager cameraManager;
+  _$BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    webGlViewProjectionMatrixManager =
+        world.getManager<WebGlViewProjectionMatrixManager>();
+    tagManager = world.getManager<TagManager>();
+    cameraManager = world.getManager<CameraManager>();
+  }
+}
