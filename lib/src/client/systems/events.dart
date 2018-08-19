@@ -94,6 +94,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         readers.forEach(_initPlayerId);
         break;
       case MessageToClient.removePlayers:
+      case MessageToClient.deleteEntities:
         for (final reader in readers) {
           while (reader.hasNext) {
             idManager.deleteEntity(reader.readUint16());
