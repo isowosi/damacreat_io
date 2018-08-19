@@ -3,11 +3,6 @@ import 'package:dartemis/dartemis.dart';
 
 class Controller extends Component {}
 
-class Size extends Component {
-  double radius, realRadius;
-
-  Size(this.radius) : realRadius = radius;
-}
 
 class Wobble extends Component {
   List<double> wobbleFactor;
