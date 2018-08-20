@@ -29,6 +29,8 @@ class Game extends GameBase {
     world
       ..addManager(tagManager)
       ..addManager(WebGlViewProjectionMatrixManager())
+      ..addManager(QuadTreeManager(
+          const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager());
 
     final player = addEntity([Position(0.0, 0.0)]);
@@ -38,18 +40,25 @@ class Game extends GameBase {
   @override
   Map<int, List<EntitySystem>> getSystems() => {
         GameBase.rendering: [
+          // input
           WebSocketListeningSystem(webSocketHandler),
           ControllerSystem(hudCanvas, webSocketHandler),
-          ResetAccelerationSystem(),
+          // game logix
           SimpleGravitySystem(),
+          ResetAccelerationSystem(),
           SimpleAccelerationSystem(),
           MovementSystem(),
+          // pre-rendering
+          OnScreenTagSystem(),
+          // rendering
           WebGlCanvasCleaningSystem(gl),
           FoodRenderingSystem(gl),
           PlayerRenderingSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
           CanvasCleaningSystem(hudCanvas),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
+          // cleanup
+          OnScreenTagRemoveSystem(),
         ],
         GameBase.physics: [
           // add at least one

@@ -18,15 +18,19 @@ abstract class _$ControllerSystem extends GenericInputHandlingSystem {
 
 abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Position> positionMapper;
+  Mapper<Size> sizeMapper;
   Mapper<Orientation> orientationMapper;
   TagManager tagManager;
   IdManager idManager;
+  QuadTreeManager quadTreeManager;
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
+    sizeMapper = Mapper<Size>(world);
     orientationMapper = Mapper<Orientation>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
+    quadTreeManager = world.getManager<QuadTreeManager>();
   }
 }

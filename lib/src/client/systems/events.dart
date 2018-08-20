@@ -49,11 +49,13 @@ class ControllerSystem extends _$ControllerSystem {
   VoidEntitySystem,
   mapper: [
     Position,
+    Size,
     Orientation,
   ],
   manager: [
     TagManager,
     IdManager,
+    QuadTreeManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
@@ -112,12 +114,18 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final x = reader.readUint16() / positionFactor;
       final y = reader.readUint16() / positionFactor;
       final position = positionMapper[entity];
+      final size = sizeMapper[entity];
       final oldX = position.x;
       final oldY = position.y;
       position
         ..x = x
         ..y = y;
       orientationMapper[entity].angle = atan2(y - oldY, x - oldX);
+      quadTreeManager
+        ..remove(entity, oldX - size.radius, oldY - size.radius,
+            size.radius * 2, size.radius * 2)
+        ..insert(entity, x - size.radius, y - size.radius, size.radius * 2,
+            size.radius * 2);
     }
   }
 

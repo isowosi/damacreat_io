@@ -36,9 +36,13 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Color> colorMapper;
   Mapper<Orientation> orientationMapper;
   Mapper<Wobble> wobbleMapper;
+  Mapper<OnScreen> onScreenMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   _$CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
-      : super(gl, aspect..allOf([Position, Size, Color, Orientation, Wobble]));
+      : super(
+            gl,
+            aspect
+              ..allOf([Position, Size, Color, Orientation, Wobble, OnScreen]));
   @override
   void initialize() {
     super.initialize();
@@ -47,6 +51,7 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
     colorMapper = Mapper<Color>(world);
     orientationMapper = Mapper<Orientation>(world);
     wobbleMapper = Mapper<Wobble>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
   }

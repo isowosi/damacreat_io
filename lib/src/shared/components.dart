@@ -18,3 +18,5 @@ class CellWall extends Component {
     strengthFactor = List.filled(playerCircleFragments, 1.0);
   }
 }
+
+class OnScreen extends Component {}

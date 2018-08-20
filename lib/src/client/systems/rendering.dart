@@ -148,6 +148,7 @@ class FoodRenderingSystem extends _$FoodRenderingSystem {
     Color,
     Orientation,
     Wobble,
+    OnScreen,
   ],
   manager: [
     WebGlViewProjectionMatrixManager,
