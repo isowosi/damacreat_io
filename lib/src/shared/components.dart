@@ -7,7 +7,7 @@ class Controller extends Component {}
 class Wobble extends Component {
   List<double> wobbleFactor;
   Wobble() {
-    wobbleFactor = List.filled(circleFragments, 1.0);
+    wobbleFactor = List.filled(playerCircleFragments, 1.0);
   }
 }
 
@@ -15,6 +15,6 @@ class CellWall extends Component {
   List<double> strengthFactor;
   double baseStrength;
   CellWall(this.baseStrength) {
-    strengthFactor = List.filled(circleFragments, 1.0);
+    strengthFactor = List.filled(playerCircleFragments, 1.0);
   }
 }

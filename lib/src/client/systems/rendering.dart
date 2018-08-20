@@ -114,6 +114,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     items = Float32List(length * (verticeCount + 1) * valuesPerItem);
     indices = Uint16List(length * circleFragments * 3 * trianglePerFragment);
   }
+
+  @override
+  int get circleFragments => playerCircleFragments;
 }
 
 @Generate(
@@ -132,6 +135,9 @@ class FoodRenderingSystem extends _$FoodRenderingSystem {
     final c = colorMapper[entity];
     items[offset + 5] = c.a;
   }
+
+  @override
+  int get circleFragments => 16;
 }
 
 @Generate(
@@ -147,7 +153,7 @@ class FoodRenderingSystem extends _$FoodRenderingSystem {
     WebGlViewProjectionMatrixManager,
   ],
 )
-class CircleRenderingSystem extends _$CircleRenderingSystem {
+abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   Float32List items;
   Uint16List indices;
   final List<Attrib> attributes = const [
@@ -155,11 +161,13 @@ class CircleRenderingSystem extends _$CircleRenderingSystem {
     Attrib('aColor', 4)
   ];
 
-  final int verticeCount = circleFragments;
+  int verticeCount;
   final int valuesPerItem = 6;
 
   CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
-      : super(gl, aspect);
+      : super(gl, aspect) {
+    verticeCount = circleFragments;
+  }
 
   @override
   void processEntity(int index, Entity entity) {
@@ -229,6 +237,8 @@ class CircleRenderingSystem extends _$CircleRenderingSystem {
 
   @override
   String get fShaderFile => 'PositionRenderingSystem';
+
+  int get circleFragments;
 }
 
 @Generate(
