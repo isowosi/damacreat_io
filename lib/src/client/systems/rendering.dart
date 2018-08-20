@@ -112,8 +112,11 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   @override
   void updateLength(int length) {
     items = Float32List(length * (verticeCount + 1) * valuesPerItem);
-    indices = Uint16List(length * circleFragments * 3 * trianglePerFragment);
+    indices = Uint16List(length * indicesPerItem);
   }
+
+  @override
+  int get indicesPerItem => circleFragments * 3 * trianglePerFragment;
 
   @override
   int get circleFragments => playerCircleFragments;
@@ -224,14 +227,18 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
             .create2dViewProjectionMatrix()
             .storage);
 
-    drawTriangles(attributes, items, indices);
+    bufferElements(attributes, items, indices);
+    gl.drawElements(
+        WebGL.TRIANGLES, length * indicesPerItem, WebGL.UNSIGNED_SHORT, 0);
   }
 
   @override
   void updateLength(int length) {
     items = Float32List(length * (verticeCount + 1) * valuesPerItem);
-    indices = Uint16List(length * verticeCount * 3);
+    indices = Uint16List(length * indicesPerItem);
   }
+
+  int get indicesPerItem => verticeCount * 3;
 
   @override
   String get vShaderFile => 'PositionRenderingSystem';
