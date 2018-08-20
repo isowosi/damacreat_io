@@ -127,7 +127,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Id(reader.readUint16()),
         Position(reader.readUint16() / positionFactor,
             reader.readUint16() / positionFactor),
-        Size(1.0 + random.nextDouble() * 10.0),
+        Size(minFoodSize + reader.readUint8() / foodSizeFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Orientation(0.0),
         Wobble(),
