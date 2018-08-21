@@ -39,7 +39,7 @@ class ControllerSystem extends _$ControllerSystem {
             255)
         .floor();
     _webSocketHandler.sendData(
-        Uint8ListWriter.clientToServer(MessageToServer.updateVelocity, 2)
+        Uint8ListWriter.clientToServer(MessageToServer.updateVelocity)
           ..writeUint8(velocity)
           ..writeUint8(angle));
   }
