@@ -85,9 +85,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     switch (type) {
       case MessageToClient.initFood:
         readers.forEach(_initFood);
+        world.processEntityChanges();
         break;
       case MessageToClient.initPlayers:
         readers.forEach(_initPlayers);
+        world.processEntityChanges();
         break;
       case MessageToClient.updatePosition:
         readers.forEach(_updatePosition);
