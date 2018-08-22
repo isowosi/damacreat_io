@@ -60,6 +60,7 @@ class ControllerSystem extends _$ControllerSystem {
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   final _messages = <MessageToClient, List<Uint8ListReader>>{};
+  final _undeleted = <int>[];
   final WebSocketHandler _webSocketHandler;
   int playerId;
 
@@ -74,6 +75,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   @override
   void processSystem() {
+    _undeleted
+      ..forEach(idManager.deleteEntity)
+      ..clear();
     final messages = _messages.entries.where((entry) => entry.value.isNotEmpty);
     for (final entry in messages) {
       _handleMessages(entry.key, entry.value);
@@ -85,11 +89,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     switch (type) {
       case MessageToClient.initFood:
         readers.forEach(_initFood);
-        world.processEntityChanges();
         break;
       case MessageToClient.initPlayers:
         readers.forEach(_initPlayers);
-        world.processEntityChanges();
         break;
       case MessageToClient.updatePosition:
         readers.forEach(_updatePosition);
@@ -101,7 +103,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.deleteEntities:
         for (final reader in readers) {
           while (reader.hasNext) {
-            idManager.deleteEntity(reader.readUint16());
+            final id = reader.readUint16();
+            if (!idManager.deleteEntity(id)) {
+              //entities that have been added and deleted in the same frame
+              _undeleted.add(id);
+            }
           }
         }
         break;

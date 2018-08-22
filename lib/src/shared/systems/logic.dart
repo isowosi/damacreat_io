@@ -32,11 +32,6 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
       ..addComponent(OnScreen())
       ..changedInWorld();
   }
-
-  @override
-  void end() {
-    world.processEntityChanges();
-  }
 }
 
 @Generate(
@@ -51,10 +46,5 @@ class OnScreenTagRemoveSystem extends _$OnScreenTagRemoveSystem {
     entity
       ..removeComponent<OnScreen>()
       ..changedInWorld();
-  }
-
-  @override
-  void end() {
-    world.processEntityChanges();
   }
 }
