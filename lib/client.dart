@@ -43,11 +43,6 @@ class Game extends GameBase {
           // input
           WebSocketListeningSystem(webSocketHandler),
           ControllerSystem(hudCanvas, webSocketHandler),
-          // game logix
-          SimpleGravitySystem(),
-          ResetAccelerationSystem(),
-          SimpleAccelerationSystem(),
-          MovementSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // rendering
