@@ -90,6 +90,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.initFood:
         readers.forEach(_initFood);
         break;
+      case MessageToClient.initGrowingFood:
+        readers.forEach(_initGrowingFood);
+        break;
       case MessageToClient.initPlayers:
         readers.forEach(_initPlayers);
         break;
@@ -118,22 +121,24 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _updatePosition(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      final entity = idManager.getEntity(id);
       final x = reader.readUint16() / positionFactor;
       final y = reader.readUint16() / positionFactor;
-      final position = positionMapper[entity];
-      final size = sizeMapper[entity];
-      final oldX = position.x;
-      final oldY = position.y;
-      position
-        ..x = x
-        ..y = y;
-      orientationMapper[entity].angle = atan2(y - oldY, x - oldX);
-      quadTreeManager
-        ..remove(entity, oldX - size.radius, oldY - size.radius,
-            size.radius * 2, size.radius * 2)
-        ..insert(entity, x - size.radius, y - size.radius, size.radius * 2,
-            size.radius * 2);
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
+        final position = positionMapper[entity];
+        final size = sizeMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        position
+          ..x = x
+          ..y = y;
+        orientationMapper[entity].angle = atan2(y - oldY, x - oldX);
+        quadTreeManager
+          ..remove(entity, oldX - size.radius, oldY - size.radius,
+              size.radius * 2, size.radius * 2)
+          ..insert(entity, x - size.radius, y - size.radius, size.radius * 2,
+              size.radius * 2);
+      }
     }
   }
 
@@ -144,6 +149,23 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Position(reader.readUint16() / positionFactor,
             reader.readUint16() / positionFactor),
         Size(minFoodSize + reader.readUint8() / foodSizeFactor),
+        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Orientation(0.0),
+        Wobble(),
+        Food(),
+      ]);
+    }
+  }
+
+  void _initGrowingFood(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      world.createAndAddEntity([
+        Id(reader.readUint16()),
+        Position(reader.readUint16() / positionFactor,
+            reader.readUint16() / positionFactor),
+        Size(minFoodSize + reader.readUint8() / foodSizeFactor),
+        Growing(minFoodSize + reader.readUint8() / foodSizeFactor,
+            minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Orientation(0.0),
         Wobble(),

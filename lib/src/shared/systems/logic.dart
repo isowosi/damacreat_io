@@ -48,3 +48,30 @@ class OnScreenTagRemoveSystem extends _$OnScreenTagRemoveSystem {
       ..changedInWorld();
   }
 }
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Food,
+    Size,
+    Growing,
+  ],
+  exclude: [
+    EatenBy,
+  ],
+)
+class FoodGrowingSystem extends _$FoodGrowingSystem {
+  @override
+  void processEntity(Entity entity) {
+    final s = sizeMapper[entity];
+    final g = growingMapper[entity];
+
+    s.radius += g.speed * world.delta;
+
+    if (s.radius >= g.targetRadius) {
+      entity
+        ..removeComponent<Growing>()
+        ..changedInWorld();
+    }
+  }
+}

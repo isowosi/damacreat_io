@@ -29,3 +29,20 @@ abstract class _$OnScreenTagRemoveSystem extends EntityProcessingSystem {
     onScreenMapper = Mapper<OnScreen>(world);
   }
 }
+
+abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
+  Mapper<Food> foodMapper;
+  Mapper<Size> sizeMapper;
+  Mapper<Growing> growingMapper;
+  _$FoodGrowingSystem()
+      : super(Aspect.empty()
+          ..allOf([Food, Size, Growing])
+          ..exclude([EatenBy]));
+  @override
+  void initialize() {
+    super.initialize();
+    foodMapper = Mapper<Food>(world);
+    sizeMapper = Mapper<Size>(world);
+    growingMapper = Mapper<Growing>(world);
+  }
+}

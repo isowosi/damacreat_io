@@ -43,6 +43,8 @@ class Game extends GameBase {
           // input
           WebSocketListeningSystem(webSocketHandler),
           ControllerSystem(hudCanvas, webSocketHandler),
+          // logic
+          FoodGrowingSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // rendering
