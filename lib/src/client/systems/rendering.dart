@@ -33,7 +33,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
 
     final itemOffset = index * (verticeCount + 1);
     final offset = index * (verticeCount + 1) * valuesPerItem;
-    final indicesOffset = index * verticeCount * 3 * trianglePerFragment;
+    final indicesOffset = index * indicesPerItem;
 
     items[offset] = p.x;
     items[offset + 1] = p.y;
