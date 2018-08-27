@@ -45,6 +45,8 @@ class Game extends GameBase {
           ControllerSystem(hudCanvas, webSocketHandler),
           // logic
           FoodGrowingSystem(),
+          ConstantMovementSystem(),
+          QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // rendering
@@ -55,7 +57,7 @@ class Game extends GameBase {
           CanvasCleaningSystem(hudCanvas),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
           // cleanup
-          OnScreenTagRemoveSystem(),
+          RemoveTemporaryComponentsSystem(),
         ],
         GameBase.physics: [
           // add at least one

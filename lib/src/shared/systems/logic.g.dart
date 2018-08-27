@@ -20,16 +20,6 @@ abstract class _$OnScreenTagSystem extends VoidEntitySystem {
   }
 }
 
-abstract class _$OnScreenTagRemoveSystem extends EntityProcessingSystem {
-  Mapper<OnScreen> onScreenMapper;
-  _$OnScreenTagRemoveSystem() : super(Aspect.empty()..allOf([OnScreen]));
-  @override
-  void initialize() {
-    super.initialize();
-    onScreenMapper = Mapper<OnScreen>(world);
-  }
-}
-
 abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
   Mapper<Food> foodMapper;
   Mapper<Size> sizeMapper;
@@ -44,5 +34,19 @@ abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
     foodMapper = Mapper<Food>(world);
     sizeMapper = Mapper<Size>(world);
     growingMapper = Mapper<Growing>(world);
+  }
+}
+
+abstract class _$RemoveTemporaryComponentsSystem
+    extends EntityProcessingSystem {
+  Mapper<ChangedPosition> changedPositionMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$RemoveTemporaryComponentsSystem()
+      : super(Aspect.empty()..oneOf([ChangedPosition, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    changedPositionMapper = Mapper<ChangedPosition>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
   }
 }

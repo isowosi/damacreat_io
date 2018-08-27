@@ -37,21 +37,6 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
 @Generate(
   EntityProcessingSystem,
   allOf: [
-    OnScreen,
-  ],
-)
-class OnScreenTagRemoveSystem extends _$OnScreenTagRemoveSystem {
-  @override
-  void processEntity(Entity entity) {
-    entity
-      ..removeComponent<OnScreen>()
-      ..changedInWorld();
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
     Food,
     Size,
     Growing,
@@ -73,5 +58,23 @@ class FoodGrowingSystem extends _$FoodGrowingSystem {
         ..removeComponent<Growing>()
         ..changedInWorld();
     }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  oneOf: [
+    ChangedPosition,
+    OnScreen,
+  ],
+)
+class RemoveTemporaryComponentsSystem
+    extends _$RemoveTemporaryComponentsSystem {
+  @override
+  void processEntity(Entity entity) {
+    entity
+      ..removeComponent<ChangedPosition>()
+      ..removeComponent<OnScreen>()
+      ..changedInWorld();
   }
 }

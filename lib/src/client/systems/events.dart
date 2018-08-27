@@ -2,7 +2,7 @@ import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
-import 'package:gamedev_helpers/gamedev_helpers.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
 
 part 'events.g.dart';
@@ -16,7 +16,7 @@ part 'events.g.dart';
 class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   CanvasElement canvas;
-  Point<num> offset = const Point<num>(0.0, 0.0);
+  Point<num> offset;
 
   ControllerSystem(this.canvas, this._webSocketHandler);
 
@@ -30,18 +30,21 @@ class ControllerSystem extends _$ControllerSystem {
 
   @override
   void processEntity(Entity entity) {
-    final center = Point<num>(canvas.width / 2, canvas.height / 2);
-    final maxDistance = min(canvas.width / 3, canvas.height / 3);
-    final distance = center.distanceTo(offset);
-    final velocity = (min(maxDistance, distance) / maxDistance * 255).floor();
-    final angle = ((pi + atan2(center.y - offset.y, center.x - offset.x)) /
-            (2 * pi) *
-            255)
-        .floor();
-    _webSocketHandler.sendData(
-        Uint8ListWriter.clientToServer(MessageToServer.updateVelocity)
-          ..writeUint8(velocity)
-          ..writeUint8(angle));
+    if (offset != null) {
+      final center = Point<num>(canvas.width / 2, canvas.height / 2);
+      final maxDistance = min(canvas.width / 3, canvas.height / 3);
+      final distance = center.distanceTo(offset);
+      final velocity =
+          ByteUtils.speedToByte(100 * min(maxDistance, distance) / maxDistance);
+      final angle = ByteUtils.angleToByte(
+          pi + atan2(center.y - offset.y, center.x - offset.x));
+
+      _webSocketHandler.sendData(
+          Uint8ListWriter.clientToServer(MessageToServer.updateVelocity)
+            ..writeUint16(velocity)
+            ..writeUint16(angle));
+    }
+    offset = null;
   }
 }
 
@@ -51,6 +54,7 @@ class ControllerSystem extends _$ControllerSystem {
     Position,
     Size,
     Orientation,
+    ConstantVelocity,
   ],
   manager: [
     TagManager,
@@ -114,6 +118,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           }
         }
         break;
+      case MessageToClient.addConstantVelocity:
+        readers.forEach(_updateVelocity);
     }
     readers.clear();
   }
@@ -126,25 +132,28 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final entity = idManager.getEntity(id);
       if (entity != null) {
         final position = positionMapper[entity];
-        final size = sizeMapper[entity];
         final oldX = position.x;
         final oldY = position.y;
         position
           ..x = x
           ..y = y;
         orientationMapper[entity].angle = atan2(y - oldY, x - oldX);
-        quadTreeManager
-          ..remove(entity, oldX - size.radius, oldY - size.radius,
-              size.radius * 2, size.radius * 2)
-          ..insert(entity, x - size.radius, y - size.radius, size.radius * 2,
-              size.radius * 2);
+
+        if (constantVelocityMapper.has(entity)) {
+          entity
+            ..removeComponent<Velocity>()
+            ..removeComponent<ConstantVelocity>();
+        }
+        entity
+          ..addComponent(ChangedPosition(x, y))
+          ..changedInWorld();
       }
     }
   }
 
   void _initFood(Uint8ListReader reader) {
     while (reader.hasNext) {
-      world.createAndAddEntity([
+      final entity = world.createAndAddEntity([
         Id(reader.readUint16()),
         Position(reader.readUint16() / positionFactor,
             reader.readUint16() / positionFactor),
@@ -154,12 +163,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Wobble(),
         Food(),
       ]);
+      idManager.add(entity);
     }
   }
 
   void _initGrowingFood(Uint8ListReader reader) {
     while (reader.hasNext) {
-      world.createAndAddEntity([
+      final entity = world.createAndAddEntity([
         Id(reader.readUint16()),
         Position(reader.readUint16() / positionFactor,
             reader.readUint16() / positionFactor),
@@ -171,6 +181,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Wobble(),
         Food(),
       ]);
+      idManager.add(entity);
     }
   }
 
@@ -208,6 +219,25 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       ..addComponent(CellWall(5.0))
       ..addComponent(Player())
       ..changedInWorld();
+  }
+
+  void _updateVelocity(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final speedByte = reader.readUint16();
+      final angleByte = reader.readUint16();
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
+        final value = ByteUtils.byteToSpeed(speedByte);
+        final angle = ByteUtils.byteToAngle(angleByte);
+        entity
+          ..addComponent(Velocity(value, angle, 0.0))
+          ..addComponent(ConstantVelocity())
+          ..changedInWorld();
+      } else {
+        print('missed $id');
+      }
+    }
   }
 
   @override
