@@ -37,7 +37,7 @@ class ControllerSystem extends _$ControllerSystem {
       final velocity =
           ByteUtils.speedToByte(100 * min(maxDistance, distance) / maxDistance);
       final angle = ByteUtils.angleToByte(
-          pi + atan2(center.y - offset.y, center.x - offset.x));
+          tau + atan2(center.y - offset.y, offset.x - center.x));
 
       _webSocketHandler.sendData(
           Uint8ListWriter.clientToServer(MessageToServer.updateVelocity)
