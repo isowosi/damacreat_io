@@ -50,3 +50,30 @@ abstract class _$RemoveTemporaryComponentsSystem
     onScreenMapper = Mapper<OnScreen>(world);
   }
 }
+
+abstract class _$DigestiveSystem extends BaseDigestiveSystem {
+  Mapper<Position> positionMapper;
+  Mapper<Color> colorMapper;
+  DigestionManager digestionManager;
+  _$DigestiveSystem()
+      : super(Aspect.empty()
+          ..allOf([Position])
+          ..exclude([DigestionComplete]));
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    colorMapper = Mapper<Color>(world);
+    digestionManager = world.getManager<DigestionManager>();
+  }
+}
+
+abstract class _$ExpirationSystem extends EntityProcessingSystem {
+  Mapper<Lifetime> lifetimeMapper;
+  _$ExpirationSystem() : super(Aspect.empty()..allOf([Lifetime]));
+  @override
+  void initialize() {
+    super.initialize();
+    lifetimeMapper = Mapper<Lifetime>(world);
+  }
+}

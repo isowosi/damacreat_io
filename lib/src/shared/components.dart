@@ -3,7 +3,6 @@ import 'package:dartemis/dartemis.dart';
 
 class Controller extends Component {}
 
-
 class Wobble extends Component {
   List<double> wobbleFactor;
   Wobble() {
@@ -20,3 +19,11 @@ class CellWall extends Component {
 }
 
 class OnScreen extends Component {}
+
+class DigestionComplete extends Component {}
+
+class Lifetime extends Component {
+  double timeLeft, timeMax;
+
+  Lifetime(this.timeMax) : timeLeft = timeMax;
+}

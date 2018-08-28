@@ -120,6 +120,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         break;
       case MessageToClient.addConstantVelocity:
         readers.forEach(_updateVelocity);
+        break;
+      case MessageToClient.startDigestion:
+        readers.forEach(_startDigestion);
+        break;
     }
     readers.clear();
   }
@@ -226,16 +230,31 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final id = reader.readUint16();
       final speedByte = reader.readUint16();
       final angleByte = reader.readUint16();
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
+      final food = idManager.getEntity(id);
+      if (food != null) {
         final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
-        entity
+        food
           ..addComponent(Velocity(value, angle, 0.0))
           ..addComponent(ConstantVelocity())
+          ..removeComponent<DigestedBy>()
           ..changedInWorld();
-      } else {
-        print('missed $id');
+        print('stop digesting entity $food');
+      }
+    }
+  }
+
+  void _startDigestion(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final digesterId = reader.readUint16();
+      final food = idManager.getEntity(id);
+      final digester = idManager.getEntity(digesterId);
+      if (food != null && digester != null) {
+        food
+          ..addComponent(DigestedBy(digester))
+          ..changedInWorld();
+        print('start digesting entity $food');
       }
     }
   }

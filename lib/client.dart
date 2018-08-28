@@ -47,6 +47,7 @@ class Game extends GameBase {
           FoodGrowingSystem(),
           ConstantMovementSystem(),
           PlayerSizeLossSystem(),
+          DigestiveSystem(),
           QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),
@@ -55,9 +56,11 @@ class Game extends GameBase {
           FoodRenderingSystem(gl),
           PlayerRenderingSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
+          ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
           // cleanup
+          ExpirationSystem(),
           RemoveTemporaryComponentsSystem(),
         ],
         GameBase.physics: [
