@@ -46,6 +46,7 @@ class Game extends GameBase {
           // logic
           FoodGrowingSystem(),
           ConstantMovementSystem(),
+          PlayerSizeLossSystem(),
           QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),
