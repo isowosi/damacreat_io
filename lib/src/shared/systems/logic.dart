@@ -42,7 +42,7 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
     Growing,
   ],
   exclude: [
-    EatenBy,
+    DigestedBy,
   ],
 )
 class FoodGrowingSystem extends _$FoodGrowingSystem {

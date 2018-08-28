@@ -27,7 +27,7 @@ abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
   _$FoodGrowingSystem()
       : super(Aspect.empty()
           ..allOf([Food, Size, Growing])
-          ..exclude([EatenBy]));
+          ..exclude([DigestedBy]));
   @override
   void initialize() {
     super.initialize();
