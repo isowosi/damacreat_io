@@ -239,7 +239,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..addComponent(ConstantVelocity())
           ..removeComponent<DigestedBy>()
           ..changedInWorld();
-        print('stop digesting entity $food');
       }
     }
   }
@@ -254,7 +253,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         food
           ..addComponent(DigestedBy(digester))
           ..changedInWorld();
-        print('start digesting entity $food');
       }
     }
   }
