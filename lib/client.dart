@@ -3,6 +3,7 @@ library client;
 import 'dart:html';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -59,6 +60,7 @@ class Game extends GameBase {
           ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
+          DebugSystem(hudCtx, webSocketHandler),
           // cleanup
           ExpirationSystem(),
           RemoveTemporaryComponentsSystem(),

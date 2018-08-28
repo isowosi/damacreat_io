@@ -124,6 +124,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.startDigestion:
         readers.forEach(_startDigestion);
         break;
+      case MessageToClient.pong:
+        break;
     }
     readers.clear();
   }
