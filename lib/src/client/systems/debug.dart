@@ -65,7 +65,7 @@ class DebugSystem extends _$DebugSystem {
           'Rate: ${(byteCount / 1024 / totalDelta).toStringAsFixed(3)}kB/s (${(8 * byteCount / 1024 / 1024 / totalDelta).toStringAsFixed(3)}Mbit/s)',
           5,
           105)
-      ..fillText('Ping: ${ping ?? 'unknown'}', 5, 125)
+      ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 125)
       ..fillText('Version: 0.1.0-secret-pre-pre-pre-alpha', 5, 145)
       ..restore();
   }
