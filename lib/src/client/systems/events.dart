@@ -194,37 +194,38 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initPlayers(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final x = reader.readUint16() / positionFactor;
+      final y = reader.readUint16() / positionFactor;
+      final playerRadius = ByteUtils.byteToPlayerRadius(reader.readUint16());
+      final hue = ByteUtils.byteToHue(reader.readUint8());
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
-          Position(reader.readUint16() / positionFactor,
-              reader.readUint16() / positionFactor),
-          Size(20.0),
-          Color.fromHsl(random.nextDouble(), 0.9, 0.6, 0.4),
+          Position(x, y),
+          Size(playerRadius),
+          Color.fromHsl(hue, 0.9, 0.6, 0.4),
           Orientation(pi / 2),
           Wobble(),
           CellWall(5.0),
           Player(),
         ]);
       } else {
-        // skipp position.x and position.y
-        reader..readUint16()..readUint16();
+        tagManager.getEntity(playerTag)
+          ..addComponent(Id(playerId))
+          ..addComponent(Controller())
+          ..addComponent(Size(playerRadius))
+          ..addComponent(Color.fromHsl(hue, 0.9, 0.6, 0.4))
+          ..addComponent(Orientation(pi / 2))
+          ..addComponent(Wobble())
+          ..addComponent(CellWall(5.0))
+          ..addComponent(Player())
+          ..changedInWorld();
       }
     }
   }
 
   void _initPlayerId(Uint8ListReader reader) {
     playerId = reader.readUint16();
-    tagManager.getEntity(playerTag)
-      ..addComponent(Id(playerId))
-      ..addComponent(Controller())
-      ..addComponent(Size(20.0))
-      ..addComponent(Color.fromHsl(random.nextDouble(), 0.9, 0.6, 0.4))
-      ..addComponent(Orientation(pi / 2))
-      ..addComponent(Wobble())
-      ..addComponent(CellWall(5.0))
-      ..addComponent(Player())
-      ..changedInWorld();
   }
 
   void _updateVelocity(Uint8ListReader reader) {
