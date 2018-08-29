@@ -48,7 +48,6 @@ class DebugSystem extends _$DebugSystem {
     final totalDeltaBefore = totalDelta;
     totalDelta += world.delta;
     if (totalDeltaBefore.toInt() % 5 == 4 && totalDelta.toInt() % 5 == 0) {
-      print('$totalDeltaBefore vs $totalDelta ping');
       lastPingTime = window.performance.now();
       webSocketHandler
           .sendData(Uint8ListWriter.clientToServer(MessageToServer.ping));
