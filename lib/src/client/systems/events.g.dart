@@ -21,9 +21,11 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Size> sizeMapper;
   Mapper<Orientation> orientationMapper;
   Mapper<ConstantVelocity> constantVelocityMapper;
+  Mapper<DigestedBy> digestedByMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
+  DigestionManager digestionManager;
   @override
   void initialize() {
     super.initialize();
@@ -31,8 +33,10 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     sizeMapper = Mapper<Size>(world);
     orientationMapper = Mapper<Orientation>(world);
     constantVelocityMapper = Mapper<ConstantVelocity>(world);
+    digestedByMapper = Mapper<DigestedBy>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
+    digestionManager = world.getManager<DigestionManager>();
   }
 }

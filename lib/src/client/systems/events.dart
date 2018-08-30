@@ -55,11 +55,13 @@ class ControllerSystem extends _$ControllerSystem {
     Size,
     Orientation,
     ConstantVelocity,
+    DigestedBy,
   ],
   manager: [
     TagManager,
     IdManager,
     QuadTreeManager,
+    DigestionManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
@@ -237,6 +239,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       if (food != null) {
         final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
+        if (digestedByMapper.has(food)) {
+          final digester = digestedByMapper[food].digester;
+          digestionManager.vomit(digester, food);
+        }
         food
           ..addComponent(Velocity(value, angle, 0.0))
           ..addComponent(ConstantVelocity())
@@ -256,6 +262,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         food
           ..addComponent(DigestedBy(digester))
           ..changedInWorld();
+        digestionManager.startDigestion(digester, food);
       }
     }
   }

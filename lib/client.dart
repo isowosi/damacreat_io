@@ -30,6 +30,7 @@ class Game extends GameBase {
     world
       ..addManager(tagManager)
       ..addManager(WebGlViewProjectionMatrixManager())
+      ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager());
