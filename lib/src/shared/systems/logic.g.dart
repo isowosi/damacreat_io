@@ -77,3 +77,42 @@ abstract class _$ExpirationSystem extends EntityProcessingSystem {
     lifetimeMapper = Mapper<Lifetime>(world);
   }
 }
+
+abstract class _$EntityInteractionSystem extends BaseEntityInteractionSystem {
+  Mapper<Wobble> wobbleMapper;
+  Mapper<CellWall> cellWallMapper;
+  Mapper<Orientation> orientationMapper;
+  Mapper<OnScreen> onScreenMapper;
+  TagManager tagManager;
+  _$EntityInteractionSystem()
+      : super(Aspect.empty()..allOf([Wobble, CellWall, Orientation, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    wobbleMapper = Mapper<Wobble>(world);
+    cellWallMapper = Mapper<CellWall>(world);
+    orientationMapper = Mapper<Orientation>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+    tagManager = world.getManager<TagManager>();
+  }
+}
+
+abstract class _$WobbleSystem extends EntityProcessingSystem {
+  Mapper<Wobble> wobbleMapper;
+  _$WobbleSystem() : super(Aspect.empty()..allOf([Wobble]));
+  @override
+  void initialize() {
+    super.initialize();
+    wobbleMapper = Mapper<Wobble>(world);
+  }
+}
+
+abstract class _$CellWallSystem extends EntityProcessingSystem {
+  Mapper<CellWall> cellWallMapper;
+  _$CellWallSystem() : super(Aspect.empty()..allOf([CellWall]));
+  @override
+  void initialize() {
+    super.initialize();
+    cellWallMapper = Mapper<CellWall>(world);
+  }
+}

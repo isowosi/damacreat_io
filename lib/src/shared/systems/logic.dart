@@ -1,7 +1,7 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
-import 'package:gamedev_helpers/gamedev_helpers_shared.dart';
+import 'package:gamedev_helpers/gamedev_helpers_shared.dart' hide Velocity;
 
 part 'logic.g.dart';
 
@@ -133,6 +133,178 @@ class ExpirationSystem extends _$ExpirationSystem {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
     if (l.timeLeft <= 0.0) {
       entity.deleteFromWorld();
+    }
+  }
+}
+
+@Generate(
+  BaseEntityInteractionSystem,
+  allOf: [
+    Wobble,
+    CellWall,
+    Orientation,
+    OnScreen,
+  ],
+  manager: [
+    TagManager,
+  ],
+)
+class EntityInteractionSystem extends _$EntityInteractionSystem {
+  double angleToSegmentFactor = playerCircleFragments / (2 * pi);
+  @override
+  void startDigestion(Entity player, Entity food, double dist, double distX,
+      double distY, double playerRadius, double foodRadius) {
+    final colliderOrientation = orientationMapper[player];
+    final angle = atan2(distY, distX) - colliderOrientation.angle;
+    final fragment = (angle * angleToSegmentFactor).round();
+    final sizeRelation = foodRadius / playerRadius;
+    final fragmentRange = getFragmentRange(sizeRelation);
+    final colliderWobble = wobbleMapper[player];
+    final additionalDistRelation =
+        (dist + foodRadius - playerRadius) / playerRadius;
+    for (var i = -fragmentRange + 1; i <= fragmentRange; i++) {
+      final fragmentIndex = (fragment + i) % playerCircleFragments;
+      final old = colliderWobble.wobbleFactor[fragmentIndex];
+      colliderWobble.wobbleFactor[fragmentIndex] = max(
+          old,
+          1.0 +
+              additionalDistRelation *
+                  (1 - i * i / (fragmentRange * fragmentRange)));
+    }
+  }
+
+  int getFragmentRange(double sizeRelation) =>
+      (sizeRelation * playerCircleFragments ~/ 4).round();
+
+  @override
+  void touch(Entity player, Entity food, double dist, double distX,
+      double distY, double playerRadius, double foodRadius) {
+    final colliderOrientation = orientationMapper[player];
+    final angle = atan2(distY, distX) - colliderOrientation.angle;
+    final fragment = (angle * angleToSegmentFactor).round();
+    final sizeRelation = foodRadius / playerRadius;
+    final fragmentRange = getFragmentRange(sizeRelation);
+    final colliderWobble = wobbleMapper[player];
+    final distRelation = (playerRadius + foodRadius - dist) / foodRadius;
+    final colliderCellWall = cellWallMapper[player];
+    final fragmentRangePow3 = fragmentRange * fragmentRange * fragmentRange;
+    final fragmentRangePow4 = fragmentRangePow3 * fragmentRange;
+    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
+      final fragmentIndex = (fragment + index) % playerCircleFragments;
+      final old = colliderWobble.wobbleFactor[fragmentIndex];
+      final indexSq = index * index;
+      colliderWobble.wobbleFactor[fragmentIndex] = min(
+          old,
+          1.0 -
+              sizeRelation *
+                  distRelation *
+                  (1 - indexSq * indexSq / fragmentRangePow4));
+      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+          distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
+    }
+  }
+
+  @override
+  void almostDigestion(Entity player, Entity food, double dist, double distX,
+      double distY, double playerRadius, double foodRadius) {
+    final colliderOrientation = orientationMapper[player];
+    final angle = atan2(distY, distX) - colliderOrientation.angle;
+    final fragment = (angle * angleToSegmentFactor).round();
+    final sizeRelation = foodRadius / playerRadius;
+    final fragmentRange = getFragmentRange(sizeRelation);
+    final colliderWobble = wobbleMapper[player];
+    final distRelation = (playerRadius + foodRadius - dist) / foodRadius;
+    final colliderCellWall = cellWallMapper[player];
+    final additionalDistRelation =
+        (dist + foodRadius - playerRadius) / playerRadius;
+    final fragmentRangePow2 = fragmentRange * fragmentRange;
+    final fragmentRangePow3 = fragmentRangePow2 * fragmentRange;
+    final fragmentRangePow4 = fragmentRangePow3 * fragmentRange;
+    var pressingEnvelopedRatio =
+        (playerRadius + foodRadius - dist - foodRadius / 2) / (foodRadius / 2);
+    pressingEnvelopedRatio *= pressingEnvelopedRatio;
+    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
+      final fragmentIndex = (fragment + index) % playerCircleFragments;
+      final old = colliderWobble.wobbleFactor[fragmentIndex];
+      final indexSq = index * index;
+      final enveloped = max(old,
+          1.0 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
+      final pressing = min(
+          old,
+          1.0 -
+              sizeRelation *
+                  distRelation *
+                  (1 - indexSq * indexSq / fragmentRangePow4));
+
+      colliderWobble.wobbleFactor[fragmentIndex] =
+          pressingEnvelopedRatio * enveloped +
+              (1.0 - pressingEnvelopedRatio) * pressing;
+      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+          distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
+    }
+  }
+
+  @override
+  void onFleeingAttempt(Entity player, Entity food, double dist, double distX,
+      double distY, double playerRadius, double foodRadius) {
+    final colliderOrientation = orientationMapper[player];
+    final angle = atan2(distY, distX) - colliderOrientation.angle;
+    final fragment = (angle * angleToSegmentFactor).round();
+    final sizeRelation = foodRadius / playerRadius;
+    final fragmentRange = getFragmentRange(sizeRelation);
+    final colliderWobble = wobbleMapper[player];
+    final colliderCellWall = cellWallMapper[player];
+    final additionalDistRelation =
+        (dist + foodRadius - playerRadius) / playerRadius;
+    final fragmentRangePow3 = fragmentRange * fragmentRange * fragmentRange;
+    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
+      final fragmentIndex = (fragment + index) % playerCircleFragments;
+      final old = colliderWobble.wobbleFactor[fragmentIndex];
+      final indexPow3 = index * index * index;
+      colliderWobble.wobbleFactor[fragmentIndex] = max(
+          old,
+          1.0 +
+              additionalDistRelation *
+                  (1 - indexPow3.abs() / fragmentRangePow3));
+      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+          additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
+    }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Wobble,
+  ],
+)
+class WobbleSystem extends _$WobbleSystem {
+  @override
+  void processEntity(Entity entity) {
+    final w = wobbleMapper[entity];
+
+    final wobbleFactor = w.wobbleFactor;
+    for (var i = 0; i < wobbleFactor.length; i++) {
+      wobbleFactor[i] = 0.2 + 0.8 * wobbleFactor[i];
+    }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    CellWall,
+  ],
+)
+class CellWallSystem extends _$CellWallSystem {
+  @override
+  void processEntity(Entity entity) {
+    final cw = cellWallMapper[entity];
+
+    final strengthFactor = cw.strengthFactor;
+    for (var i = 0; i < strengthFactor.length; i++) {
+      strengthFactor[i] =
+          1.0 + (strengthFactor[i] - 1.0) * (1 - 0.999 * world.delta);
     }
   }
 }

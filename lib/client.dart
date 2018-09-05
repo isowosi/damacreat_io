@@ -53,6 +53,10 @@ class Game extends GameBase {
           QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),
+          // logic that changes visuals
+          WobbleSystem(),
+          CellWallSystem(),
+          EntityInteractionSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
           FoodRenderingSystem(gl),
