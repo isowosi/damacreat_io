@@ -57,6 +57,8 @@ class Game extends GameBase {
           WobbleSystem(),
           CellWallSystem(),
           EntityInteractionSystem(),
+          ThrusterParticleEmissionSystem(),
+          ThrusterParticleColorModificationSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
           FoodRenderingSystem(gl),

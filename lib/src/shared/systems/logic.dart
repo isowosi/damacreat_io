@@ -151,6 +151,7 @@ class ExpirationSystem extends _$ExpirationSystem {
 )
 class EntityInteractionSystem extends _$EntityInteractionSystem {
   double angleToSegmentFactor = playerCircleFragments / (2 * pi);
+
   @override
   void startDigestion(Entity player, Entity food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
@@ -306,5 +307,152 @@ class CellWallSystem extends _$CellWallSystem {
       strengthFactor[i] =
           1.0 + (strengthFactor[i] - 1.0) * (1 - 0.999 * world.delta);
     }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Position,
+    ChangedPosition,
+    Orientation,
+    Thruster,
+    Velocity,
+    Size,
+    Color,
+    Wobble,
+    OnScreen,
+  ],
+)
+class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
+  @override
+  void processEntity(Entity entity) {
+    final p = positionMapper[entity];
+    final op = changedPositionMapper[entity];
+    final o = orientationMapper[entity];
+    final v = velocityMapper[entity];
+    final s = sizeMapper[entity];
+    final c = colorMapper[entity];
+    final w = wobbleMapper[entity];
+    final oldAngle = o.angle - v.rotational * world.delta;
+
+    final leftThrusterAngle = o.angle + 3 / 4 * pi;
+    final rightThrusterAngle = o.angle - 3 / 4 * pi;
+    final oldLeftThrusterAngle = oldAngle + 3 / 4 * pi;
+    final oldRightThrusterAngle = oldAngle - 3 / 4 * pi;
+
+    spawnThrusterParticles(
+        p, op, s, v, c, leftThrusterAngle, oldLeftThrusterAngle, o, w, 1);
+    spawnThrusterParticles(
+        p, op, s, v, c, rightThrusterAngle, oldRightThrusterAngle, o, w, -1);
+  }
+
+  void spawnThrusterParticles(
+      Position position,
+      ChangedPosition oldPosition,
+      Size size,
+      Velocity velocity,
+      Color color,
+      double thrusterAngle,
+      double oldThrusterAngle,
+      Orientation orientation,
+      Wobble wobble,
+      int direction) {
+    double w1, w2;
+    if (direction == 1) {
+      final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
+      w1 = wobble.wobbleFactor[leftThrusterIndex];
+      w2 = wobble.wobbleFactor[leftThrusterIndex + 1];
+    } else {
+      final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
+      w1 = wobble.wobbleFactor[rightThrusterIndex];
+      w2 = wobble.wobbleFactor[rightThrusterIndex - 1];
+    }
+
+    final x1 = position.x + size.radius * 1.1 * cos(thrusterAngle) * w1;
+    final y1 = position.y + size.radius * 1.1 * sin(thrusterAngle) * w1;
+    final oldX1 =
+        oldPosition.oldX + size.radius * 1.1 * cos(oldThrusterAngle) * w1;
+    final oldY1 =
+        oldPosition.oldY + size.radius * 1.1 * sin(oldThrusterAngle) * w1;
+    final x2 = position.x +
+        size.radius *
+            cos(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
+            w2;
+    final y2 = position.y +
+        size.radius *
+            sin(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
+            w2;
+    final oldX2 = oldPosition.oldX +
+        size.radius *
+            cos(oldThrusterAngle +
+                direction / (playerCircleFragments ~/ 2) * pi) *
+            w2;
+    final oldY2 = oldPosition.oldY +
+        size.radius *
+            sin(oldThrusterAngle +
+                direction / (playerCircleFragments ~/ 2) * pi) *
+            w2;
+    final thrusterSpeed = 1.1 * velocity.rotational * size.radius;
+    final vx = velocity.value * cos(velocity.angle) -
+        50.0 * cos(orientation.angle) +
+        thrusterSpeed * cos(thrusterAngle + pi / 2);
+    final vy = velocity.value * sin(velocity.angle) -
+        50.0 * sin(orientation.angle) +
+        thrusterSpeed * sin(thrusterAngle + pi / 2);
+
+    final velocityAngle = atan2(vy, vx);
+    final speed = vx / cos(velocityAngle);
+    final hsl = rgbToHsl(color.r, color.g, color.b);
+    hsl[2] += 0.1;
+    hsl[1] += 0.3;
+    final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
+    for (var i = 0; i < size.radius / 10; i++) {
+      final posFactor = random.nextDouble();
+      final posFactorTime = random.nextDouble();
+      final x = x1 + posFactor * (x2 - x1);
+      final y = y1 + posFactor * (y2 - y1);
+      final oldX = oldX1 + posFactor * (oldX2 - oldX1);
+      final oldY = oldY1 + posFactor * (oldY2 - oldY1);
+      world.createAndAddEntity([
+        Position(
+            x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
+        Particle(),
+        ThrusterParticle(),
+        Color(rgb[0], rgb[1], rgb[2], 1.0),
+        Lifetime(1.0 + 2.0 * random.nextDouble()),
+        Velocity(speed * 0.9 + random.nextDouble() * 0.2,
+            velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0)
+      ]);
+    }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    ThrusterParticle,
+    Color,
+    Lifetime,
+  ],
+)
+class ThrusterParticleColorModificationSystem
+    extends _$ThrusterParticleColorModificationSystem {
+  @override
+  void processEntity(Entity entity) {
+    final color = colorMapper[entity];
+    final lifetime = lifetimeMapper[entity];
+
+    final hsl = rgbToHsl(color.realR, color.realG, color.realB);
+    hsl[0] = hsl[0] - 0.2 * (1.0 - lifetime.timeLeft / lifetime.timeMax);
+    hsl[1] = hsl[1] * lifetime.timeLeft / lifetime.timeMax;
+    hsl[2] = hsl[2] * lifetime.timeLeft / lifetime.timeMax;
+    final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
+
+    color
+      ..r = rgb[0]
+      ..g = rgb[1]
+      ..b = rgb[2]
+      ..a = lifetime.timeLeft / lifetime.timeMax;
   }
 }

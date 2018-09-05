@@ -27,3 +27,7 @@ class Lifetime extends Component {
 
   Lifetime(this.timeMax) : timeLeft = timeMax;
 }
+
+class Thruster extends Component {}
+
+class ThrusterParticle extends Component {}

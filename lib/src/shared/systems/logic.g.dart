@@ -116,3 +116,57 @@ abstract class _$CellWallSystem extends EntityProcessingSystem {
     cellWallMapper = Mapper<CellWall>(world);
   }
 }
+
+abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
+  Mapper<Position> positionMapper;
+  Mapper<ChangedPosition> changedPositionMapper;
+  Mapper<Orientation> orientationMapper;
+  Mapper<Thruster> thrusterMapper;
+  Mapper<Velocity> velocityMapper;
+  Mapper<Size> sizeMapper;
+  Mapper<Color> colorMapper;
+  Mapper<Wobble> wobbleMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$ThrusterParticleEmissionSystem()
+      : super(Aspect.empty()
+          ..allOf([
+            Position,
+            ChangedPosition,
+            Orientation,
+            Thruster,
+            Velocity,
+            Size,
+            Color,
+            Wobble,
+            OnScreen
+          ]));
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    changedPositionMapper = Mapper<ChangedPosition>(world);
+    orientationMapper = Mapper<Orientation>(world);
+    thrusterMapper = Mapper<Thruster>(world);
+    velocityMapper = Mapper<Velocity>(world);
+    sizeMapper = Mapper<Size>(world);
+    colorMapper = Mapper<Color>(world);
+    wobbleMapper = Mapper<Wobble>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+  }
+}
+
+abstract class _$ThrusterParticleColorModificationSystem
+    extends EntityProcessingSystem {
+  Mapper<ThrusterParticle> thrusterParticleMapper;
+  Mapper<Color> colorMapper;
+  Mapper<Lifetime> lifetimeMapper;
+  _$ThrusterParticleColorModificationSystem()
+      : super(Aspect.empty()..allOf([ThrusterParticle, Color, Lifetime]));
+  @override
+  void initialize() {
+    super.initialize();
+    thrusterParticleMapper = Mapper<ThrusterParticle>(world);
+    colorMapper = Mapper<Color>(world);
+    lifetimeMapper = Mapper<Lifetime>(world);
+  }
+}
