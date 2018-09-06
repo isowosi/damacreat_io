@@ -84,7 +84,7 @@ class DebugSystem extends _$DebugSystem {
           5,
           125)
       ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 145)
-      ..fillText('Version: 0.1.0-secret-pre-pre-pre-alpha', 5, 165);
+      ..fillText('Version: $packageVersion', 5, 165);
 
     final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
     ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,

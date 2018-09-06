@@ -1,6 +1,8 @@
 targets:
   $default:
     builders:
+      build_version:
+        enabled: true
       build_web_compilers|entrypoint:
         generate_for:
           - web/main.dart
