@@ -31,8 +31,6 @@ class DebugSystem extends _$DebugSystem {
         ping = window.performance.now() - lastPingTime;
       }
     });
-    webSocketHandler
-        .sendData(Uint8ListWriter.clientToServer(MessageToServer.ping));
   }
 
   @override

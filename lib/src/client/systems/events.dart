@@ -76,6 +76,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     MessageToClient.values.forEach(_storeMessages);
   }
 
+  @override
+  void initialize() {
+    super.initialize();
+    _webSocketHandler
+        .sendData(Uint8ListWriter.clientToServer(MessageToServer.ping));
+  }
+
   void _storeMessages(MessageToClient type) {
     _messages[type] = <Uint8ListReader>[];
     _webSocketHandler.on(type).listen((data) => _messages[type].add(data));
