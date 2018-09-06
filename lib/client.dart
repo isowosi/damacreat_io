@@ -36,7 +36,10 @@ class Game extends GameBase {
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager());
 
-    final player = addEntity([Position(0.0, 0.0)]);
+    final player = addEntity([
+      Position(
+          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble())
+    ]);
     tagManager.register(player, playerTag);
   }
 
