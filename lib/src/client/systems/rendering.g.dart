@@ -74,3 +74,19 @@ abstract class _$BackgroundRenderingSystemBase
     cameraManager = world.getManager<CameraManager>();
   }
 }
+
+abstract class _$RankingRenderingSystem extends EntityProcessingSystem {
+  Mapper<Player> playerMapper;
+  Mapper<Size> sizeMapper;
+  TagManager tagManager;
+  CameraManager cameraManager;
+  _$RankingRenderingSystem() : super(Aspect.empty()..allOf([Player, Size]));
+  @override
+  void initialize() {
+    super.initialize();
+    playerMapper = Mapper<Player>(world);
+    sizeMapper = Mapper<Size>(world);
+    tagManager = world.getManager<TagManager>();
+    cameraManager = world.getManager<CameraManager>();
+  }
+}

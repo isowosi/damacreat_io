@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:typed_data';
 import 'dart:web_gl';
 
@@ -322,4 +323,60 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     rgb[2] = random.nextDouble();
     parallaxFactor = 0.4;
   }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Player,
+    Size,
+  ],
+  manager: [
+    TagManager,
+    CameraManager,
+  ],
+)
+class RankingRenderingSystem extends _$RankingRenderingSystem {
+  final CanvasRenderingContext2D ctx;
+  final List<Score> highscore = <Score>[];
+  RankingRenderingSystem(this.ctx);
+
+  @override
+  void begin() {
+    highscore.clear();
+  }
+
+  @override
+  void processEntity(Entity entity) {
+    final player = tagManager.getEntity(playerTag);
+    final size = sizeMapper[entity];
+    var name = 'someone else';
+    if (player == entity) {
+      name = 'you';
+    }
+    highscore.add(Score(name, (size.radius * size.radius * pi) ~/ 100));
+  }
+
+  @override
+  void end() {
+    highscore.sort((a, b) => b.size.compareTo(a.size));
+    var y = 0;
+    var ranking = 0;
+    ctx.fillText('Ranking', cameraManager.width - 200, y);
+    for (final score in highscore) {
+      final scoreWidth = ctx.measureText('${score.size}').width;
+      y += 20;
+      ranking++;
+      ctx
+        ..fillText(
+            '$ranking. ${score.playerName}', cameraManager.width - 200, y)
+        ..fillText('${score.size}', cameraManager.width - scoreWidth, y);
+    }
+  }
+}
+
+class Score {
+  String playerName;
+  int size;
+  Score(this.playerName, this.size);
 }

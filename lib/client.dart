@@ -66,6 +66,7 @@ class Game extends GameBase {
           BackgroundRenderingSystemLayer0(gl),
           ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
+          RankingRenderingSystem(hudCtx),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
           DebugSystem(hudCtx, webSocketHandler),
           // cleanup
