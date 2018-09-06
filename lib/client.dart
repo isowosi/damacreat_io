@@ -17,7 +17,8 @@ class Game extends GameBase {
   WebSocketHandler webSocketHandler;
 
   Game(this.webSocketHandler)
-      : super.noAssets('damacreat_io', '#game', webgl: true, depthTest: false) {
+      : super.noAssets('damacreat_io', '#game',
+            webgl: true, depthTest: false, useMaxDelta: false) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
