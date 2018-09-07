@@ -1,9 +1,9 @@
-#version 300 es
+#version 100
 
 uniform mat4 uViewProjection;
-in vec2 aPosition;
-in vec4 aColor;
-out vec4 color;
+attribute vec2 aPosition;
+attribute vec4 aColor;
+varying vec4 color;
 
 void main() {
     gl_Position = uViewProjection * vec4(aPosition, 0.0, 1.0);

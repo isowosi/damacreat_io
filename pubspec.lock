@@ -35,7 +35,7 @@ packages:
       name: bazel_worker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.12"
+    version: "0.1.13"
   bit_set:
     dependency: transitive
     description:
@@ -170,7 +170,7 @@ packages:
       path: "..\\damacreat"
       relative: true
     source: path
-    version: "0.0.0"
+    version: "0.2.0-dev"
   dart_style:
     dependency: transitive
     description:
@@ -221,8 +221,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "38efc40fbbb75f288d832a08fc8ac4c5a326bd5e"
+      ref: webgl1
+      resolved-ref: "82009ab1de2b2a47c1e32deeb2bd55eec31abac8"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -365,7 +365,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.1"
+    version: "0.10.2"
   pub_semver:
     dependency: transitive
     description:

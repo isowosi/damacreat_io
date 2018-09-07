@@ -9,7 +9,7 @@ part of 'rendering.dart';
 abstract class _$PlayerRenderingSystem extends CircleRenderingSystem {
   Mapper<Player> playerMapper;
   Mapper<CellWall> cellWallMapper;
-  _$PlayerRenderingSystem(RenderingContext2 gl)
+  _$PlayerRenderingSystem(RenderingContext gl)
       : super(gl, Aspect.empty()..allOf([Player, CellWall]));
   @override
   void initialize() {
@@ -21,7 +21,7 @@ abstract class _$PlayerRenderingSystem extends CircleRenderingSystem {
 
 abstract class _$FoodRenderingSystem extends CircleRenderingSystem {
   Mapper<Food> foodMapper;
-  _$FoodRenderingSystem(RenderingContext2 gl)
+  _$FoodRenderingSystem(RenderingContext gl)
       : super(gl, Aspect.empty()..allOf([Food]));
   @override
   void initialize() {
@@ -38,7 +38,7 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Wobble> wobbleMapper;
   Mapper<OnScreen> onScreenMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
-  _$CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
+  _$CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(
             gl,
             aspect
@@ -63,7 +63,7 @@ abstract class _$BackgroundRenderingSystemBase
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   TagManager tagManager;
   CameraManager cameraManager;
-  _$BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+  _$BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
   @override
   void initialize() {
     super.initialize();

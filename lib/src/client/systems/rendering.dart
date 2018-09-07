@@ -18,7 +18,7 @@ part 'rendering.g.dart';
 class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   final int trianglePerFragment = 3;
 
-  PlayerRenderingSystem(RenderingContext2 gl) : super(gl);
+  PlayerRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
   int get verticeCount => circleFragments * 2;
@@ -130,7 +130,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   ],
 )
 class FoodRenderingSystem extends _$FoodRenderingSystem {
-  FoodRenderingSystem(RenderingContext2 gl) : super(gl);
+  FoodRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
   void processEntity(int index, Entity entity) {
@@ -169,7 +169,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   int verticeCount;
   final int valuesPerItem = 6;
 
-  CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
+  CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(gl, aspect) {
     verticeCount = circleFragments;
   }
@@ -267,7 +267,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   Float32List rgb = Float32List.fromList([0.0, 0.0, 0.0]);
   double parallaxFactor = 1.0;
 
-  BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+  BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
   @override
   void render() {
@@ -317,7 +317,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
-  BackgroundRenderingSystemLayer0(RenderingContext2 gl) : super(gl) {
+  BackgroundRenderingSystemLayer0(RenderingContext gl) : super(gl) {
     rgb[0] = random.nextDouble();
     rgb[1] = random.nextDouble();
     rgb[2] = random.nextDouble();
