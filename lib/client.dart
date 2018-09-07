@@ -84,19 +84,12 @@ class Game extends GameBase {
 
   @override
   void handleResize(int width, int height) {
-    var calcWidth = max(800, width);
-    var calcHeight = max(450, height);
-    if (calcWidth / calcHeight > 16 / 9) {
-      calcWidth = (16 * calcHeight) ~/ 9;
-    } else if (calcWidth / calcHeight < 16 / 9) {
-      calcHeight = (9 * calcWidth) ~/ 16;
-    }
     container.style
-      ..width = '${calcWidth}px'
-      ..height = '${calcHeight}px';
-    resizeCanvas(hudCanvas, calcWidth, calcHeight);
+      ..width = '${width}px'
+      ..height = '${height}px';
+    resizeCanvas(hudCanvas, width, height);
     _configureHud();
-    super.handleResize(calcWidth, calcHeight);
+    super.handleResize(width, height);
   }
 
   void _configureHud() {
