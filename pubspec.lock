@@ -222,7 +222,7 @@ packages:
     description:
       path: "."
       ref: webgl1
-      resolved-ref: "82009ab1de2b2a47c1e32deeb2bd55eec31abac8"
+      resolved-ref: "2a4544f0748c03e256cc8ebbcead41f8b321b1ce"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"

@@ -88,7 +88,7 @@ class DebugSystem extends _$DebugSystem {
 
     final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
     ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,
-        (600.0 + leftTop.y) * scaling);
+        (cameraManager.height / scaling + leftTop.y) * scaling);
 
     for (final leaf in visibleLeaves) {
       ctx.strokeRect(leaf.bounds.left, leaf.bounds.top, leaf.bounds.width,
