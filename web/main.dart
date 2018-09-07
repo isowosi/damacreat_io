@@ -6,7 +6,7 @@ import 'package:damacreat_io/src/client/web_socket_handler.dart';
 const bool debug = bool.fromEnvironment('debug', defaultValue: false);
 
 void main() {
-  final webSocket = WebSocket('ws://localhost:8081');
+  final webSocket = WebSocket('wss://ws.damacreat.io/v0/');
   webSocket.onOpen.listen((openEvent) {
     final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
     Game(webSocketHandler).start();
