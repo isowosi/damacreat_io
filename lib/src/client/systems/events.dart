@@ -26,6 +26,9 @@ class ControllerSystem extends _$ControllerSystem {
     canvas.onMouseMove.listen((event) {
       offset = event.offset;
     });
+    canvas.onTouchMove.listen((event) {
+      offset = event.touches.last.page;
+    });
   }
 
   @override
