@@ -120,6 +120,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         readers.reversed.forEach(_updatePosition);
         _processed.clear();
         break;
+      case MessageToClient.updatePositionAndOrientation:
+        // start with most current data and ignores old data if if already in
+        // _processed
+        readers.reversed.forEach(_updatePositionAndOrientation);
+        _processed.clear();
+        break;
       case MessageToClient.initPlayerId:
         readers.forEach(_initPlayerId);
         break;
@@ -156,14 +162,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         final entity = idManager.getEntity(id);
         if (entity != null) {
           final position = positionMapper[entity];
-          final orientation = orientationMapper[entity];
           final oldX = position.x;
           final oldY = position.y;
-          final oldOrientation = orientation.angle;
           position
             ..x = x
             ..y = y;
-          orientation.angle = atan2(y - oldY, x - oldX);
 
           if (constantVelocityMapper.has(entity)) {
             // moving food that was caught by a player
@@ -177,8 +180,40 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             velocityMapper[entity]
               ..angle = atan2(y - oldY, x - oldX)
               ..value = dist / world.delta
-              ..rotational = (orientation.angle - oldOrientation) / world.delta;
+              ..rotational = 0.0;
           }
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
+      }
+    }
+  }
+
+  void _updatePositionAndOrientation(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final x = reader.readUint16() / positionFactor;
+      final y = reader.readUint16() / positionFactor;
+      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
+      if (_processed.add(id)) {
+        final entity = idManager.getEntity(id);
+        if (entity != null) {
+          final position = positionMapper[entity];
+          final orientation = orientationMapper[entity];
+          final oldX = position.x;
+          final oldY = position.y;
+          final oldOrientation = orientation.angle;
+          position
+            ..x = x
+            ..y = y;
+          orientation.angle = orientationAngle;
+
+          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          velocityMapper[entity]
+            ..angle = atan2(y - oldY, x - oldX)
+            ..value = dist / world.delta
+            ..rotational = (orientation.angle - oldOrientation) / world.delta;
           entity
             ..addComponent(ChangedPosition(x, y))
             ..changedInWorld();
@@ -226,6 +261,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final id = reader.readUint16();
       final x = reader.readUint16() / positionFactor;
       final y = reader.readUint16() / positionFactor;
+      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       final playerRadius = ByteUtils.byteToPlayerRadius(reader.readUint16());
       final hue = ByteUtils.byteToHue(reader.readUint8());
       if (id != playerId) {
@@ -234,7 +270,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           Position(x, y),
           Size(playerRadius),
           Color.fromHsl(hue, 0.9, 0.6, 0.4),
-          Orientation(pi / 2),
+          Orientation(orientationAngle),
           Wobble(),
           CellWall(5.0),
           Thruster(),
@@ -247,7 +283,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..addComponent(Controller())
           ..addComponent(Size(playerRadius))
           ..addComponent(Color.fromHsl(hue, 0.9, 0.6, 0.4))
-          ..addComponent(Orientation(pi / 2))
+          ..addComponent(Orientation(orientationAngle))
           ..addComponent(Wobble())
           ..addComponent(CellWall(5.0))
           ..addComponent(Thruster())
