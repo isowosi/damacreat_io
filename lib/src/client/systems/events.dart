@@ -156,8 +156,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _updatePosition(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      final x = reader.readUint16() / positionFactor;
-      final y = reader.readUint16() / positionFactor;
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
       if (_processed.add(id)) {
         final entity = idManager.getEntity(id);
         if (entity != null) {
@@ -193,8 +193,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _updatePositionAndOrientation(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      final x = reader.readUint16() / positionFactor;
-      final y = reader.readUint16() / positionFactor;
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
       final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       if (_processed.add(id)) {
         final entity = idManager.getEntity(id);
@@ -226,8 +226,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     while (reader.hasNext) {
       final entity = world.createAndAddEntity([
         Id(reader.readUint16()),
-        Position(reader.readUint16() / positionFactor,
-            reader.readUint16() / positionFactor),
+        Position(ByteUtils.byteToPosition(reader.readUint16()),
+            ByteUtils.byteToPosition(reader.readUint16())),
         Size(reader.readUint8() / foodSizeFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Orientation(0.0),
@@ -242,8 +242,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     while (reader.hasNext) {
       final entity = world.createAndAddEntity([
         Id(reader.readUint16()),
-        Position(reader.readUint16() / positionFactor,
-            reader.readUint16() / positionFactor),
+        Position(ByteUtils.byteToPosition(reader.readUint16()),
+            ByteUtils.byteToPosition(reader.readUint16())),
         Size(reader.readUint8() / foodSizeFactor),
         Growing(reader.readUint8() / foodSizeFactor,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
@@ -259,8 +259,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initPlayers(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      final x = reader.readUint16() / positionFactor;
-      final y = reader.readUint16() / positionFactor;
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
       final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       final playerRadius = ByteUtils.byteToPlayerRadius(reader.readUint16());
       final hue = ByteUtils.byteToHue(reader.readUint8());
