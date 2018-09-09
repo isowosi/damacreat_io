@@ -124,24 +124,70 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
 }
 
 @Generate(
-  CircleRenderingSystem,
+  WebGlRenderingSystem,
   allOf: [
     Food,
+    Position,
+    Size,
+    OnScreen,
+  ],
+  manager: [
+    WebGlViewProjectionMatrixManager,
   ],
 )
 class FoodRenderingSystem extends _$FoodRenderingSystem {
+  Uint16List indices;
+
+  Float32List items;
+
+  List<Attrib> attributes = const [
+    Attrib('aPosition', 2),
+    Attrib('aRadius', 1),
+    Attrib('aColorMod', 3),
+  ];
+
   FoodRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
   void processEntity(int index, Entity entity) {
-    super.processEntity(index, entity);
-    final offset = index * (verticeCount + 1) * valuesPerItem;
-    final c = colorMapper[entity];
-    items[offset + 5] = c.a;
+    final position = positionMapper[entity];
+    final size = sizeMapper[entity];
+    final food = foodMapper[entity];
+    final itemOffset = index * 6;
+    items[itemOffset] = position.x;
+    items[itemOffset + 1] = position.y;
+    items[itemOffset + 2] = size.radius;
+    items[itemOffset + 3] = food.r;
+    items[itemOffset + 4] = food.g;
+    items[itemOffset + 5] = food.b;
+    indices[index] = index;
   }
 
   @override
-  int get circleFragments => 16;
+  void render(int length) {
+    gl
+      ..uniformMatrix4fv(
+          gl.getUniformLocation(program, 'uViewProjection'),
+          false,
+          webGlViewProjectionMatrixManager
+              .create2dViewProjectionMatrix()
+              .storage)
+      ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
+
+    bufferElements(attributes, items, indices);
+    gl.drawElements(WebGL.POINTS, length, WebGL.UNSIGNED_SHORT, 0);
+  }
+
+  @override
+  void updateLength(int length) {
+    items = Float32List(length * 6);
+    indices = Uint16List(length);
+  }
+
+  @override
+  String get vShaderFile => 'FoodRenderingSystem';
+  @override
+  String get fShaderFile => 'FoodRenderingSystem';
 }
 
 @Generate(

@@ -230,9 +230,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ByteUtils.byteToPosition(reader.readUint16())),
         Size(reader.readUint8() / foodSizeFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
-        Orientation(0.0),
-        Wobble(),
-        Food(),
+        Food(random.nextDouble() * tau, random.nextDouble() * tau,
+            random.nextDouble() * tau),
       ]);
       idManager.add(entity);
     }
@@ -248,9 +247,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Growing(reader.readUint8() / foodSizeFactor,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
-        Orientation(0.0),
-        Wobble(),
-        Food(),
+        Food(random.nextDouble() * tau, random.nextDouble() * tau,
+            random.nextDouble() * tau),
       ]);
       idManager.add(entity);
     }
