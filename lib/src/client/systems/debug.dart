@@ -27,13 +27,13 @@ class DebugSystem extends _$DebugSystem {
   double lastPingTime = 0.0;
   double ping;
   DebugSystem(this.ctx, this.webSocketHandler) {
-    MessageToClient.values.forEach(_countBytes);
+    _countBytes();
   }
 
-  void _countBytes(MessageToClient message) {
-    webSocketHandler.on(message).listen((reader) {
-      byteCount += reader.length;
-      if (message == MessageToClient.pong) {
+  void _countBytes() {
+    webSocketHandler.on.listen((message) {
+      byteCount += message.reader.length;
+      if (message.type == MessageToClient.pong) {
         ping = window.performance.now() - lastPingTime;
       }
     });
