@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:typed_data';
 import 'dart:web_gl';
 
@@ -17,7 +18,7 @@ part 'rendering.g.dart';
 class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   final int trianglePerFragment = 3;
 
-  PlayerRenderingSystem(RenderingContext2 gl) : super(gl);
+  PlayerRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
   int get verticeCount => circleFragments * 2;
@@ -123,24 +124,70 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
 }
 
 @Generate(
-  CircleRenderingSystem,
+  WebGlRenderingSystem,
   allOf: [
     Food,
+    Position,
+    Size,
+    OnScreen,
+  ],
+  manager: [
+    WebGlViewProjectionMatrixManager,
   ],
 )
 class FoodRenderingSystem extends _$FoodRenderingSystem {
-  FoodRenderingSystem(RenderingContext2 gl) : super(gl);
+  Uint16List indices;
+
+  Float32List items;
+
+  List<Attrib> attributes = const [
+    Attrib('aPosition', 2),
+    Attrib('aRadius', 1),
+    Attrib('aColorMod', 3),
+  ];
+
+  FoodRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
   void processEntity(int index, Entity entity) {
-    super.processEntity(index, entity);
-    final offset = index * (verticeCount + 1) * valuesPerItem;
-    final c = colorMapper[entity];
-    items[offset + 5] = c.a;
+    final position = positionMapper[entity];
+    final size = sizeMapper[entity];
+    final food = foodMapper[entity];
+    final itemOffset = index * 6;
+    items[itemOffset] = position.x;
+    items[itemOffset + 1] = position.y;
+    items[itemOffset + 2] = size.radius;
+    items[itemOffset + 3] = food.r;
+    items[itemOffset + 4] = food.g;
+    items[itemOffset + 5] = food.b;
+    indices[index] = index;
   }
 
   @override
-  int get circleFragments => 16;
+  void render(int length) {
+    gl
+      ..uniformMatrix4fv(
+          gl.getUniformLocation(program, 'uViewProjection'),
+          false,
+          webGlViewProjectionMatrixManager
+              .create2dViewProjectionMatrix()
+              .storage)
+      ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
+
+    bufferElements(attributes, items, indices);
+    gl.drawElements(WebGL.POINTS, length, WebGL.UNSIGNED_SHORT, 0);
+  }
+
+  @override
+  void updateLength(int length) {
+    items = Float32List(length * 6);
+    indices = Uint16List(length);
+  }
+
+  @override
+  String get vShaderFile => 'FoodRenderingSystem';
+  @override
+  String get fShaderFile => 'FoodRenderingSystem';
 }
 
 @Generate(
@@ -168,7 +215,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   int verticeCount;
   final int valuesPerItem = 6;
 
-  CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
+  CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(gl, aspect) {
     verticeCount = circleFragments;
   }
@@ -266,7 +313,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   Float32List rgb = Float32List.fromList([0.0, 0.0, 0.0]);
   double parallaxFactor = 1.0;
 
-  BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+  BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
   @override
   void render() {
@@ -316,10 +363,66 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
-  BackgroundRenderingSystemLayer0(RenderingContext2 gl) : super(gl) {
+  BackgroundRenderingSystemLayer0(RenderingContext gl) : super(gl) {
     rgb[0] = random.nextDouble();
     rgb[1] = random.nextDouble();
     rgb[2] = random.nextDouble();
     parallaxFactor = 0.4;
   }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Player,
+    Size,
+  ],
+  manager: [
+    TagManager,
+    CameraManager,
+  ],
+)
+class RankingRenderingSystem extends _$RankingRenderingSystem {
+  final CanvasRenderingContext2D ctx;
+  final List<Score> highscore = <Score>[];
+  RankingRenderingSystem(this.ctx);
+
+  @override
+  void begin() {
+    highscore.clear();
+  }
+
+  @override
+  void processEntity(Entity entity) {
+    final player = tagManager.getEntity(playerTag);
+    final size = sizeMapper[entity];
+    var name = 'someone else';
+    if (player == entity) {
+      name = 'you';
+    }
+    highscore.add(Score(name, (size.radius * size.radius * pi) ~/ 100));
+  }
+
+  @override
+  void end() {
+    highscore.sort((a, b) => b.size.compareTo(a.size));
+    var y = 0;
+    var ranking = 0;
+    ctx.fillText('Ranking', cameraManager.width - 200, y);
+    for (final score in highscore) {
+      final scoreWidth = ctx.measureText('${score.size}').width;
+      y += 20;
+      ranking++;
+      ctx
+        ..fillText(
+            '$ranking. ${score.playerName}', cameraManager.width - 200, y)
+        ..fillText('${score.size}', cameraManager.width - scoreWidth, y);
+    }
+  }
+}
+
+class Score {
+  String playerName;
+  int size;
+  Score(this.playerName, this.size);
 }

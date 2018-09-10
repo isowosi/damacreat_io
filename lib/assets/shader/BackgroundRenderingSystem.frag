@@ -89,5 +89,5 @@ void main() {
         frequency *= lacunarity;
         amplitude *= gain;
     }
-    gl_FragColor = vec4(0.2 * uRgb + vec3(total, total, total), total);
+    gl_FragColor = vec4(0.5 * (uRgb + vec3(total, total, total)), total);
 }

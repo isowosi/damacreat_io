@@ -17,7 +17,8 @@ class Game extends GameBase {
   WebSocketHandler webSocketHandler;
 
   Game(this.webSocketHandler)
-      : super.noAssets('damacreat_io', '#game', webgl: true, depthTest: false) {
+      : super.noAssets('damacreat_io', '#game',
+            webgl: true, depthTest: false, useMaxDelta: false) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
@@ -35,7 +36,10 @@ class Game extends GameBase {
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager());
 
-    final player = addEntity([Position(0.0, 0.0)]);
+    final player = addEntity([
+      Position(
+          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble())
+    ]);
     tagManager.register(player, playerTag);
   }
 
@@ -66,6 +70,7 @@ class Game extends GameBase {
           BackgroundRenderingSystemLayer0(gl),
           ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
+          RankingRenderingSystem(hudCtx),
           FpsRenderingSystem(hudCtx, fillStyle: 'white'),
           DebugSystem(hudCtx, webSocketHandler),
           // cleanup
@@ -79,19 +84,12 @@ class Game extends GameBase {
 
   @override
   void handleResize(int width, int height) {
-    var calcWidth = max(800, width);
-    var calcHeight = max(450, height);
-    if (calcWidth / calcHeight > 16 / 9) {
-      calcWidth = (16 * calcHeight) ~/ 9;
-    } else if (calcWidth / calcHeight < 16 / 9) {
-      calcHeight = (9 * calcWidth) ~/ 16;
-    }
     container.style
-      ..width = '${calcWidth}px'
-      ..height = '${calcHeight}px';
-    resizeCanvas(hudCanvas, calcWidth, calcHeight);
+      ..width = '${width}px'
+      ..height = '${height}px';
+    resizeCanvas(hudCanvas, width, height);
     _configureHud();
-    super.handleResize(calcWidth, calcHeight);
+    super.handleResize(width, height);
   }
 
   void _configureHud() {

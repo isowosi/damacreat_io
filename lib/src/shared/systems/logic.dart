@@ -54,6 +54,7 @@ class FoodGrowingSystem extends _$FoodGrowingSystem {
     s.radius += g.speed * world.delta;
 
     if (s.radius >= g.targetRadius) {
+      s.radius = g.targetRadius;
       entity
         ..removeComponent<Growing>()
         ..changedInWorld();

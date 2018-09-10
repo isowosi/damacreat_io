@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:damacreat/damacreat.dart';
 
 class WebSocketHandler {
-  final _streams = <MessageToClient, StreamController<Uint8ListReader>>{};
+  final _controller = StreamController<Message>.broadcast();
   bool _open = false;
 
   final WebSocket _webSocket;
@@ -18,16 +18,14 @@ class WebSocketHandler {
         final Uint8List data = reader.result;
         final uint8ListReader = Uint8ListReader(data.sublist(1));
         final type = MessageToClient.values[data[0]];
-        if (debug) {
-          print(type);
-        }
-        _streams[type]?.add(uint8ListReader);
+        _controller.add(Message(type, uint8ListReader));
       });
       final blob = messageEvent.data;
       reader.readAsArrayBuffer(blob);
     });
     _webSocket.onClose.listen((_) {
       _open = false;
+      _controller.close();
     });
   }
 
@@ -37,13 +35,11 @@ class WebSocketHandler {
     }
   }
 
-  Stream<Uint8ListReader> on(MessageToClient type) => _streams
-        .putIfAbsent(type, () => StreamController<Uint8ListReader>.broadcast())
-        .stream;
+  Stream<Message> get on => _controller.stream;
 }
 
 class Message {
   final MessageToClient type;
-  final Uint8List data;
-  Message(this.type, this.data);
+  final Uint8ListReader reader;
+  Message(this.type, this.reader);
 }

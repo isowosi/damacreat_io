@@ -11,6 +11,12 @@ part 'debug.g.dart';
   VoidEntitySystem,
   mapper: [
     Food,
+    Position,
+  ],
+  manager: [
+    QuadTreeManager,
+    WebGlViewProjectionMatrixManager,
+    CameraManager,
   ],
 )
 class DebugSystem extends _$DebugSystem {
@@ -21,18 +27,16 @@ class DebugSystem extends _$DebugSystem {
   double lastPingTime = 0.0;
   double ping;
   DebugSystem(this.ctx, this.webSocketHandler) {
-    MessageToClient.values.forEach(_countBytes);
+    _countBytes();
   }
 
-  void _countBytes(MessageToClient message) {
-    webSocketHandler.on(message).listen((reader) {
-      byteCount += reader.length;
-      if (message == MessageToClient.pong) {
+  void _countBytes() {
+    webSocketHandler.on.listen((message) {
+      byteCount += message.reader.length;
+      if (message.type == MessageToClient.pong) {
         ping = window.performance.now() - lastPingTime;
       }
     });
-    webSocketHandler
-        .sendData(Uint8ListWriter.clientToServer(MessageToServer.ping));
   }
 
   @override
@@ -52,21 +56,45 @@ class DebugSystem extends _$DebugSystem {
       webSocketHandler
           .sendData(Uint8ListWriter.clientToServer(MessageToServer.ping));
     }
+    final leaves = quadTreeManager.getLeaves().toList();
 
+    final inverse = webGlViewProjectionMatrixManager
+        .create2dViewProjectionMatrix()
+          ..invert();
+    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
+    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final visibleLeaves = leaves.where((leaf) => leaf.bounds.intersects(
+        Rectangle(leftTop.x, leftTop.y, rightBottom.x - leftTop.x,
+            rightBottom.y - leftTop.y)));
     ctx
       ..save()
       ..font = '20px Verdana'
       ..textBaseline = 'top'
       ..fillStyle = 'white'
+      ..strokeStyle = 'grey'
       ..fillText('Rendered circles: $renderedCircles', 5, 45)
       ..fillText('Moving entities: $movingThings', 5, 65)
-      ..fillText('Received: ${(byteCount / 1024).toStringAsFixed(3)}kB', 5, 85)
+      ..fillText(
+          'QuadTree leaves (visible/total): ${visibleLeaves.length}/${leaves.length}',
+          5,
+          85)
+      ..fillText('Received: ${(byteCount / 1024).toStringAsFixed(3)}kB', 5, 105)
       ..fillText(
           'Rate: ${(byteCount / 1024 / totalDelta).toStringAsFixed(3)}kB/s (${(8 * byteCount / 1024 / 1024 / totalDelta).toStringAsFixed(3)}Mbit/s)',
           5,
-          105)
-      ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 125)
-      ..fillText('Version: 0.1.0-secret-pre-pre-pre-alpha', 5, 145)
-      ..restore();
+          125)
+      ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 145)
+      ..fillText('Version: $packageVersion', 5, 165);
+
+    final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
+    ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,
+        (cameraManager.height / scaling + leftTop.y) * scaling);
+
+    for (final leaf in visibleLeaves) {
+      ctx.strokeRect(leaf.bounds.left, leaf.bounds.top, leaf.bounds.width,
+          leaf.bounds.height);
+    }
+
+    ctx.restore();
   }
 }

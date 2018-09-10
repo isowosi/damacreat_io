@@ -87,6 +87,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.1+5"
+  build_version:
+    dependency: "direct dev"
+    description:
+      name: build_version
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   build_web_compilers:
     dependency: "direct dev"
     description:
@@ -160,12 +167,10 @@ packages:
   damacreat:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "924301164d1f71315fcd6b6a1d46eb2aa6a1f232"
-      url: "git@bitbucket.org:isowosi/damacreat.git"
-    source: git
-    version: "0.1.0"
+      path: "..\\damacreat"
+      relative: true
+    source: path
+    version: "0.2.0-dev"
   dart_style:
     dependency: transitive
     description:
@@ -216,8 +221,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "38efc40fbbb75f288d832a08fc8ac4c5a326bd5e"
+      ref: webgl1
+      resolved-ref: "2a4544f0748c03e256cc8ebbcead41f8b321b1ce"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"

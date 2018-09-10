@@ -4,6 +4,8 @@ analyzer:
     unused_import: error
     unused_local_variable: error
     dead_code: error
+  exclude:
+    - lib/src/version.dart
 linter:
   rules:
     # http://dart-lang.github.io/linter/lints/options/options.html

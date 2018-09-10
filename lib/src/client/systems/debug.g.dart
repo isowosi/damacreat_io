@@ -8,9 +8,18 @@ part of 'debug.dart';
 
 abstract class _$DebugSystem extends VoidEntitySystem {
   Mapper<Food> foodMapper;
+  Mapper<Position> positionMapper;
+  QuadTreeManager quadTreeManager;
+  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  CameraManager cameraManager;
   @override
   void initialize() {
     super.initialize();
     foodMapper = Mapper<Food>(world);
+    positionMapper = Mapper<Position>(world);
+    quadTreeManager = world.getManager<QuadTreeManager>();
+    webGlViewProjectionMatrixManager =
+        world.getManager<WebGlViewProjectionMatrixManager>();
+    cameraManager = world.getManager<CameraManager>();
   }
 }

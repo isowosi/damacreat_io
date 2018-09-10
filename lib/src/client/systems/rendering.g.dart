@@ -9,7 +9,7 @@ part of 'rendering.dart';
 abstract class _$PlayerRenderingSystem extends CircleRenderingSystem {
   Mapper<Player> playerMapper;
   Mapper<CellWall> cellWallMapper;
-  _$PlayerRenderingSystem(RenderingContext2 gl)
+  _$PlayerRenderingSystem(RenderingContext gl)
       : super(gl, Aspect.empty()..allOf([Player, CellWall]));
   @override
   void initialize() {
@@ -19,14 +19,23 @@ abstract class _$PlayerRenderingSystem extends CircleRenderingSystem {
   }
 }
 
-abstract class _$FoodRenderingSystem extends CircleRenderingSystem {
+abstract class _$FoodRenderingSystem extends WebGlRenderingSystem {
   Mapper<Food> foodMapper;
-  _$FoodRenderingSystem(RenderingContext2 gl)
-      : super(gl, Aspect.empty()..allOf([Food]));
+  Mapper<Position> positionMapper;
+  Mapper<Size> sizeMapper;
+  Mapper<OnScreen> onScreenMapper;
+  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  _$FoodRenderingSystem(RenderingContext gl)
+      : super(gl, Aspect.empty()..allOf([Food, Position, Size, OnScreen]));
   @override
   void initialize() {
     super.initialize();
     foodMapper = Mapper<Food>(world);
+    positionMapper = Mapper<Position>(world);
+    sizeMapper = Mapper<Size>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+    webGlViewProjectionMatrixManager =
+        world.getManager<WebGlViewProjectionMatrixManager>();
   }
 }
 
@@ -38,7 +47,7 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Wobble> wobbleMapper;
   Mapper<OnScreen> onScreenMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
-  _$CircleRenderingSystem(RenderingContext2 gl, Aspect aspect)
+  _$CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(
             gl,
             aspect
@@ -63,13 +72,29 @@ abstract class _$BackgroundRenderingSystemBase
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   TagManager tagManager;
   CameraManager cameraManager;
-  _$BackgroundRenderingSystemBase(RenderingContext2 gl) : super(gl);
+  _$BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
+    tagManager = world.getManager<TagManager>();
+    cameraManager = world.getManager<CameraManager>();
+  }
+}
+
+abstract class _$RankingRenderingSystem extends EntityProcessingSystem {
+  Mapper<Player> playerMapper;
+  Mapper<Size> sizeMapper;
+  TagManager tagManager;
+  CameraManager cameraManager;
+  _$RankingRenderingSystem() : super(Aspect.empty()..allOf([Player, Size]));
+  @override
+  void initialize() {
+    super.initialize();
+    playerMapper = Mapper<Player>(world);
+    sizeMapper = Mapper<Size>(world);
     tagManager = world.getManager<TagManager>();
     cameraManager = world.getManager<CameraManager>();
   }
