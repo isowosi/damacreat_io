@@ -167,10 +167,12 @@ packages:
   damacreat:
     dependency: "direct main"
     description:
-      path: "..\\damacreat"
-      relative: true
-    source: path
-    version: "0.2.0-dev"
+      path: "."
+      ref: HEAD
+      resolved-ref: cde82347658e17c5474f5ecb270c77c520047956
+      url: "git@bitbucket.org:isowosi/damacreat.git"
+    source: git
+    version: "0.2.0"
   dart_style:
     dependency: transitive
     description:
