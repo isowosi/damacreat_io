@@ -113,6 +113,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.updatePositionAndOrientation:
         _updatePositionAndOrientation(reader);
         break;
+      case MessageToClient.updatePositionAndSize:
+        _updatePositionAndSize(reader);
+        break;
+      case MessageToClient.updatePositionAndOrientationAndSize:
+        _updatePositionAndOrientationAndSize(reader);
+        break;
       case MessageToClient.initPlayerId:
         _initPlayerId(reader);
         break;
@@ -171,34 +177,100 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
+  void _updatePositionAndSize(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
+        sizeMapper[entity].radius = radius;
+        final position = positionMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        position
+          ..x = x
+          ..y = y;
+
+        if (constantVelocityMapper.has(entity)) {
+          // moving food that was caught by a player
+          entity
+            ..removeComponent<Velocity>()
+            ..removeComponent<ConstantVelocity>();
+        } else if (velocityMapper.has(entity)) {
+          // the player
+          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          velocityMapper[entity]
+            ..angle = atan2(y - oldY, x - oldX)
+            ..value = dist / world.delta
+            ..rotational = 0.0;
+        }
+        entity
+          ..addComponent(ChangedPosition(x, y))
+          ..changedInWorld();
+      }
+    }
+  }
+
   void _updatePositionAndOrientation(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
       final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
-      if (_processed.add(id)) {
-        final entity = idManager.getEntity(id);
-        if (entity != null) {
-          final position = positionMapper[entity];
-          final orientation = orientationMapper[entity];
-          final oldX = position.x;
-          final oldY = position.y;
-          final oldOrientation = orientation.angle;
-          position
-            ..x = x
-            ..y = y;
-          orientation.angle = orientationAngle;
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
+        final position = positionMapper[entity];
+        final orientation = orientationMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        final oldOrientation = orientation.angle;
+        position
+          ..x = x
+          ..y = y;
+        orientation.angle = orientationAngle;
 
-          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
-          velocityMapper[entity]
-            ..angle = atan2(y - oldY, x - oldX)
-            ..value = dist / world.delta
-            ..rotational = (orientation.angle - oldOrientation) / world.delta;
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
+        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        velocityMapper[entity]
+          ..angle = atan2(y - oldY, x - oldX)
+          ..value = dist / world.delta
+          ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        entity
+          ..addComponent(ChangedPosition(x, y))
+          ..changedInWorld();
+      }
+    }
+  }
+
+  void _updatePositionAndOrientationAndSize(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
+      final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
+        sizeMapper[entity].radius = radius;
+        final position = positionMapper[entity];
+        final orientation = orientationMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        final oldOrientation = orientation.angle;
+        position
+          ..x = x
+          ..y = y;
+        orientation.angle = orientationAngle;
+
+        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        velocityMapper[entity]
+          ..angle = atan2(y - oldY, x - oldX)
+          ..value = dist / world.delta
+          ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        entity
+          ..addComponent(ChangedPosition(x, y))
+          ..changedInWorld();
       }
     }
   }
