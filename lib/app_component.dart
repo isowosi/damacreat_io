@@ -1,6 +1,7 @@
 import 'package:angular/angular.dart';
 import 'package:damacreat_io/src/ng/game_menu/game_menu.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
+import 'package:damacreat_io/src/ng/page_footer/page_footer.dart';
 
 const bool debug = bool.fromEnvironment('debug', defaultValue: false);
 
@@ -10,6 +11,7 @@ const bool debug = bool.fromEnvironment('debug', defaultValue: false);
   templateUrl: 'app_component.html',
   directives: [
     GameMenuComponent,
+    PageFooterComponent,
     NgIf,
   ],
   providers: [

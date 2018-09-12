@@ -1,0 +1,57 @@
+$baseHue: 92;
+$baseSaturation: 24;
+$baseLightness: 90;
+$linkTextColor: hsl($baseHue, $baseSaturation + 63, $baseLightness - 63);
+
+:host {
+  position: absolute;
+  height: 30px;
+  width: 100vw;
+  bottom: 0;
+  display: grid;
+  background-color: gainsboro;
+  grid-template-columns: 150px auto 150px;
+  grid-template-areas: "privacy logo imprint";
+  align-items: center;
+}
+
+a.privacy {
+  grid-area: privacy;
+  text-align: left;
+}
+a.logo {
+  grid-area: logo;
+  text-align: center;
+}
+a.imprint {
+  grid-area: imprint;
+  text-align: right;
+}
+
+a {
+  margin: 0 10px;
+  color: #2900ae;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: #80007e;
+  }
+}
+
+
+@media (max-width: 550px) {
+  :host {
+    flex-direction: row;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    grid-template-areas: "logo" "privacy" "imprint";
+    height: 100px;
+    align-content: space-evenly;
+  }
+  a.privacy, a.imprint {
+    text-align: center;
+  }
+}

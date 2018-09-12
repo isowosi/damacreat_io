@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0"
+  angular_router:
+    dependency: transitive
+    description:
+      name: angular_router
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0-alpha+19"
   archive:
     dependency: transitive
     description:
@@ -317,6 +324,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.3"
+  isowosi_angular_components:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: c64e972bd7b1b41c78497b46f38240354435bb60
+      url: "git@bitbucket.org:dennis_kaselow/isowosi_angular_components"
+    source: git
+    version: "0.0.3"
   js:
     dependency: transitive
     description:
