@@ -2,5 +2,6 @@
   <canvas id="game"></canvas>
   <canvas id="hud"></canvas>
   <game-menu *ngIf='menuVisible'></game-menu>
+  <game-error *ngIf='gameError && menuVisible'></game-error>
   <page-footer *ngIf='menuVisible'></page-footer>
 </div>

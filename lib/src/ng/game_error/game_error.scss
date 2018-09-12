@@ -1,0 +1,24 @@
+:host {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+}
+
+div.container {
+  background-color: hsl(0, 20%, 50%);
+  border: 1px solid hsl(0, 90%, 50%);
+  margin: 10px;
+  width: 100vw;
+  text-align: left;
+}
+
+div.info {
+  margin: 10px;
+}
+
+pre {
+  margin: 0 10px;
+}
