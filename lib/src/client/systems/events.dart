@@ -8,7 +8,7 @@ import 'package:damacreat_io/src/shared/components.dart';
 part 'events.g.dart';
 
 @Generate(
-  GenericInputHandlingSystem,
+  EntityProcessingSystem,
   allOf: [
     Controller,
   ],
@@ -319,6 +319,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         world.createAndAddEntity([
           Id(id),
           Position(x, y),
+          ChangedPosition(x, y),
           Size(playerRadius),
           Color.fromHsl(hue, 0.9, 0.6, 0.4),
           Orientation(orientationAngle),
@@ -326,12 +327,14 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           CellWall(5.0),
           Thruster(),
           Velocity(0.0, 0.0, 0.0),
-          Player(),
+          Player(''),
         ]);
       } else {
         tagManager.getEntity(playerTag)
           ..addComponent(Id(playerId))
           ..addComponent(Controller())
+          ..addComponent(Position(x, y))
+          ..addComponent(ChangedPosition(x, y))
           ..addComponent(Size(playerRadius))
           ..addComponent(Color.fromHsl(hue, 0.9, 0.6, 0.4))
           ..addComponent(Orientation(orientationAngle))
@@ -339,7 +342,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..addComponent(CellWall(5.0))
           ..addComponent(Thruster())
           ..addComponent(Velocity(0.0, 0.0, 0.0))
-          ..addComponent(Player())
+          ..addComponent(Player(''))
           ..changedInWorld();
       }
     }

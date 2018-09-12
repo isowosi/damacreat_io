@@ -1,6 +1,8 @@
 library client;
 
+import 'dart:convert';
 import 'dart:html';
+
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
@@ -96,5 +98,14 @@ class Game extends GameBase {
     hudCtx
       ..textBaseline = 'top'
       ..font = '16px Verdana';
+  }
+
+  void joinGame(String nickname) {
+    final utf8nickname = utf8
+        .encode(nickname.substring(0, min(maxLengthNickname, nickname.length)));
+    webSocketHandler.sendData(Uint8ListWriter.clientToServer(
+        MessageToServer.joinGame,
+        itemCount: utf8nickname.length)
+      ..writeUint8List(utf8nickname));
   }
 }

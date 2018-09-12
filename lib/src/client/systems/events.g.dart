@@ -6,7 +6,7 @@ part of 'events.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$ControllerSystem extends GenericInputHandlingSystem {
+abstract class _$ControllerSystem extends EntityProcessingSystem {
   Mapper<Controller> controllerMapper;
   _$ControllerSystem() : super(Aspect.empty()..allOf([Controller]));
   @override

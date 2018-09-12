@@ -18,7 +18,9 @@ class WebSocketHandler {
         final Uint8List data = reader.result;
         final uint8ListReader = Uint8ListReader(data.sublist(1));
         final type = MessageToClient.values[data[0]];
-        _controller.add(Message(type, uint8ListReader));
+        if (!_controller.isClosed) {
+          _controller.add(Message(type, uint8ListReader));
+        }
       });
       final blob = messageEvent.data;
       reader.readAsArrayBuffer(blob);
