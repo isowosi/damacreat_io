@@ -10,20 +10,22 @@ $linkTextColor: hsl($baseHue, $baseSaturation + 63, $baseLightness - 63);
   bottom: 0;
   display: grid;
   background-color: gainsboro;
-  grid-template-columns: 150px auto 150px;
+  grid-template-columns: 250px auto 150px;
   grid-template-areas: "privacy logo imprint";
   align-items: center;
 }
 
-a.privacy {
+.privacy {
   grid-area: privacy;
   text-align: left;
 }
-a.logo {
+
+.logo {
   grid-area: logo;
   text-align: center;
 }
-a.imprint {
+
+.imprint {
   grid-area: imprint;
   text-align: right;
 }
@@ -41,6 +43,10 @@ a {
   }
 }
 
+span.lastupdate {
+  font-size: 12px;
+  color: grey;
+}
 
 @media (max-width: 630px) {
   :host {
@@ -51,7 +57,10 @@ a {
     height: 100px;
     align-content: space-evenly;
   }
-  a.privacy, a.imprint {
+  .privacy, .imprint {
     text-align: center;
+  }
+  .lastupdate {
+    display: block;
   }
 }

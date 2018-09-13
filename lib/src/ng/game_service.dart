@@ -10,6 +10,7 @@ class GameService {
   Game _game;
   bool menuVisible = true;
   bool error = false;
+  bool showPrivacyPolicy = false;
   Object errorMessage;
   StackTrace stackTrace;
   final SettingsManager settings;
@@ -37,5 +38,9 @@ class GameService {
       _game.joinGame(nickname);
       menuVisible = false;
     }
+  }
+
+  void togglePrivacyPolicy() {
+    showPrivacyPolicy = !showPrivacyPolicy;
   }
 }

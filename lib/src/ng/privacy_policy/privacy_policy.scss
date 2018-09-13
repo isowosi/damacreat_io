@@ -1,0 +1,18 @@
+:host {
+  position: absolute;
+  background-color: gainsboro;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  margin: 10px;
+  padding: 10px;
+}
+
+@media (max-width: 630px) {
+  :host {
+    height: calc(100vh - 140px);
+  }
+}
+
+.exit {
+  text-align: center;
+}
