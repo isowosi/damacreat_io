@@ -11,7 +11,7 @@ dependencies:
   gamedev_helpers:
     git:
       url: git://github.com/kayzgames/gamedev_helpers.git
-      ref: webgl1
+      ref: games/damacreat/0.3.0
   damacreat:
     path: ../damacreat
   angular: ^5.0.0

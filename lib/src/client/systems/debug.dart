@@ -3,7 +3,9 @@ import 'dart:html';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:dartemis/dartemis.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 part 'debug.g.dart';
 
@@ -17,6 +19,7 @@ part 'debug.g.dart';
     QuadTreeManager,
     WebGlViewProjectionMatrixManager,
     CameraManager,
+    SettingsManager,
   ],
 )
 class DebugSystem extends _$DebugSystem {
@@ -68,23 +71,24 @@ class DebugSystem extends _$DebugSystem {
             rightBottom.y - leftTop.y)));
     ctx
       ..save()
-      ..font = '20px Verdana'
+      ..font = '10px Verdana'
       ..textBaseline = 'top'
-      ..fillStyle = 'white'
+      ..fillStyle = 'grey'
       ..strokeStyle = 'grey'
-      ..fillText('Rendered circles: $renderedCircles', 5, 45)
-      ..fillText('Moving entities: $movingThings', 5, 65)
+      ..fillText('Entities: ${world.entityManager.activeEntityCount}', 5, 15)
+      ..fillText('Rendered circles: $renderedCircles', 5, 25)
+      ..fillText('Moving entities: $movingThings', 5, 35)
       ..fillText(
           'QuadTree leaves (visible/total): ${visibleLeaves.length}/${leaves.length}',
           5,
-          85)
-      ..fillText('Received: ${(byteCount / 1024).toStringAsFixed(3)}kB', 5, 105)
+          45)
+      ..fillText('Received: ${(byteCount / 1024).toStringAsFixed(3)}kB', 5, 55)
       ..fillText(
           'Rate: ${(byteCount / 1024 / totalDelta).toStringAsFixed(3)}kB/s (${(8 * byteCount / 1024 / 1024 / totalDelta).toStringAsFixed(3)}Mbit/s)',
           5,
-          125)
-      ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 145)
-      ..fillText('Version: $packageVersion', 5, 165);
+          65)
+      ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 75)
+      ..fillText('Version: $packageVersion', 5, 85);
 
     final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
     ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,
@@ -97,4 +101,21 @@ class DebugSystem extends _$DebugSystem {
 
     ctx.restore();
   }
+
+  @override
+  bool checkProcessing() => settingsManager.showDebug;
+}
+
+@Generate(
+  FpsRenderingSystem,
+  manager: [
+    SettingsManager,
+  ],
+)
+class DamacreatFpsRenderingSystem extends _$DamacreatFpsRenderingSystem {
+  DamacreatFpsRenderingSystem(CanvasRenderingContext2D ctx, String fillStyle)
+      : super(ctx, fillStyle);
+
+  @override
+  bool checkProcessing() => settingsManager.showFps;
 }

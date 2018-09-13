@@ -12,6 +12,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
   QuadTreeManager quadTreeManager;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   CameraManager cameraManager;
+  SettingsManager settingsManager;
   @override
   void initialize() {
     super.initialize();
@@ -21,5 +22,17 @@ abstract class _$DebugSystem extends VoidEntitySystem {
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();
+    settingsManager = world.getManager<SettingsManager>();
+  }
+}
+
+abstract class _$DamacreatFpsRenderingSystem extends FpsRenderingSystem {
+  SettingsManager settingsManager;
+  _$DamacreatFpsRenderingSystem(CanvasRenderingContext2D ctx, String fillStyle)
+      : super(ctx, fillStyle);
+  @override
+  void initialize() {
+    super.initialize();
+    settingsManager = world.getManager<SettingsManager>();
   }
 }

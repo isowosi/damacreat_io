@@ -1,4 +1,14 @@
-<div>
-  <input #nickname type='text' placeholder='Nickname' [attr.maxlength]='maxLength'>
-  <button (click)='joinGame(nickname.value)'>Join Game</button>
+<div id="main">
+  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength">
+  <button (click)="joinGame(nickname.value)">Join Game</button>
+</div>
+<div id="settings">
+  <label>
+    <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
+    show FPS
+  </label>
+  <label>
+    <input type="checkbox" [checked]="settings.showDebug" (change)="settings.showDebug = !settings.showDebug">
+    show debug info
+  </label>
 </div>

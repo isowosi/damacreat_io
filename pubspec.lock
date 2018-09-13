@@ -256,8 +256,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: webgl1
-      resolved-ref: "2a4544f0748c03e256cc8ebbcead41f8b321b1ce"
+      ref: "games/damacreat/0.3.0"
+      resolved-ref: "62dce3a34942379eb4c43bff545e31b3046ce4e0"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"

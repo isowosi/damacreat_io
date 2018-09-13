@@ -7,6 +7,7 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 import 'src/client/systems/events.dart';
@@ -16,9 +17,10 @@ class Game extends GameBase {
   CanvasElement hudCanvas;
   CanvasRenderingContext2D hudCtx;
   DivElement container;
-  WebSocketHandler webSocketHandler;
+  final WebSocketHandler webSocketHandler;
+  final SettingsManager settingsManager;
 
-  Game(this.webSocketHandler)
+  Game(this.webSocketHandler, this.settingsManager)
       : super.noAssets('damacreat_io', '#game',
             webgl: true, depthTest: false, useMaxDelta: false) {
     container = querySelector('#gamecontainer');
@@ -32,6 +34,7 @@ class Game extends GameBase {
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
+      ..addManager(settingsManager)
       ..addManager(WebGlViewProjectionMatrixManager())
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
@@ -73,7 +76,7 @@ class Game extends GameBase {
           ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           RankingRenderingSystem(hudCtx),
-          FpsRenderingSystem(hudCtx, fillStyle: 'white'),
+          DamacreatFpsRenderingSystem(hudCtx, 'grey'),
           DebugSystem(hudCtx, webSocketHandler),
           // cleanup
           ExpirationSystem(),
