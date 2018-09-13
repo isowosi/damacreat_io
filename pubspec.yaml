@@ -13,7 +13,7 @@ dependencies:
       url: git://github.com/kayzgames/gamedev_helpers.git
       ref: games/damacreat/0.3.0
   damacreat:
-    path: ../damacreat
+    git: git@bitbucket.org:isowosi/damacreat.git
   angular: ^5.0.0
   isowosi_angular_components:
     git: git@bitbucket.org:dennis_kaselow/isowosi_angular_components
