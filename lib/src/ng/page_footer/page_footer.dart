@@ -17,7 +17,7 @@ class PageFooterComponent {
   void togglePrivacyPolicy() => service.togglePrivacyPolicy();
 
   String getLastUpdate() {
-    final diff = lastUpdate.difference(today).inDays;
+    final diff = today.difference(lastUpdate).inDays;
     if (diff > 1) {
       return '$diff days ago';
     } else if (diff == 1) {
