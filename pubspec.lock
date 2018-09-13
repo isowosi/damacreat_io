@@ -203,8 +203,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "release/0.3.0"
-      resolved-ref: f3b7da897c0512d739c091f890a229bec77af5c5
+      ref: "tags/0.3.0"
+      resolved-ref: dc77f96e18fd29d9819c06739f925ecd597e8271
       url: "git@bitbucket.org:isowosi/damacreat.git"
     source: git
     version: "0.3.0"
