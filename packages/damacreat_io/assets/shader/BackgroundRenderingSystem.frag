@@ -1,5 +1,5 @@
 #version 100
-precision highp float;
+precision mediump float;
 
 uniform vec4 uPosition;
 uniform vec4 uDimension;
