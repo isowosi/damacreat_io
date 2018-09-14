@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
@@ -315,6 +316,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       final playerRadius = ByteUtils.byteToPlayerRadius(reader.readUint16());
       final hue = ByteUtils.byteToHue(reader.readUint8());
+      final utf8nickname = reader.readUint8List();
+      final nickname = utf8.decode(utf8nickname);
       if (id != playerId) {
         world.createAndAddEntity([
           Id(id),
@@ -327,7 +330,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           CellWall(5.0),
           Thruster(),
           Velocity(0.0, 0.0, 0.0),
-          Player(''),
+          Player(nickname),
         ]);
       } else {
         tagManager.getEntity(playerTag)
@@ -342,7 +345,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..addComponent(CellWall(5.0))
           ..addComponent(Thruster())
           ..addComponent(Velocity(0.0, 0.0, 0.0))
-          ..addComponent(Player(''))
+          ..addComponent(Player(nickname))
           ..changedInWorld();
       }
     }

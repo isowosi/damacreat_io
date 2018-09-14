@@ -75,6 +75,7 @@ class Game extends GameBase {
           BackgroundRenderingSystemLayer0(gl),
           ParticleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
+          PlayerNameRenderingSystem(hudCtx),
           RankingRenderingSystem(hudCtx),
           DamacreatFpsRenderingSystem(hudCtx, 'grey'),
           DebugSystem(hudCtx, webSocketHandler),
@@ -108,7 +109,7 @@ class Game extends GameBase {
         .encode(nickname.substring(0, min(maxLengthNickname, nickname.length)));
     webSocketHandler.sendData(Uint8ListWriter.clientToServer(
         MessageToServer.joinGame,
-        itemCount: utf8nickname.length)
+        additionalDynamicLength: 1 + utf8nickname.length)
       ..writeUint8List(utf8nickname));
   }
 }
