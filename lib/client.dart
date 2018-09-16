@@ -35,7 +35,7 @@ class Game extends GameBase {
     world
       ..addManager(tagManager)
       ..addManager(settingsManager)
-      ..addManager(WebGlViewProjectionMatrixManager())
+      ..addManager(WebGlViewProjectionMatrixManager(1000))
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
@@ -89,13 +89,14 @@ class Game extends GameBase {
       };
 
   @override
-  void handleResize(int width, int height) {
+  void handleResize() {
+    final camera = world.getManager<CameraManager>();
     container.style
-      ..width = '${width}px'
-      ..height = '${height}px';
-    resizeCanvas(hudCanvas, width, height);
+      ..width = '${camera.clientWidth}px'
+      ..height = '${camera.clientHeight}px';
+    resizeCanvas(hudCanvas, useClientSize: true);
     _configureHud();
-    super.handleResize(width, height);
+    super.handleResize();
   }
 
   void _configureHud() {

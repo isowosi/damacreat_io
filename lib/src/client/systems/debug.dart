@@ -69,6 +69,8 @@ class DebugSystem extends _$DebugSystem {
     final visibleLeaves = leaves.where((leaf) => leaf.bounds.intersects(
         Rectangle(leftTop.x, leftTop.y, rightBottom.x - leftTop.x,
             rightBottom.y - leftTop.y)));
+    final viewportWidth = cameraManager.clientWidth;
+    final viewportHeight = cameraManager.clientHeight;
     ctx
       ..save()
       ..font = '10px Verdana'
@@ -88,11 +90,12 @@ class DebugSystem extends _$DebugSystem {
           5,
           65)
       ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 75)
-      ..fillText('Version: $packageVersion', 5, 85);
+      ..fillText('Version: $packageVersion', 5, 85)
+      ..fillText('Resolution: $viewportWidth:$viewportHeight', 5, 95);
 
-    final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
+    final scaling = viewportWidth / (rightBottom.x - leftTop.x);
     ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,
-        (cameraManager.height / scaling + leftTop.y) * scaling);
+        (viewportHeight / scaling + leftTop.y) * scaling);
 
     for (final leaf in visibleLeaves) {
       ctx.strokeRect(leaf.bounds.left, leaf.bounds.top, leaf.bounds.width,

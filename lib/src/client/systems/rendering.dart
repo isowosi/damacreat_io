@@ -404,16 +404,16 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
     highscore.sort((a, b) => b.radius.compareTo(a.radius));
     var y = 0;
     var ranking = 0;
-    ctx.fillText('Ranking', cameraManager.width - 200, y);
+    ctx.fillText('Ranking', cameraManager.clientWidth - 200, y);
     for (final score in highscore) {
       final value = score.radius ~/ 1;
       final scoreWidth = ctx.measureText('$value').width;
       y += 20;
       ranking++;
       ctx
-        ..fillText(
-            '$ranking. ${score.playerName}', cameraManager.width - 200, y)
-        ..fillText('$value', cameraManager.width - scoreWidth, y);
+        ..fillText('$ranking. ${score.playerName}',
+            cameraManager.clientWidth - 220, y)
+        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 10, y);
     }
   }
 }
@@ -453,12 +453,12 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
     final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
-    final scaling = cameraManager.width / (rightBottom.x - leftTop.x);
+    final scaling = cameraManager.clientWidth / (rightBottom.x - leftTop.x);
     ctx
       ..save()
       ..transform(scaling, 0.0, 0.0, scaling, -leftTop.x * scaling,
-          (cameraManager.height / scaling + leftTop.y) * scaling)
-      ..font = '${radius / 3}px Verdana'
+          (cameraManager.clientHeight / scaling + leftTop.y) * scaling)
+      ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Verdana'
       ..textBaseline = 'top'
       ..fillStyle = 'white';
     final nicknameWidth = ctx.measureText(nickname).width;
