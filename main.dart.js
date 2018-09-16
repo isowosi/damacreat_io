@@ -8312,7 +8312,7 @@ fZ:function(){P.uo(new L.lF(this),new L.lG(this),null,null,P.z)},
 bt:function(a){if(!this.c){this.a.bt(a)
 this.b=!1}},
 fI:[function(){this.d=!this.d},"$0","gbP",0,0,1]},lF:{"^":"c:0;a",
-$0:[function(){var z=W.ov("wss://ws.damacreat.io/v0/",null)
+$0:[function(){var z=W.ov("wss://ws.damacreat.io/v1/",null)
 W.ap(z,"open",new L.lE(this.a,z),!1)},null,null,0,0,null,"call"]},lE:{"^":"c:8;a,b",
 $1:function(a){var z,y,x,w,v,u,t,s,r
 z=this.b
