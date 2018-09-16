@@ -1,13 +1,6 @@
-$baseHue: 92;
-$baseSaturation: 24;
-$baseLightness: 90;
-$linkTextColor: hsl($baseHue, $baseSaturation + 63, $baseLightness - 63);
+@import '../../variables';
 
 :host {
-  position: absolute;
-  height: 30px;
-  width: 100vw;
-  bottom: 0;
   display: grid;
   background-color: gainsboro;
   grid-template-columns: 250px auto 250px;
@@ -48,9 +41,8 @@ span.lastupdate {
   color: grey;
 }
 
-@media (max-width: 630px) {
+@media #{$smallScreen}, #{$mobileLandscape} {
   :host {
-    flex-direction: row;
     grid-template-columns: auto;
     grid-template-rows: auto;
     grid-template-areas: "logo" "privacy" "imprint";

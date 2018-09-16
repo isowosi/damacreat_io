@@ -1,21 +1,22 @@
+@import "../../variables";
+
 :host {
-  position: absolute;
   display: grid;
   justify-content: stretch;
   align-content: stretch;
-  width: 100vw;
-  height: 100vh;
-  grid-template-columns: 1fr 200px 200px 200px 1fr;
-  grid-template-rows: 1fr 200px 200px 200px 1fr;
-  grid-gap: 10px;
-  gap: 10px;
+  grid-template-columns: 200px 200px 200px;
+  grid-template-rows: 200px;
+  grid-column-gap: 10px;
+  column-gap: 10px;
 
-  @media (max-width: 630px) {
-    grid-template-columns: 1fr 200px 1fr;
-    grid-template-rows: 1fr 200px 200px 200px 1fr;
+  @media #{$smallScreen}, #{$mobileLandscape} {
+    grid-template-columns: 200px;
+    grid-template-rows: 200px;
+    grid-column-gap: 0;
+    column-gap: 0;
     div#main {
-      grid-column: 2/3;
-      grid-row: 3/4;
+      grid-column: 1/2;
+      grid-row: 1/2;
     }
     div#settings {
       display: none;
@@ -45,8 +46,8 @@ input:focus {
 }
 
 div#main {
-  grid-column: 3/4;
-  grid-row: 3/4;
+  grid-column: 2/3;
+  grid-row: 1/2;
   text-align: center;
 
   input {
@@ -79,12 +80,12 @@ div#main {
 }
 
 div#settings {
-  grid-column: 4/5;
-  grid-row: 3/4;
+  grid-column: 3/4;
+  grid-row: 1/2;
   padding: 30px 20px;
   label {
     display: block;
-    font-size: 18px;
+    font-size: 16px;
     color: gainsboro;
     user-select: none;
   }

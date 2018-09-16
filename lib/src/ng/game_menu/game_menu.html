@@ -4,6 +4,10 @@
 </div>
 <div id="settings">
   <label>
+    <input type="checkbox" [checked]="settings.showNicknames" (change)="settings.showNicknames = !settings.showNicknames">
+    show nicknames
+  </label>
+  <label>
     <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
     show FPS
   </label>

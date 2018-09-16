@@ -1,5 +1,5 @@
 name: damacreat_io
-version: 0.3.0
+version: 0.4.0-dev
 description: Client for damacreat
 publish_to: none
 environment:
@@ -11,7 +11,7 @@ dependencies:
   gamedev_helpers:
     git:
       url: git://github.com/kayzgames/gamedev_helpers.git
-      ref: games/damacreat/0.3.0
+      ref: games/damacreat/0.4.0
   damacreat:
     git:
       url: git@bitbucket.org:isowosi/damacreat.git

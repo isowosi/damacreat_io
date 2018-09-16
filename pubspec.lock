@@ -128,7 +128,7 @@ packages:
       name: build_web_compilers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.3"
+    version: "0.4.3+1"
   built_collection:
     dependency: transitive
     description:
@@ -258,8 +258,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "games/damacreat/0.3.0"
-      resolved-ref: "62dce3a34942379eb4c43bff545e31b3046ce4e0"
+      ref: "games/damacreat/0.4.0"
+      resolved-ref: f64c8f1a147b3542dd573a87a026327c973e4e90
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"

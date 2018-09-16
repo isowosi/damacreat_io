@@ -4,6 +4,7 @@ import 'dart:web_gl';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 part 'rendering.g.dart';
@@ -378,7 +379,6 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     Size,
   ],
   manager: [
-    TagManager,
     CameraManager,
   ],
 )
@@ -394,35 +394,79 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
 
   @override
   void processEntity(Entity entity) {
-    final player = tagManager.getEntity(playerTag);
     final size = sizeMapper[entity];
-    var name = 'someone else';
-    if (player == entity) {
-      name = 'you';
-    }
-    highscore.add(Score(name, (size.radius * size.radius * pi) ~/ 100));
+    final name = playerMapper[entity].nickname;
+    highscore.add(Score(name, size.radius));
   }
 
   @override
   void end() {
-    highscore.sort((a, b) => b.size.compareTo(a.size));
+    highscore.sort((a, b) => b.radius.compareTo(a.radius));
     var y = 0;
     var ranking = 0;
-    ctx.fillText('Ranking', cameraManager.width - 200, y);
+    ctx.fillText('Ranking', cameraManager.clientWidth - 200, y);
     for (final score in highscore) {
-      final scoreWidth = ctx.measureText('${score.size}').width;
+      final value = score.radius ~/ 1;
+      final scoreWidth = ctx.measureText('$value').width;
       y += 20;
       ranking++;
       ctx
-        ..fillText(
-            '$ranking. ${score.playerName}', cameraManager.width - 200, y)
-        ..fillText('${score.size}', cameraManager.width - scoreWidth, y);
+        ..fillText('$ranking. ${score.playerName}',
+            cameraManager.clientWidth - 220, y)
+        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 10, y);
     }
   }
 }
 
 class Score {
   String playerName;
-  int size;
-  Score(this.playerName, this.size);
+  double radius;
+  Score(this.playerName, this.radius);
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Player,
+    Size,
+    Position,
+    OnScreen,
+  ],
+  manager: [
+    WebGlViewProjectionMatrixManager,
+    CameraManager,
+    SettingsManager,
+  ],
+)
+class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
+  CanvasRenderingContext2D ctx;
+  PlayerNameRenderingSystem(this.ctx);
+
+  @override
+  void processEntity(Entity entity) {
+    final nickname = playerMapper[entity].nickname;
+    final radius = sizeMapper[entity].radius;
+    final position = positionMapper[entity];
+
+    final inverse = webGlViewProjectionMatrixManager
+        .create2dViewProjectionMatrix()
+          ..invert();
+    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
+    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final scaling = cameraManager.clientWidth / (rightBottom.x - leftTop.x);
+    ctx
+      ..save()
+      ..transform(scaling, 0.0, 0.0, scaling, -leftTop.x * scaling,
+          (cameraManager.clientHeight / scaling + leftTop.y) * scaling)
+      ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Verdana'
+      ..textBaseline = 'top'
+      ..fillStyle = 'white';
+    final nicknameWidth = ctx.measureText(nickname).width;
+    ctx
+      ..fillText(nickname, position.x - nicknameWidth / 2, -position.y)
+      ..restore();
+  }
+
+  @override
+  bool checkProcessing() => settingsManager.showNicknames;
 }
