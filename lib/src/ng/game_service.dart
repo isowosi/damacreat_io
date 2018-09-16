@@ -18,7 +18,7 @@ class GameService {
 
   void startGame() {
     runZoned(() {
-      final webSocket = WebSocket('wss://ws.damacreat.io/v0/');
+      final webSocket = WebSocket('wss://ws.damacreat.io/v1/');
       webSocket.onOpen.listen((openEvent) {
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
         _game = Game(webSocketHandler, settings)..start();
