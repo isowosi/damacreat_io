@@ -63,7 +63,7 @@ packages:
       name: bazel_worker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.13"
+    version: "0.1.14"
   bit_set:
     dependency: transitive
     description:
