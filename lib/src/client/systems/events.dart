@@ -87,9 +87,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   @override
   void processSystem() {
-    _undeleted
-      ..forEach(idManager.deleteEntity)
-      ..clear();
+    for (final id in _undeleted) {
+      idManager.deleteEntity(id, RuntimeEnvironment.client);
+    }
+    _undeleted.clear();
     _messages
       ..forEach(_handleMessage)
       ..clear();
@@ -127,7 +128,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.deleteEntities:
         while (reader.hasNext) {
           final id = reader.readUint16();
-          if (!idManager.deleteEntity(id, isServer: false)) {
+          if (!idManager.deleteEntity(id, RuntimeEnvironment.client)) {
             //entities that have been added and deleted in the same frame
             _undeleted.add(id);
           }
@@ -366,7 +367,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         final angle = ByteUtils.byteToAngle(angleByte);
         if (digestedByMapper.has(food)) {
           final digester = digestedByMapper[food].digester;
-          digestionManager.vomit(digester, food, isServer: false);
+          digestionManager.vomit(digester, food, RuntimeEnvironment.client);
         }
         food
           ..addComponent(Velocity(value, angle, 0.0))
