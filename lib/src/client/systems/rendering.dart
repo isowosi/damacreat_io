@@ -399,18 +399,44 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
   @override
   void end() {
     highscore.sort((a, b) => b.radius.compareTo(a.radius));
-    var y = 0;
+    var y = 5;
     var ranking = 0;
-    ctx.fillText('Ranking', cameraManager.clientWidth - 200, y);
+    ctx
+      ..save()
+      ..strokeStyle = 'white';
+
+    const leaderboardWidth = 250;
+    const leaderboardLabel = 'Leaderboard';
+    final leaderboardLabelWidth = ctx.measureText(leaderboardLabel).width;
+    final leaderboardStartX = cameraManager.clientWidth -
+        (leaderboardWidth + leaderboardLabelWidth) / 2;
+    ctx
+      ..beginPath()
+      ..lineWidth = 1
+      ..fillText(leaderboardLabel, leaderboardStartX, y)
+      ..moveTo(leaderboardStartX, y + 19)
+      ..lineTo(leaderboardStartX + leaderboardLabelWidth, y + 19)
+      ..closePath()
+      ..stroke()
+      ..beginPath()
+      ..lineWidth = 2
+      ..moveTo(cameraManager.clientWidth - leaderboardWidth, 28)
+      ..lineTo(cameraManager.clientWidth, 28)
+      ..closePath()
+      ..stroke();
+    y = 7;
     for (final score in highscore) {
       final value = score.radius ~/ 1;
       final scoreWidth = ctx.measureText('$value').width;
       y += 20;
       ranking++;
+      final rankingWidth = ctx.measureText('$ranking. ').width;
       ctx
-        ..fillText(
-            '$ranking. ${score.playerName}', cameraManager.clientWidth - 220, y)
-        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 10, y);
+        ..fillText('$ranking. ',
+            cameraManager.clientWidth - leaderboardWidth - rankingWidth, y)
+        ..fillText('${score.playerName}',
+            cameraManager.clientWidth - leaderboardWidth, y)
+        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
     }
   }
 }
