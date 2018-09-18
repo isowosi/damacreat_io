@@ -7,6 +7,7 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -39,7 +40,7 @@ class Game extends GameBase {
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
-      ..addManager(IdManager());
+      ..addManager(IdManager(ClientIdPool()));
 
     final player = addEntity([
       Position(
