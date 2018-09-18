@@ -7,6 +7,9 @@ import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
   selector: 'game-menu',
   templateUrl: 'game_menu.html',
   styleUrls: ['game_menu.css'],
+  directives: [
+    NgIf,
+  ],
 )
 class GameMenuComponent {
   GameService service;
@@ -18,4 +21,10 @@ class GameMenuComponent {
 
   int get maxLength => maxLengthNickname;
   SettingsManager get settings => service.settings;
+  bool get connected =>
+      service.connectionState == ServerConnectionState.connected;
+  bool get connecting =>
+      service.connectionState == ServerConnectionState.connecting;
+  bool get connectionError =>
+      service.connectionState == ServerConnectionState.error;
 }

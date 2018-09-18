@@ -8,6 +8,7 @@ import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 
 class GameService {
   Game _game;
+  ServerConnectionState connectionState = ServerConnectionState.connecting;
   bool menuVisible = true;
   bool error = false;
   bool showPrivacyPolicy = false;
@@ -20,11 +21,15 @@ class GameService {
     runZoned(() {
       final webSocket = WebSocket('ws://localhost:8081');
       webSocket.onOpen.listen((openEvent) {
+        connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
         _game = Game(webSocketHandler, settings)..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();
         });
+      });
+      webSocket.onError.listen((errorEvent) {
+        connectionState = ServerConnectionState.error;
       });
     }, onError: (errorMessage, stackTrace) {
       error = true;
@@ -43,4 +48,8 @@ class GameService {
   void togglePrivacyPolicy() {
     showPrivacyPolicy = !showPrivacyPolicy;
   }
+}
+
+enum ServerConnectionState {
+  connecting, connected, error
 }

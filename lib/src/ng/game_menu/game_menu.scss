@@ -90,3 +90,20 @@ div#settings {
     user-select: none;
   }
 }
+
+.connecting, .connectionerror {
+  width: 150px;
+  height: 75px;
+  border-radius: 10px;
+  margin-left: 20px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  color: gainsboro;
+}
+.connecting {
+  background-color: #bb5a00;
+}
+.connectionerror {
+  background-color: darkred;
+}
