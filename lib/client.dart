@@ -32,6 +32,7 @@ class Game extends GameBase {
 
   @override
   void createEntities() {
+    world.getManager<CameraManager>().gameZoom = initialGameZoom;
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
@@ -60,6 +61,7 @@ class Game extends GameBase {
           ConstantMovementSystem(),
           PlayerSizeLossSystem(),
           DigestiveSystem(),
+          CameraZoomCalculatingSystem(),
           QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),

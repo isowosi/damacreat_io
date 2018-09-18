@@ -170,3 +170,18 @@ abstract class _$ThrusterParticleColorModificationSystem
     lifetimeMapper = Mapper<Lifetime>(world);
   }
 }
+
+abstract class _$CameraZoomCalculatingSystem extends EntityProcessingSystem {
+  Mapper<Controller> controllerMapper;
+  Mapper<Size> sizeMapper;
+  CameraManager cameraManager;
+  _$CameraZoomCalculatingSystem()
+      : super(Aspect.empty()..allOf([Controller, Size]));
+  @override
+  void initialize() {
+    super.initialize();
+    controllerMapper = Mapper<Controller>(world);
+    sizeMapper = Mapper<Size>(world);
+    cameraManager = world.getManager<CameraManager>();
+  }
+}

@@ -256,8 +256,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "games/damacreat/0.4.0"
-      resolved-ref: f64c8f1a147b3542dd573a87a026327c973e4e90
+      ref: "games/damacreat/0.5.0"
+      resolved-ref: "2d5918741bb994844b3c7bce36965f94fc87c627"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -295,7 +295,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.3+17"
+    version: "0.12.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -395,7 +395,7 @@ packages:
       name: package_resolver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.6"
   path:
     dependency: transitive
     description:

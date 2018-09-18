@@ -457,3 +457,21 @@ class ThrusterParticleColorModificationSystem
       ..a = lifetime.timeLeft / lifetime.timeMax;
   }
 }
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Controller,
+    Size,
+  ],
+  manager: [
+    CameraManager,
+  ],
+)
+class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
+  @override
+  void processEntity(Entity entity) {
+    final size = sizeMapper[entity];
+    cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300.0);
+  }
+}
