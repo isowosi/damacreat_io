@@ -320,7 +320,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   @override
   void render() {
     final zoom = cameraManager.gameZoom;
-    final p = positionMapper[tagManager.getEntity(playerTag)];
+    final p = positionMapper[tagManager.getEntity(cameraTag)];
     final width = cameraManager.width * zoom;
     final height = cameraManager.height * zoom;
     final px = p.x * parallaxFactor;

@@ -4,6 +4,7 @@ import 'package:damacreat_io/src/ng/game_menu/game_menu.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
 import 'package:damacreat_io/src/ng/page_footer/page_footer.dart';
 import 'package:damacreat_io/src/ng/privacy_policy/privacy_policy.dart';
+import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 
 const bool debug = bool.fromEnvironment('debug', defaultValue: false);
@@ -22,6 +23,7 @@ const bool debug = bool.fromEnvironment('debug', defaultValue: false);
   providers: [
     GameService,
     SettingsManager,
+    GameStateManager,
   ],
 )
 class AppComponent implements OnInit {

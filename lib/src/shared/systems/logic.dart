@@ -475,3 +475,23 @@ class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
     cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300.0);
   }
 }
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Controller,
+    Position,
+  ],
+  manager: [
+    TagManager,
+  ],
+)
+class CameraPositionSystem extends _$CameraPositionSystem {
+  @override
+  void processEntity(Entity entity) {
+    final position = positionMapper[entity];
+    positionMapper[tagManager.getEntity(cameraTag)]
+      ..x = position.x
+      ..y = position.y;
+  }
+}

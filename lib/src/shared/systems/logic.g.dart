@@ -185,3 +185,18 @@ abstract class _$CameraZoomCalculatingSystem extends EntityProcessingSystem {
     cameraManager = world.getManager<CameraManager>();
   }
 }
+
+abstract class _$CameraPositionSystem extends EntityProcessingSystem {
+  Mapper<Controller> controllerMapper;
+  Mapper<Position> positionMapper;
+  TagManager tagManager;
+  _$CameraPositionSystem()
+      : super(Aspect.empty()..allOf([Controller, Position]));
+  @override
+  void initialize() {
+    super.initialize();
+    controllerMapper = Mapper<Controller>(world);
+    positionMapper = Mapper<Position>(world);
+    tagManager = world.getManager<TagManager>();
+  }
+}

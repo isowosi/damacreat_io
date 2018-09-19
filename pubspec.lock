@@ -257,7 +257,7 @@ packages:
     description:
       path: "."
       ref: "games/damacreat/0.5.0"
-      resolved-ref: "7f6fb6fe8566ff637cce315bf3c1c2ba5db37b5f"
+      resolved-ref: "23860ecd3a9967b8d85df0cd66a36de9d738e9ec"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -346,7 +346,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   kernel:
     dependency: transitive
     description:
