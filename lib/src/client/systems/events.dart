@@ -154,7 +154,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       if (!idManager.deleteEntity(id, RuntimeEnvironment.client)) {
         // entities that have been added and deleted in the same frame
         // should no longer be a problem
-        throw StateError('ErrorCode: 42 - existential crisis');
+        print('tried to delete $id but failed');
       }
       if (id == playerId) {
         gameStateManager.state = GameState.menu;
