@@ -1,7 +1,6 @@
 #version 100
 precision mediump float;
 
-uniform vec4 uPosition;
 uniform vec4 uDimension;
 uniform float uTime;
 uniform vec3 uRgb;

@@ -4,27 +4,35 @@ import 'dart:html';
 import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 
 class GameService {
   Game _game;
-  bool menuVisible = true;
+  ServerConnectionState connectionState = ServerConnectionState.connecting;
   bool error = false;
   bool showPrivacyPolicy = false;
   Object errorMessage;
   StackTrace stackTrace;
   final SettingsManager settings;
-  GameService(this.settings);
+  final GameStateManager gameStateManager;
+  GameService(this.settings, this.gameStateManager);
+
+  bool get menuVisible => gameStateManager.state == GameState.menu;
 
   void startGame() {
     runZoned(() {
       final webSocket = WebSocket('wss://ws.damacreat.io/v1/');
       webSocket.onOpen.listen((openEvent) {
+        connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
-        _game = Game(webSocketHandler, settings)..start();
+        _game = Game(webSocketHandler, settings, gameStateManager)..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();
         });
+      });
+      webSocket.onError.listen((errorEvent) {
+        connectionState = ServerConnectionState.error;
       });
     }, onError: (errorMessage, stackTrace) {
       error = true;
@@ -34,9 +42,9 @@ class GameService {
   }
 
   void joinGame(String nickname) {
-    if (!error) {
+    if (!error && menuVisible) {
       _game.joinGame(nickname);
-      menuVisible = false;
+      gameStateManager.state = GameState.playing;
     }
   }
 
@@ -44,3 +52,5 @@ class GameService {
     showPrivacyPolicy = !showPrivacyPolicy;
   }
 }
+
+enum ServerConnectionState { connecting, connected, error }

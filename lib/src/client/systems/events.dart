@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
 
@@ -12,6 +13,9 @@ part 'events.g.dart';
   EntityProcessingSystem,
   allOf: [
     Controller,
+  ],
+  manager: [
+    GameStateManager,
   ],
 )
 class ControllerSystem extends _$ControllerSystem {
@@ -30,6 +34,7 @@ class ControllerSystem extends _$ControllerSystem {
     canvas.onTouchMove.listen((event) {
       offset = event.touches.last.page;
     });
+    canvas.onTouchStart.listen((event) => event.preventDefault());
   }
 
   @override
@@ -50,6 +55,9 @@ class ControllerSystem extends _$ControllerSystem {
     }
     offset = null;
   }
+
+  @override
+  bool checkProcessing() => gameStateManager.state == GameState.playing;
 }
 
 @Generate(
@@ -61,17 +69,18 @@ class ControllerSystem extends _$ControllerSystem {
     ConstantVelocity,
     DigestedBy,
     Velocity,
+    Food,
   ],
   manager: [
     TagManager,
     IdManager,
     QuadTreeManager,
     DigestionManager,
+    GameStateManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   final _messages = <Message>[];
-  final _undeleted = <int>[];
   final WebSocketHandler _webSocketHandler;
   int playerId;
 
@@ -87,9 +96,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   @override
   void processSystem() {
-    _undeleted
-      ..forEach(idManager.deleteEntity)
-      ..clear();
     _messages
       ..forEach(_handleMessage)
       ..clear();
@@ -125,15 +131,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         break;
       case MessageToClient.removePlayers:
       case MessageToClient.deleteEntities:
-        while (reader.hasNext) {
-          final id = reader.readUint16();
-          if (!idManager.deleteEntity(id)) {
-            //entities that have been added and deleted in the same frame
-            _undeleted.add(id);
-          }
-        }
+        _deleteEntity(reader);
         break;
       case MessageToClient.addConstantVelocity:
+      case MessageToClient.vomit:
         _updateVelocity(reader);
         break;
       case MessageToClient.startDigestion:
@@ -141,6 +142,20 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         break;
       case MessageToClient.pong:
         break;
+    }
+  }
+
+  void _deleteEntity(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      if (!idManager.deleteEntity(id, RuntimeEnvironment.client)) {
+        // entities that have been added and deleted in the same frame
+        // should no longer be a problem
+        throw StateError('ErrorCode: 42 - existential crisis');
+      }
+      if (id == playerId) {
+        gameStateManager.state = GameState.menu;
+      }
     }
   }
 
@@ -278,8 +293,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   void _initFood(Uint8ListReader reader) {
     while (reader.hasNext) {
+      final id = reader.readUint16();
       final entity = world.createAndAddEntity([
-        Id(reader.readUint16()),
+        Id(id),
         Position(ByteUtils.byteToPosition(reader.readUint16()),
             ByteUtils.byteToPosition(reader.readUint16())),
         Size(reader.readUint8() / foodSizeFactor),
@@ -293,8 +309,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   void _initGrowingFood(Uint8ListReader reader) {
     while (reader.hasNext) {
+      final id = reader.readUint16();
       final entity = world.createAndAddEntity([
-        Id(reader.readUint16()),
+        Id(id),
         Position(ByteUtils.byteToPosition(reader.readUint16()),
             ByteUtils.byteToPosition(reader.readUint16())),
         Size(reader.readUint8() / foodSizeFactor),
@@ -304,6 +321,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
       ]);
+
       idManager.add(entity);
     }
   }
@@ -318,36 +336,24 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final hue = ByteUtils.byteToHue(reader.readUint8());
       final utf8nickname = reader.readUint8List();
       final nickname = utf8.decode(utf8nickname);
-      if (id != playerId) {
-        world.createAndAddEntity([
-          Id(id),
-          Position(x, y),
-          ChangedPosition(x, y),
-          Size(playerRadius),
-          Color.fromHsl(hue, 0.9, 0.6, 0.4),
-          Orientation(orientationAngle),
-          Wobble(),
-          CellWall(5.0),
-          Thruster(),
-          Velocity(0.0, 0.0, 0.0),
-          Player(nickname),
-        ]);
-      } else {
-        tagManager.getEntity(playerTag)
-          ..addComponent(Id(playerId))
-          ..addComponent(Controller())
-          ..addComponent(Position(x, y))
-          ..addComponent(ChangedPosition(x, y))
-          ..addComponent(Size(playerRadius))
-          ..addComponent(Color.fromHsl(hue, 0.9, 0.6, 0.4))
-          ..addComponent(Orientation(orientationAngle))
-          ..addComponent(Wobble())
-          ..addComponent(CellWall(5.0))
-          ..addComponent(Thruster())
-          ..addComponent(Velocity(0.0, 0.0, 0.0))
-          ..addComponent(Player(nickname))
-          ..changedInWorld();
+      final playerComponents = [
+        Id(id),
+        Position(x, y),
+        ChangedPosition(x, y),
+        Size(playerRadius),
+        Color.fromHsl(hue, 0.9, 0.6, 0.4),
+        Orientation(orientationAngle),
+        Wobble(),
+        CellWall(5.0),
+        Thruster(),
+        Velocity(0.0, 0.0, 0.0),
+        Player(nickname),
+      ];
+      if (playerId == id) {
+        playerComponents.add(Controller());
       }
+      final entity = world.createAndAddEntity(playerComponents);
+      idManager.add(entity);
     }
   }
 
@@ -366,13 +372,15 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         final angle = ByteUtils.byteToAngle(angleByte);
         if (digestedByMapper.has(food)) {
           final digester = digestedByMapper[food].digester;
-          digestionManager.vomit(digester, food);
+          digestionManager.vomit(digester, food, RuntimeEnvironment.client);
         }
-        food
-          ..addComponent(Velocity(value, angle, 0.0))
-          ..addComponent(ConstantVelocity())
-          ..removeComponent<DigestedBy>()
-          ..changedInWorld();
+        // no constant velocity for players
+        if (foodMapper.has(food)) {
+          food
+            ..addComponent(Velocity(value, angle, 0.0))
+            ..addComponent(ConstantVelocity())
+            ..changedInWorld();
+        }
       }
     }
   }

@@ -25,6 +25,7 @@ abstract class _$FoodRenderingSystem extends WebGlRenderingSystem {
   Mapper<Size> sizeMapper;
   Mapper<OnScreen> onScreenMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  CameraManager cameraManager;
   _$FoodRenderingSystem(RenderingContext gl)
       : super(gl, Aspect.empty()..allOf([Food, Position, Size, OnScreen]));
   @override
@@ -36,6 +37,7 @@ abstract class _$FoodRenderingSystem extends WebGlRenderingSystem {
     onScreenMapper = Mapper<OnScreen>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
+    cameraManager = world.getManager<CameraManager>();
   }
 }
 

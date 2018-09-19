@@ -64,7 +64,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
       radius = s.radius * w.wobbleFactor[i];
       createCircleVertex(
           baseOffset, p, radius, angle, c, i, indicesOffset, itemOffset);
-      items[baseOffset + 5] = 1.0 * cw.strengthFactor[i];
+      items[baseOffset + 5] = cw.strengthFactor[i];
 
       // triangle 1 of cell wall
       indices[indicesOffset + i * 9 + 3] = itemOffset + 1 + i;
@@ -134,6 +134,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   ],
   manager: [
     WebGlViewProjectionMatrixManager,
+    CameraManager,
   ],
 )
 class FoodRenderingSystem extends _$FoodRenderingSystem {
@@ -157,7 +158,7 @@ class FoodRenderingSystem extends _$FoodRenderingSystem {
     final itemOffset = index * 6;
     items[itemOffset] = position.x;
     items[itemOffset + 1] = position.y;
-    items[itemOffset + 2] = size.radius;
+    items[itemOffset + 2] = size.radius / cameraManager.gameZoom;
     items[itemOffset + 3] = food.r;
     items[itemOffset + 4] = food.g;
     items[itemOffset + 5] = food.b;
@@ -318,26 +319,24 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 
   @override
   void render() {
-    const zoom = 1.0;
-    final p = positionMapper[tagManager.getEntity(playerTag)];
-    final size = max(cameraManager.width, cameraManager.height) / zoom;
+    final zoom = cameraManager.gameZoom;
+    final p = positionMapper[tagManager.getEntity(cameraTag)];
+    final width = cameraManager.width * zoom;
+    final height = cameraManager.height * zoom;
     final px = p.x * parallaxFactor;
     final py = p.y * parallaxFactor;
     final background = Float32List.fromList([
-      -size / 2 + px + offsetX,
-      -size / 2 + py + offsetY,
-      -size / 2 + px + offsetX,
-      size / 2 + py + offsetY,
-      size / 2 + px + offsetX,
-      size / 2 + py + offsetY,
-      size / 2 + px + offsetX,
-      -size / 2 + py + offsetY
+      -width / 2 + px + offsetX,
+      -height / 2 + py + offsetY,
+      -width / 2 + px + offsetX,
+      height / 2 + py + offsetY,
+      width / 2 + px + offsetX,
+      height / 2 + py + offsetY,
+      width / 2 + px + offsetX,
+      -height / 2 + py + offsetY
     ]);
     final viewProjectionMatrix = webGlViewProjectionMatrixManager
         .create2dViewProjectionMatrixForPosition(px, py)
-          ..translate(px, py)
-          ..scale(zoom, zoom)
-          ..translate(-px, -py)
           ..translate(-offsetX, -offsetY);
 
     gl
@@ -349,8 +348,6 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
           cameraManager.height.toDouble(),
           0.0,
           0.0)
-      ..uniform4f(
-          gl.getUniformLocation(program, 'uPosition'), p.x, p.y, 0.0, 0.0)
       ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
       ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
     buffer('aPosition', background, 2);
@@ -402,18 +399,44 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
   @override
   void end() {
     highscore.sort((a, b) => b.radius.compareTo(a.radius));
-    var y = 0;
+    var y = 5;
     var ranking = 0;
-    ctx.fillText('Ranking', cameraManager.clientWidth - 200, y);
+    ctx
+      ..save()
+      ..strokeStyle = 'white';
+
+    const leaderboardWidth = 250;
+    const leaderboardLabel = 'Leaderboard';
+    final leaderboardLabelWidth = ctx.measureText(leaderboardLabel).width;
+    final leaderboardStartX = cameraManager.clientWidth -
+        (leaderboardWidth + leaderboardLabelWidth) / 2;
+    ctx
+      ..beginPath()
+      ..lineWidth = 1
+      ..fillText(leaderboardLabel, leaderboardStartX, y)
+      ..moveTo(leaderboardStartX, y + 19)
+      ..lineTo(leaderboardStartX + leaderboardLabelWidth, y + 19)
+      ..closePath()
+      ..stroke()
+      ..beginPath()
+      ..lineWidth = 2
+      ..moveTo(cameraManager.clientWidth - leaderboardWidth, 28)
+      ..lineTo(cameraManager.clientWidth, 28)
+      ..closePath()
+      ..stroke();
+    y = 7;
     for (final score in highscore) {
       final value = score.radius ~/ 1;
       final scoreWidth = ctx.measureText('$value').width;
       y += 20;
       ranking++;
+      final rankingWidth = ctx.measureText('$ranking. ').width;
       ctx
-        ..fillText('$ranking. ${score.playerName}',
-            cameraManager.clientWidth - 220, y)
-        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 10, y);
+        ..fillText('$ranking. ',
+            cameraManager.clientWidth - leaderboardWidth - rankingWidth, y)
+        ..fillText('${score.playerName}',
+            cameraManager.clientWidth - leaderboardWidth, y)
+        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
     }
   }
 }

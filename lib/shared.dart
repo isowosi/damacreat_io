@@ -7,3 +7,4 @@ export 'src/shared/systems/logic.dart';
 export 'src/version.dart';
 
 const int playerCircleFragments = 64;
+const double initialGameZoom = 0.6;

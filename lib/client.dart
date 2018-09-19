@@ -7,6 +7,8 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -19,8 +21,9 @@ class Game extends GameBase {
   DivElement container;
   final WebSocketHandler webSocketHandler;
   final SettingsManager settingsManager;
+  final GameStateManager gameStateManager;
 
-  Game(this.webSocketHandler, this.settingsManager)
+  Game(this.webSocketHandler, this.settingsManager, this.gameStateManager)
       : super.noAssets('damacreat_io', '#game',
             webgl: true, depthTest: false, useMaxDelta: false) {
     container = querySelector('#gamecontainer');
@@ -31,21 +34,23 @@ class Game extends GameBase {
 
   @override
   void createEntities() {
+    world.getManager<CameraManager>().gameZoom = initialGameZoom;
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
       ..addManager(settingsManager)
+      ..addManager(gameStateManager)
       ..addManager(WebGlViewProjectionMatrixManager(1000))
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
-      ..addManager(IdManager());
+      ..addManager(IdManager(ClientIdPool()));
 
-    final player = addEntity([
+    final camera = addEntity([
       Position(
           maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble())
     ]);
-    tagManager.register(player, playerTag);
+    tagManager.register(camera, cameraTag);
   }
 
   @override
@@ -59,6 +64,8 @@ class Game extends GameBase {
           ConstantMovementSystem(),
           PlayerSizeLossSystem(),
           DigestiveSystem(),
+          CameraPositionSystem(),
+          CameraZoomCalculatingSystem(),
           QuadTreeUpdateChangedPositionSystem(),
           // pre-rendering
           OnScreenTagSystem(),
