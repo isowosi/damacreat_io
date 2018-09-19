@@ -34,7 +34,10 @@ class ControllerSystem extends _$ControllerSystem {
     canvas.onTouchMove.listen((event) {
       offset = event.touches.last.page;
     });
-    canvas.onTouchStart.listen((event) => event.preventDefault());
+    canvas.onTouchStart.listen((event) {
+      offset = event.touches.last.page;
+      event.preventDefault();
+    });
   }
 
   @override
