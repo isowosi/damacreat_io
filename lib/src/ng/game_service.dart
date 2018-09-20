@@ -14,6 +14,7 @@ class GameService {
   bool showPrivacyPolicy = false;
   Object errorMessage;
   StackTrace stackTrace;
+  String lastName = '';
   final SettingsManager settings;
   final GameStateManager gameStateManager;
   GameService(this.settings, this.gameStateManager);
@@ -43,6 +44,7 @@ class GameService {
 
   void joinGame(String nickname) {
     if (!error && menuVisible) {
+      lastName = nickname;
       _game.joinGame(nickname);
       gameStateManager.state = GameState.playing;
     }

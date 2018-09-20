@@ -29,4 +29,5 @@ class GameMenuComponent {
   bool get connectionError =>
       service.connectionState == ServerConnectionState.error;
   String get version => packageVersion;
+  String get name => service.lastName;
 }
