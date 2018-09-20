@@ -2,6 +2,7 @@ import 'package:angular/angular.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
+import 'package:damacreat_io/src/version.dart';
 
 @Component(
   selector: 'game-menu',
@@ -27,4 +28,5 @@ class GameMenuComponent {
       service.connectionState == ServerConnectionState.connecting;
   bool get connectionError =>
       service.connectionState == ServerConnectionState.error;
+  String get version => packageVersion;
 }

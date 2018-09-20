@@ -1,12 +1,14 @@
 <div id="main">
   <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength">
-  <button (click)="joinGame(nickname.value)" *ngIf='connected'>Join Game</button>
-  <div class='connecting' *ngIf='connecting'>Connecting to server...</div>
-  <div class='connectionerror' *ngIf='connectionError'>Server could not be reached.</div>
+  <button (click)="joinGame(nickname.value)" *ngIf="connected">Join Game</button>
+  <div class="connecting" *ngIf="connecting">Connecting to server...</div>
+  <div class="connectionerror" *ngIf="connectionError">Server could not be reached.</div>
+  <div class="version">v{{version}}</div>
 </div>
 <div id="settings">
   <label>
-    <input type="checkbox" [checked]="settings.showNicknames" (change)="settings.showNicknames = !settings.showNicknames">
+    <input type="checkbox" [checked]="settings.showNicknames"
+           (change)="settings.showNicknames = !settings.showNicknames">
     show nicknames
   </label>
   <label>
