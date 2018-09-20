@@ -8332,7 +8332,7 @@ this.a.b0(a)
 this.y.b=C.W}},
 fE:[function(){this.d=!this.d},"$0","gbS",0,0,2]},lZ:{"^":"c:0;a",
 $0:[function(){var z,y
-z=W.oU("wss://damacreat.io/v0/",null)
+z=W.oU("wss://ws.damacreat.io/v0/",null)
 y=this.a
 W.af(z,"open",new L.lX(y,z),!1)
 W.af(z,"error",new L.lY(y),!1)},null,null,0,0,null,"call"]},lX:{"^":"c:8;a,b",
