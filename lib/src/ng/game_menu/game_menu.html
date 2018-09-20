@@ -1,5 +1,6 @@
 <div id="main">
-  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength">
+  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength"
+         (keyup.enter)="joinGame(nickname.value)">
   <button (click)="joinGame(nickname.value)" *ngIf="connected">Join Game</button>
   <div class="connecting" *ngIf="connecting">Connecting to server...</div>
   <div class="connectionerror" *ngIf="connectionError">Server could not be reached.</div>
