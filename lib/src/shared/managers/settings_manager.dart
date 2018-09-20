@@ -4,4 +4,5 @@ class SettingsManager extends Manager {
   bool showFps = true;
   bool showDebug = false;
   bool showNicknames = true;
+  bool isTouchScreen = false;
 }

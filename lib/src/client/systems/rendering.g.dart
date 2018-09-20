@@ -74,6 +74,7 @@ abstract class _$BackgroundRenderingSystemBase
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   TagManager tagManager;
   CameraManager cameraManager;
+  SettingsManager settingsManager;
   _$BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
   @override
   void initialize() {
@@ -83,6 +84,7 @@ abstract class _$BackgroundRenderingSystemBase
         world.getManager<WebGlViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
     cameraManager = world.getManager<CameraManager>();
+    settingsManager = world.getManager<SettingsManager>();
   }
 }
 

@@ -20,6 +20,10 @@ class GameMenuComponent {
     service.joinGame(nickname);
   }
 
+  void setTouchscreenDevice() {
+    settings.isTouchScreen = true;
+  }
+
   int get maxLength => maxLengthNickname;
   SettingsManager get settings => service.settings;
   bool get connected =>
