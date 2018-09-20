@@ -73,7 +73,7 @@ class DebugSystem extends _$DebugSystem {
     final viewportHeight = cameraManager.clientHeight;
     ctx
       ..save()
-      ..font = '10px Verdana'
+      ..font = '10px Roboto'
       ..textBaseline = 'top'
       ..fillStyle = 'grey'
       ..strokeStyle = 'grey'

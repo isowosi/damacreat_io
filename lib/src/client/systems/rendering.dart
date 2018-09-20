@@ -481,7 +481,7 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
       ..save()
       ..transform(scaling, 0.0, 0.0, scaling, -leftTop.x * scaling,
           (cameraManager.clientHeight / scaling + leftTop.y) * scaling)
-      ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Verdana'
+      ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Roboto'
       ..textBaseline = 'top'
       ..fillStyle = 'white';
     final nicknameWidth = ctx.measureText(nickname).width;

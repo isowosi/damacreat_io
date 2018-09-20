@@ -109,7 +109,7 @@ class Game extends GameBase {
   void _configureHud() {
     hudCtx
       ..textBaseline = 'top'
-      ..font = '16px Verdana';
+      ..font = '16px Roboto';
   }
 
   void joinGame(String nickname) {
