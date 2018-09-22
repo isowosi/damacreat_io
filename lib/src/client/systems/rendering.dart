@@ -304,7 +304,6 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     WebGlViewProjectionMatrixManager,
     TagManager,
     CameraManager,
-    SettingsManager,
   ],
   mapper: [
     Position,
@@ -316,8 +315,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   Float32List rgb = Float32List.fromList([0.0, 0.0, 0.0]);
   double parallaxFactor = 1.0;
 
-  BackgroundRenderingSystemBase(RenderingContext gl)
-      : super(gl);
+  BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
   @override
   void render() {
@@ -360,14 +358,10 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   String get vShaderFile => 'BackgroundRenderingSystem';
   @override
   String get fShaderFile => 'BackgroundRenderingSystem';
-
-  @override
-  bool checkProcessing() => !settingsManager.isTouchScreen;
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
-  BackgroundRenderingSystemLayer0(RenderingContext gl)
-      : super(gl) {
+  BackgroundRenderingSystemLayer0(RenderingContext gl) : super(gl) {
     rgb[0] = random.nextDouble();
     rgb[1] = random.nextDouble();
     rgb[2] = random.nextDouble();
