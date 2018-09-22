@@ -1,8 +1,13 @@
 <div id="gamecontainer">
   <canvas id="game"></canvas>
   <canvas id="hud"></canvas>
-  <game-menu *ngIf='menuVisible'></game-menu>
-  <game-error *ngIf='gameError'></game-error>
-  <privacy-policy *ngIf='showPrivacyPolicy'></privacy-policy>
-  <page-footer *ngIf='menuVisible'></page-footer>
+  <game-menu *ngIf="menuVisible"></game-menu>
+  <game-error *ngIf="gameError"></game-error>
+  <ng-container *ngIf="showPrivacyPolicy">
+    <privacy-policy @deferred></privacy-policy>
+  </ng-container>
+  <ng-container *ngIf="showChangelog">
+    <game-changelog @deferred></game-changelog>
+  </ng-container>
+  <page-footer *ngIf="menuVisible"></page-footer>
 </div>

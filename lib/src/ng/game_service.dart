@@ -12,11 +12,18 @@ class GameService {
   ServerConnectionState connectionState = ServerConnectionState.connecting;
   bool error = false;
   bool showPrivacyPolicy = false;
+  bool showChangelog = false;
   Object errorMessage;
   StackTrace stackTrace;
+  String lastName = '';
+
   final SettingsManager settings;
   final GameStateManager gameStateManager;
   GameService(this.settings, this.gameStateManager);
+
+  Future<void> init() async {
+    await settings.init();
+  }
 
   bool get menuVisible => gameStateManager.state == GameState.menu;
 
@@ -43,6 +50,7 @@ class GameService {
 
   void joinGame(String nickname) {
     if (!error && menuVisible) {
+      lastName = nickname;
       _game.joinGame(nickname);
       gameStateManager.state = GameState.playing;
     }
@@ -50,6 +58,16 @@ class GameService {
 
   void togglePrivacyPolicy() {
     showPrivacyPolicy = !showPrivacyPolicy;
+    if (showPrivacyPolicy) {
+      showChangelog = false;
+    }
+  }
+
+  void toggleChangelog() {
+    showChangelog = !showChangelog;
+    if (showChangelog) {
+      showPrivacyPolicy = false;
+    }
   }
 }
 

@@ -49,6 +49,10 @@ div#main {
   grid-column: 2/3;
   grid-row: 1/2;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 
   input {
     margin-top: 40px;
@@ -106,4 +110,13 @@ div#settings {
 }
 .connectionerror {
   background-color: darkred;
+}
+.version {
+  background: none;
+  border: none;
+  transform: translateY(7px);
+  > a {
+    color: #888;
+    font-size: 10px;
+  }
 }

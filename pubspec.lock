@@ -11,9 +11,9 @@ packages:
   angular:
     dependency: "direct main"
     description:
-      name: angular
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "..\\angular\\angular"
+      relative: true
+    source: path
     version: "5.0.0"
   angular_ast:
     dependency: transitive
@@ -259,7 +259,7 @@ packages:
     description:
       path: "."
       ref: "games/damacreat/0.5.0"
-      resolved-ref: "23860ecd3a9967b8d85df0cd66a36de9d738e9ec"
+      resolved-ref: eaf95e952d20c2578a48c3f67f7028e10bb42709
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -356,6 +356,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4+1"
+  lawndart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "4ca04e4a703063286d0bf46b5bed378ef5e6ac34"
+      resolved-ref: "4ca04e4a703063286d0bf46b5bed378ef5e6ac34"
+      url: "https://github.com/lejard-h/lawndart.git"
+    source: git
+    version: "0.10.0"
   logging:
     dependency: transitive
     description:
@@ -363,6 +372,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.3+2"
+  markdown:
+    dependency: "direct main"
+    description:
+      name: markdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   matcher:
     dependency: transitive
     description:
@@ -432,7 +448,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.2"
+    version: "0.10.3"
   pub_semver:
     dependency: transitive
     description:
@@ -460,7 +476,7 @@ packages:
       name: sass
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.13.4"
+    version: "1.14.0"
   sass_builder:
     dependency: "direct dev"
     description:

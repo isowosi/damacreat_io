@@ -1,4 +1,4 @@
-<div class='exit'>
+<div class="exit">
   <button (click)="togglePrivacyPolicy()">Close</button>
 </div>
 <h2>Privacy Policy</h2>
@@ -18,10 +18,13 @@
 
 <h4>Data Storage by isowosi UG (haftungsbeschränkt)</h4>
 
-<p>No data is stored while using this website (no logs, no profiling, no tracking).
+<p>
+  No personally identifiable information (PII) is stored while using this website.
 </p>
 
-<h3>External Providers</h3>
+<p>Game settings are stored using the browser storage.</p>
+
+<h3>Data Processing and Data Storage by third parties</h3>
 
 <h4>Hosting</h4>
 
@@ -37,8 +40,24 @@
 
 <p>This website uses the font Roboto provided by Google Fonts. Google Fonts limits the processing and storing of
   personally identifiable information to the minimum needed to efficiently use fonts. No authentification is required
-  and no cookies are stored. Google Fonts is certified under the US Privacy Shield and complies with the GDPR.
+  and no cookies are stored. Google is certified under the US Privacy Shield and complies with the GDPR.
 </p>
-<div class='exit'>
+
+<h4>Google Analytics</h4>
+
+<p>This website uses Google Analytics to collect usage statistics. Google Analytics stores cookies in your browser to
+  distinguish between first time visitors and returning visitors. IP anonymization is configured for Google Analytics.
+  Google is certified under the US Privacy Shield and complies with the GDPR.
+</p>
+<p>
+  If you have "do not track" (DNT) enabled in your browser, Google Analytics is disabled on this website (and can not be
+  enabled).
+</p>
+<label *ngIf="!settings.doNotTrack">
+  <input type="checkbox" [checked]="settings.allowAnalytics"
+         (change)="settings.allowAnalytics = !settings.allowAnalytics" [disabled]="settings.doNotTrack">
+  allow Google Analytics to track you on this website
+</label>
+<div class="exit">
   <button (click)="togglePrivacyPolicy()">Close</button>
 </div>

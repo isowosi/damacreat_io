@@ -1,13 +1,21 @@
 <div id="main">
-  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength">
-  <button (click)="joinGame(nickname.value)" *ngIf='connected'>Join Game</button>
-  <div class='connecting' *ngIf='connecting'>Connecting to server...</div>
-  <div class='connectionerror' *ngIf='connectionError'>Server could not be reached.</div>
+  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength"
+         (keyup.enter)="joinGame(nickname.value)" [value]="name" (touch)="setTouchscreenDevice()">
+  <button (click)="joinGame(nickname.value)" *ngIf="connected" (touch)="setTouchscreenDevice()">Join Game</button>
+  <div class="connecting" *ngIf="connecting">Connecting to server...</div>
+  <div class="connectionerror" *ngIf="connectionError">Server could not be reached.</div>
+  <div class="version"><a href="#" (click)="toggleChangelog()">{{version}}</a></div>
 </div>
 <div id="settings">
   <label>
-    <input type="checkbox" [checked]="settings.showNicknames" (change)="settings.showNicknames = !settings.showNicknames">
+    <input type="checkbox" [checked]="settings.showNicknames"
+           (change)="settings.showNicknames = !settings.showNicknames">
     show nicknames
+  </label>
+  <label>
+    <input type="checkbox" [checked]="settings.showMinimap"
+           (change)="settings.showMinimap = !settings.showMinimap">
+    show minimap
   </label>
   <label>
     <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
@@ -16,5 +24,10 @@
   <label>
     <input type="checkbox" [checked]="settings.showDebug" (change)="settings.showDebug = !settings.showDebug">
     show debug info
+  </label>
+  <label *ngIf='!settings.doNotTrack'>
+    <input type="checkbox" [checked]="settings.allowAnalytics"
+           (change)="settings.allowAnalytics = !settings.allowAnalytics">
+    allow analytics
   </label>
 </div>
