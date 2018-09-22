@@ -1,6 +1,7 @@
 @import "../../variables";
 
 :host {
+  position: absolute;
   background-color: gainsboro;
   height: calc(100vh - 70px);
   overflow-y: auto;
@@ -16,4 +17,5 @@
 
 .exit {
   text-align: center;
+  margin: 15px 0 10px 0;
 }

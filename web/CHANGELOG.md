@@ -10,6 +10,7 @@
 * remember nickname when losing
 * start game on enter
 * store settings in browser
+* added Google Analytics, updated privacy policy
 
 ## Bugfixes
 * background was not rendered on mobile phones since 0.4.0, switched back to highp precision and disabled background rendering on devices not supporting highp precision in fragment shaders
