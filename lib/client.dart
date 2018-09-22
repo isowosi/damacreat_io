@@ -6,6 +6,7 @@ import 'dart:html';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
+import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
@@ -86,6 +87,7 @@ class Game extends GameBase {
           RankingRenderingSystem(hudCtx),
           DamacreatFpsRenderingSystem(hudCtx, 'grey'),
           DebugSystem(hudCtx, webSocketHandler),
+          MinimapRenderingSystem(hudCtx),
           // cleanup
           ExpirationSystem(),
           RemoveTemporaryComponentsSystem(),

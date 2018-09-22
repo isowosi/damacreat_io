@@ -5,4 +5,5 @@ class SettingsManager extends Manager {
   bool showDebug = false;
   bool showNicknames = true;
   bool isTouchScreen = false;
+  bool showMinimap = true;
 }

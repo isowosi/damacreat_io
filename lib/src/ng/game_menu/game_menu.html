@@ -13,6 +13,11 @@
     show nicknames
   </label>
   <label>
+    <input type="checkbox" [checked]="settings.showMinimap"
+           (change)="settings.showMinimap = !settings.showMinimap">
+    show minimap
+  </label>
+  <label>
     <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
     show FPS
   </label>
