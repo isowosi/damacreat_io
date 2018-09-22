@@ -4,7 +4,7 @@
   <button (click)="joinGame(nickname.value)" *ngIf="connected" (touch)='setTouchscreenDevice()'>Join Game</button>
   <div class="connecting" *ngIf="connecting">Connecting to server...</div>
   <div class="connectionerror" *ngIf="connectionError">Server could not be reached.</div>
-  <div class="version">v{{version}}</div>
+  <div class="version"><a href='#' (click)='toggleChangelog()'>{{version}}</a></div>
 </div>
 <div id="settings">
   <label>

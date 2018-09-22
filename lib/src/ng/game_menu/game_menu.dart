@@ -24,6 +24,10 @@ class GameMenuComponent {
     settings.isTouchScreen = true;
   }
 
+  void toggleChangelog() {
+    service.showChangelog = !service.showChangelog;
+  }
+
   int get maxLength => maxLengthNickname;
   SettingsManager get settings => service.settings;
   bool get connected =>

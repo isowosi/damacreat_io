@@ -11,9 +11,9 @@ packages:
   angular:
     dependency: "direct main"
     description:
-      name: angular
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "..\\angular\\angular"
+      relative: true
+    source: path
     version: "5.0.0"
   angular_ast:
     dependency: transitive
@@ -361,6 +361,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.3+2"
+  markdown:
+    dependency: "direct main"
+    description:
+      name: markdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   matcher:
     dependency: transitive
     description:

@@ -12,6 +12,7 @@ class GameService {
   ServerConnectionState connectionState = ServerConnectionState.connecting;
   bool error = false;
   bool showPrivacyPolicy = false;
+  bool showChangelog = false;
   Object errorMessage;
   StackTrace stackTrace;
   String lastName = '';
@@ -55,6 +56,16 @@ class GameService {
 
   void togglePrivacyPolicy() {
     showPrivacyPolicy = !showPrivacyPolicy;
+    if (showPrivacyPolicy) {
+      showChangelog = false;
+    }
+  }
+
+  void toggleChangelog() {
+    showChangelog = !showChangelog;
+    if (showChangelog) {
+      showPrivacyPolicy = false;
+    }
   }
 }
 
