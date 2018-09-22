@@ -18,6 +18,10 @@ dependencies:
   isowosi_angular_components:
     git: git@bitbucket.org:dennis_kaselow/isowosi_angular_components
   markdown: ^2.0.2
+  lawndart:
+    git:
+      url: https://github.com/lejard-h/lawndart.git
+      ref: 4ca04e4a703063286d0bf46b5bed378ef5e6ac34
 dev_dependencies:
   build_runner: ^0.10.0
   build_version: ^1.0.0

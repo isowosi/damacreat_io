@@ -354,6 +354,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4+1"
+  lawndart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "4ca04e4a703063286d0bf46b5bed378ef5e6ac34"
+      resolved-ref: "4ca04e4a703063286d0bf46b5bed378ef5e6ac34"
+      url: "https://github.com/lejard-h/lawndart.git"
+    source: git
+    version: "0.10.0"
   logging:
     dependency: transitive
     description:

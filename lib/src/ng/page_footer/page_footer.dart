@@ -9,7 +9,7 @@ import 'package:isowosi_angular_components/isowosi_angular_components.dart';
   directives: [isowosiDirectives],
 )
 class PageFooterComponent {
-  DateTime lastUpdate = DateTime.utc(2018, DateTime.september, 13);
+  DateTime lastPrivacyPolicyUpdate = DateTime.utc(2018, DateTime.september, 22);
   DateTime today = DateTime.now();
   GameService service;
   PageFooterComponent(this.service);
@@ -17,7 +17,7 @@ class PageFooterComponent {
   void togglePrivacyPolicy() => service.togglePrivacyPolicy();
 
   String getLastUpdate() {
-    final diff = today.difference(lastUpdate).inDays;
+    final diff = today.difference(lastPrivacyPolicyUpdate).inDays;
     if (diff > 1) {
       return '$diff days ago';
     } else if (diff == 1) {

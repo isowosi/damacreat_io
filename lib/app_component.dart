@@ -32,7 +32,8 @@ class AppComponent implements OnInit {
   GameService service;
   AppComponent(this.service);
   @override
-  void ngOnInit() {
+  void ngOnInit() async {
+    await service.init();
     service.startGame();
   }
 

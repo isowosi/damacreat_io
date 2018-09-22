@@ -21,6 +21,10 @@ class GameService {
   final GameStateManager gameStateManager;
   GameService(this.settings, this.gameStateManager);
 
+  Future<void> init() async {
+    await settings.init();
+  }
+
   bool get menuVisible => gameStateManager.state == GameState.menu;
 
   void startGame() {
@@ -29,9 +33,7 @@ class GameService {
       webSocket.onOpen.listen((openEvent) {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
-        _game =
-            Game(webSocketHandler, settings, gameStateManager)
-              ..start();
+        _game = Game(webSocketHandler, settings, gameStateManager)..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();
         });
