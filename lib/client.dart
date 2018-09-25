@@ -6,11 +6,13 @@ import 'dart:html';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
+import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
+import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 import 'src/client/systems/events.dart';
@@ -88,7 +90,9 @@ class Game extends GameBase {
           DamacreatFpsRenderingSystem(hudCtx, 'grey'),
           DebugSystem(hudCtx, webSocketHandler),
           MinimapRenderingSystem(hudCtx),
+          BoostButtonRenderingSystem(hudCtx),
           // cleanup
+          BoosterHandlingSystem(),
           ExpirationSystem(),
           RemoveTemporaryComponentsSystem(),
         ],
@@ -111,7 +115,8 @@ class Game extends GameBase {
   void _configureHud() {
     hudCtx
       ..textBaseline = 'top'
-      ..font = '16px Roboto';
+      ..font = '${fontSize}px Roboto'
+      ..globalCompositeOperation = 'source-over';
   }
 
   void joinGame(String nickname) {

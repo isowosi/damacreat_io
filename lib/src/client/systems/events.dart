@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
@@ -13,15 +14,19 @@ part 'events.g.dart';
   EntityProcessingSystem,
   allOf: [
     Controller,
+    Booster,
   ],
   manager: [
     GameStateManager,
+    CameraManager,
   ],
 )
 class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   CanvasElement canvas;
   Point<num> offset;
+  bool useBooster = false;
+  int boosterFinger;
 
   ControllerSystem(this.canvas, this._webSocketHandler);
 
@@ -31,30 +36,71 @@ class ControllerSystem extends _$ControllerSystem {
     canvas.onMouseMove.listen((event) {
       offset = event.offset;
     });
-    canvas.onTouchMove.listen((event) {
-      offset = event.touches.last.page;
-    });
+    canvas.onTouchMove.listen(_handleTouchEvent);
     canvas.onTouchStart.listen((event) {
-      offset = event.touches.last.page;
+      _handleTouchEvent(event);
       event.preventDefault();
     });
+    canvas.onTouchEnd.listen((event) {
+      for (final touch in event.changedTouches) {
+        if (touch.identifier == boosterFinger) {
+          useBooster = false;
+          boosterFinger = null;
+        }
+      }
+      event.preventDefault();
+    });
+    canvas.onMouseDown.listen((event) {
+      if (event.buttons & 1 == 1) {
+        useBooster = true;
+      }
+    });
+    canvas.onMouseUp.listen((event) {
+      if (event.buttons & 1 == 0) {
+        useBooster = false;
+      }
+    });
+  }
+
+  void _handleTouchEvent(TouchEvent event) {
+    final boosterOffset = Point<double>(boosterButtonCenterX.toDouble(),
+        cameraManager.clientHeight - boosterButtonCenterY.toDouble());
+    for (final touch in event.targetTouches) {
+      final touchOffset = touch.page;
+      if (boosterOffset.distanceTo(touchOffset) <= boosterButtonRadius) {
+        useBooster = true;
+        boosterFinger = touch.identifier;
+      } else {
+        offset = touchOffset;
+        if (boosterFinger == touch.identifier) {
+          useBooster = false;
+          boosterFinger = null;
+        }
+      }
+    }
   }
 
   @override
   void processEntity(Entity entity) {
+    boosterMapper[entity].inUse = useBooster;
     if (offset != null) {
       final center = Point<num>(canvas.width / 2, canvas.height / 2);
       final maxDistance = min(canvas.width / 3, canvas.height / 3);
       final distance = center.distanceTo(offset);
       final velocity =
-          ByteUtils.speedToByte(100 * min(maxDistance, distance) / maxDistance);
+          ByteUtils.speedToByte(min(maxDistance, distance) / maxDistance);
       final angle = ByteUtils.angleToByte(
           tau + atan2(center.y - offset.y, offset.x - center.x));
 
-      _webSocketHandler.sendData(
-          Uint8ListWriter.clientToServer(MessageToServer.updateVelocity)
-            ..writeUint16(velocity)
-            ..writeUint16(angle));
+      final type = useBooster
+          ? MessageToServer.updateVelocityAndUseBooster
+          : MessageToServer.updateVelocity;
+      _webSocketHandler.sendData(Uint8ListWriter.clientToServer(type)
+        ..writeUint16(velocity)
+        ..writeUint16(angle));
+    } else if (useBooster) {
+      _webSocketHandler
+          .sendData(Uint8ListWriter.clientToServer(MessageToServer.useBooster));
     }
     offset = null;
   }
@@ -350,6 +396,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         CellWall(5.0),
         Thruster(),
         Velocity(0.0, 0.0, 0.0),
+        Booster(boosterMaxStartPower),
         Player(nickname),
       ];
       if (playerId == id) {
@@ -380,7 +427,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         // no constant velocity for players
         if (foodMapper.has(food)) {
           food
-            ..addComponent(Velocity(value, angle, 0.0))
+            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
             ..addComponent(ConstantVelocity())
             ..changedInWorld();
         }

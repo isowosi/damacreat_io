@@ -1,3 +1,13 @@
+# 0.6.0 (2018-09-25)
+
+## Gameplay
+* the maximum velocity of a damacreat depends on its size
+* damacreats can use a temporary speed boost
+* modified digestion speed - faster for small ones and slower for big ones
+
+## Misc
+* performance improvement updating the quadtree
+
 # 0.5.1 (2018-09-22)
 
 ## Gameplay

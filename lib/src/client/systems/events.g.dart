@@ -8,13 +8,17 @@ part of 'events.dart';
 
 abstract class _$ControllerSystem extends EntityProcessingSystem {
   Mapper<Controller> controllerMapper;
+  Mapper<Booster> boosterMapper;
   GameStateManager gameStateManager;
-  _$ControllerSystem() : super(Aspect.empty()..allOf([Controller]));
+  CameraManager cameraManager;
+  _$ControllerSystem() : super(Aspect.empty()..allOf([Controller, Booster]));
   @override
   void initialize() {
     super.initialize();
     controllerMapper = Mapper<Controller>(world);
+    boosterMapper = Mapper<Booster>(world);
     gameStateManager = world.getManager<GameStateManager>();
+    cameraManager = world.getManager<CameraManager>();
   }
 }
 
