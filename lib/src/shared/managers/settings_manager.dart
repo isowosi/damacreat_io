@@ -70,11 +70,9 @@ class SettingsManager extends Manager {
 
   void _handleAnalytics() {
     if (_allowAnalytics) {
-      print('adding script async');
       final gtag = ScriptElement()
         ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-2'
         ..defer = true;
-      print('adding script');
       final gtagConfig = ScriptElement()
         ..text = '''
     window.dataLayer = window.dataLayer || [];
