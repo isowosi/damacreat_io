@@ -88,7 +88,7 @@ class ControllerSystem extends _$ControllerSystem {
       final maxDistance = min(canvas.width / 3, canvas.height / 3);
       final distance = center.distanceTo(offset);
       final velocity =
-          ByteUtils.speedToByte(100 * min(maxDistance, distance) / maxDistance);
+          ByteUtils.speedToByte(min(maxDistance, distance) / maxDistance);
       final angle = ByteUtils.angleToByte(
           tau + atan2(center.y - offset.y, offset.x - center.x));
 
@@ -427,7 +427,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         // no constant velocity for players
         if (foodMapper.has(food)) {
           food
-            ..addComponent(Velocity(value, angle, 0.0))
+            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
             ..addComponent(ConstantVelocity())
             ..changedInWorld();
         }
