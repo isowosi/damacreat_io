@@ -1,3 +1,11 @@
+# 0.7.0 (2018-11-05)
+
+## Misc
+* performance improvement when there is a lot of moving food/dark energy
+
+## Bugfixes
+* QuadTree wasn't updated correctly for moving stuff between two nodes resulting in performance degration over time
+
 # 0.6.0 (2018-09-25)
 
 ## Gameplay

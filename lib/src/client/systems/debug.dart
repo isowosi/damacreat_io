@@ -49,9 +49,15 @@ class DebugSystem extends _$DebugSystem {
         .where((component) => component != null)
         .length;
     final movingThings = world.componentManager
-        .getComponentsByType(ComponentTypeManager.getTypeFor(ChangedPosition))
-        .where((component) => component != null)
-        .length;
+            .getComponentsByType(
+                ComponentTypeManager.getTypeFor(ChangedPosition))
+            .where((component) => component != null)
+            .length +
+        world.componentManager
+            .getComponentsByType(
+                ComponentTypeManager.getTypeFor(ConstantVelocity))
+            .where((component) => component != null)
+            .length;
     final totalDeltaBefore = totalDelta;
     totalDelta += world.delta;
     if (totalDeltaBefore.toInt() % 5 == 4 && totalDelta.toInt() % 5 == 0) {
