@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:math';
 
 import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
@@ -16,6 +17,7 @@ class GameService {
   Object errorMessage;
   StackTrace stackTrace;
   String lastName = '';
+  final Random random = Random();
 
   final SettingsManager settings;
   final GameStateManager gameStateManager;
@@ -51,7 +53,7 @@ class GameService {
   void joinGame(String nickname) {
     if (!error && menuVisible) {
       lastName = nickname;
-      _game.joinGame(nickname);
+      _game.joinGame(random.nextInt(256), nickname);
       gameStateManager.state = GameState.playing;
     }
   }
