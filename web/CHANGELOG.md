@@ -2,6 +2,7 @@
 
 ## Misc
 * performance improvement when there is a lot of moving food/dark energy
+* the player can pick their color
 
 ## Bugfixes
 * QuadTree wasn't updated correctly for moving stuff between two nodes resulting in performance degration over time

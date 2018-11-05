@@ -17,6 +17,7 @@ class GameService {
   Object errorMessage;
   StackTrace stackTrace;
   String lastName = '';
+  int hue = 0;
   final Random random = Random();
 
   final SettingsManager settings;
@@ -24,6 +25,7 @@ class GameService {
   GameService(this.settings, this.gameStateManager);
 
   Future<void> init() async {
+    hue = random.nextInt(256);
     await settings.init();
   }
 
@@ -53,7 +55,7 @@ class GameService {
   void joinGame(String nickname) {
     if (!error && menuVisible) {
       lastName = nickname;
-      _game.joinGame(random.nextInt(256), nickname);
+      _game.joinGame(hue ?? random.nextInt(256), nickname);
       gameStateManager.state = GameState.playing;
     }
   }
@@ -70,6 +72,10 @@ class GameService {
     if (showChangelog) {
       showPrivacyPolicy = false;
     }
+  }
+
+  void setPlayerHue(String hueString) {
+    hue = int.tryParse(hueString) ?? random.nextInt(256);
   }
 }
 

@@ -9,6 +9,12 @@
   grid-column-gap: 10px;
   column-gap: 10px;
 
+  > div, > color-picker {
+    background-color: hsla(260, 90%, 50%, 0.4);
+    border: 1px solid hsla(260, 90%, 50%, 0.9);
+    border-radius: 50px;
+  }
+
   @media #{$smallScreen}, #{$mobileLandscape} {
     grid-template-columns: 200px;
     grid-template-rows: 200px;
@@ -22,12 +28,6 @@
       display: none;
     }
   }
-}
-
-div {
-  background-color: hsla(260, 90%, 50%, 0.4);
-  border: 1px solid hsla(260, 90%, 50%, 0.9);
-  border-radius: 50px;
 }
 
 button {
@@ -95,6 +95,12 @@ div#settings {
   }
 }
 
+color-picker {
+  grid-column: 1/2;
+  grid-row: 1/2;
+  padding: 30px 20px;
+}
+
 .connecting, .connectionerror {
   width: 150px;
   height: 75px;
@@ -103,12 +109,15 @@ div#settings {
   align-items: center;
   color: gainsboro;
 }
+
 .connecting {
   background-color: #bb5a00;
 }
+
 .connectionerror {
   background-color: darkred;
 }
+
 .version {
   background: none;
   border: none;
