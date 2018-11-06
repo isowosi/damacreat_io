@@ -5,7 +5,7 @@ import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 @Component(
   selector: 'privacy-policy',
   templateUrl: 'privacy_policy.html',
-  styleUrls: ['privacy_policy.css'],
+  styleUrls: ['../modal_popup/modal_popup.css'],
   directives: [
     NgIf,
   ],
