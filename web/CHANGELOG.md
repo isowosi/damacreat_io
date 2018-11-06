@@ -1,5 +1,8 @@
 # 0.7.0 (2018-11-05)
 
+## Gameplay
+* using the boost reduces the size of the damacreat and produces dark energy
+
 ## Misc
 * performance improvement when there is a lot of moving food/dark energy
 * the player can pick their color
