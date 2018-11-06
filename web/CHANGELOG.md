@@ -2,6 +2,7 @@
 
 ## Gameplay
 * using the boost reduces the size of the damacreat and produces dark energy
+* food below a certain size is consumed instantly 
 
 ## Misc
 * performance improvement when there is a lot of moving food/dark energy
