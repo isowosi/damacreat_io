@@ -6,6 +6,7 @@
 
 ## Bugfixes
 * QuadTree wasn't updated correctly for moving stuff between two nodes resulting in performance degration over time
+* improved rendering quality
 
 # 0.6.0 (2018-09-25)
 

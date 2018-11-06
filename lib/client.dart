@@ -107,7 +107,7 @@ class Game extends GameBase {
     container.style
       ..width = '${camera.clientWidth}px'
       ..height = '${camera.clientHeight}px';
-    resizeCanvas(hudCanvas, useClientSize: true);
+    resizeCanvas(hudCanvas);
     _configureHud();
     super.handleResize();
   }
