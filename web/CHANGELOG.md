@@ -2,7 +2,8 @@
 
 ## Gameplay
 * using the boost reduces the size of the damacreat and produces dark energy
-* food below a certain size is consumed instantly 
+* food below a certain size is consumed instantly
+* a player that disconnects or has a radius smaller than 5 will be turned into several pieces of dark energy 
 
 ## Misc
 * performance improvement when there is a lot of moving food/dark energy
