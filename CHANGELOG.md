@@ -1,3 +1,18 @@
+# 0.7.0 (2018-11-05)
+
+## Gameplay
+* using the boost reduces the size of the damacreat and produces dark energy
+* food below a certain size is consumed instantly
+* a player that disconnects or has a radius smaller than 5 will be turned into several pieces of dark energy 
+
+## Misc
+* performance improvement when there is a lot of moving food/dark energy
+* the player can pick their color
+
+## Bugfixes
+* QuadTree wasn't updated correctly for moving stuff between two nodes resulting in performance degration over time
+* improved rendering quality
+
 # 0.6.0 (2018-09-25)
 
 ## Gameplay

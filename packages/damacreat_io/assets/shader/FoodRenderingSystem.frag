@@ -10,7 +10,7 @@ void main() {
     if (dist > 0.5) {
       discard;
     }
-    float alpha = 1.0 - dist;
+    float alpha = 1.0 - dist * 0.8;
     alpha = alpha * alpha;
     float r = 0.4 + 0.4 * sin(uTime + vColorMod.r);
     float g = 0.8 + 0.2 * sin(uTime + vColorMod.g);
