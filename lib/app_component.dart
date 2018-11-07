@@ -11,7 +11,7 @@ import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 const bool debug = bool.fromEnvironment('debug', defaultValue: false);
 
 @Component(
-  selector: 'my-app',
+  selector: 'damacreat-io',
   styleUrls: ['app_component.css'],
   templateUrl: 'app_component.html',
   directives: [

@@ -107,7 +107,7 @@ class Game extends GameBase {
     container.style
       ..width = '${camera.clientWidth}px'
       ..height = '${camera.clientHeight}px';
-    resizeCanvas(hudCanvas, useClientSize: true);
+    resizeCanvas(hudCanvas);
     _configureHud();
     super.handleResize();
   }
@@ -119,12 +119,13 @@ class Game extends GameBase {
       ..globalCompositeOperation = 'source-over';
   }
 
-  void joinGame(String nickname) {
+  void joinGame(int color, String nickname) {
     final utf8nickname = utf8
         .encode(nickname.substring(0, min(maxLengthNickname, nickname.length)));
     webSocketHandler.sendData(Uint8ListWriter.clientToServer(
         MessageToServer.joinGame,
         additionalDynamicLength: 1 + utf8nickname.length)
+      ..writeUint8(color)
       ..writeUint8List(utf8nickname));
   }
 }

@@ -4,11 +4,11 @@ import 'package:angular/angular.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
 import 'package:markdown/markdown.dart';
 
-
 @Component(
-    selector: 'game-changelog',
-    templateUrl: 'game_changelog.html',
-    styleUrls: ['game_changelog.css'])
+  selector: 'game-changelog',
+  templateUrl: 'game_changelog.html',
+  styleUrls: ['../modal_popup/modal_popup.css'],
+)
 class GameChangelogComponent implements OnInit {
   String content;
   GameService service;

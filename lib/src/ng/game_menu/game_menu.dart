@@ -1,5 +1,6 @@
 import 'package:angular/angular.dart';
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/src/ng/color_picker/color_picker.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/version.dart';
@@ -10,6 +11,7 @@ import 'package:damacreat_io/src/version.dart';
   styleUrls: ['game_menu.css'],
   directives: [
     NgIf,
+    ColorPickerComponent,
   ],
 )
 class GameMenuComponent {

@@ -113,8 +113,8 @@ class DigestiveSystem extends _$DigestiveSystem {
       final angle = random.nextDouble() * 2 * pi;
       world.createAndAddEntity([
         Particle(),
-        Position(foodPosition.x + foodSize.radius * cos(angle),
-            foodPosition.y + foodSize.radius * sin(angle)),
+        Position(foodPosition.x + foodSize.radius * cos(angle) * 0.9,
+            foodPosition.y + foodSize.radius * sin(angle) * 0.9),
         Color.fromHsl(hsl[0], hsl[1] + 0.1, hsl[2] + 0.1, 1.0),
         Lifetime(0.1)
       ]);

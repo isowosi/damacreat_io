@@ -158,7 +158,7 @@ class FoodRenderingSystem extends _$FoodRenderingSystem {
     final itemOffset = index * 6;
     items[itemOffset] = position.x;
     items[itemOffset + 1] = position.y;
-    items[itemOffset + 2] = size.radius / cameraManager.gameZoom;
+    items[itemOffset + 2] = size.radius / cameraManager.scalingFactor;
     items[itemOffset + 3] = food.r;
     items[itemOffset + 4] = food.g;
     items[itemOffset + 5] = food.b;
