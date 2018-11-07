@@ -7,7 +7,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.33.2"
+    version: "0.33.3"
   angular:
     dependency: "direct main"
     description:
@@ -107,7 +107,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   build_runner_core:
     dependency: transitive
     description:
@@ -196,11 +196,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "tags/0.6.0"
-      resolved-ref: "30ef649991c91aa6f9808501415a5ea332efe012"
+      ref: "tags/0.7.0"
+      resolved-ref: "9dcf5117f2ba879c9335494be26013f8fa5ee48d"
       url: "git@bitbucket.org:isowosi/damacreat.git"
     source: git
-    version: "0.6.0"
+    version: "0.7.0"
   dart_style:
     dependency: transitive
     description:
@@ -239,14 +239,14 @@ packages:
       name: fixnum
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.8"
+    version: "0.10.9"
   front_end:
     dependency: transitive
     description:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.6+2"
+    version: "0.1.6+3"
   gamedev_helpers:
     dependency: "direct main"
     description:
@@ -348,7 +348,7 @@ packages:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.6+2"
+    version: "0.3.6+3"
   lawndart:
     dependency: "direct main"
     description:
