@@ -1,4 +1,8 @@
 # 0.8.0 (2018-11-11)
+
+## Misc
+* added initial gamepad support; just press start on your gamepad and you are in
+
 # 0.7.0 (2018-11-07)
 
 ## Gameplay

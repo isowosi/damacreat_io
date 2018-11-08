@@ -6,22 +6,6 @@ part of 'events.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$ControllerSystem extends EntityProcessingSystem {
-  Mapper<Controller> controllerMapper;
-  Mapper<Booster> boosterMapper;
-  GameStateManager gameStateManager;
-  CameraManager cameraManager;
-  _$ControllerSystem() : super(Aspect.empty()..allOf([Controller, Booster]));
-  @override
-  void initialize() {
-    super.initialize();
-    controllerMapper = Mapper<Controller>(world);
-    boosterMapper = Mapper<Booster>(world);
-    gameStateManager = world.getManager<GameStateManager>();
-    cameraManager = world.getManager<CameraManager>();
-  }
-}
-
 abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Position> positionMapper;
   Mapper<Size> sizeMapper;

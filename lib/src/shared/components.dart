@@ -2,6 +2,7 @@ import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 
 class Controller extends Component {}
+class MouseController extends Component {}
 
 class Wobble extends Component {
   List<double> wobbleFactor;

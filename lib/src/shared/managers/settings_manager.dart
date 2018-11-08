@@ -11,7 +11,6 @@ class SettingsManager extends Manager {
   bool _showDebug = false;
   bool _showNicknames = true;
   bool _showMinimap = true;
-  bool isTouchScreen = false;
   bool doNotTrack = '1' == window.navigator.doNotTrack;
   bool _allowAnalytics = '1' != window.navigator.doNotTrack;
 

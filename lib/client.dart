@@ -5,11 +5,13 @@ import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
@@ -25,8 +27,10 @@ class Game extends GameBase {
   final WebSocketHandler webSocketHandler;
   final SettingsManager settingsManager;
   final GameStateManager gameStateManager;
+  final ControllerManager controllerManager;
 
-  Game(this.webSocketHandler, this.settingsManager, this.gameStateManager)
+  Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
+      this.controllerManager)
       : super.noAssets('damacreat_io', '#game',
             webgl: true, depthTest: false, useMaxDelta: false) {
     container = querySelector('#gamecontainer');
@@ -43,6 +47,7 @@ class Game extends GameBase {
       ..addManager(tagManager)
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
+      ..addManager(controllerManager)
       ..addManager(WebGlViewProjectionMatrixManager(1000))
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
@@ -61,7 +66,8 @@ class Game extends GameBase {
         GameBase.rendering: [
           // input
           WebSocketListeningSystem(webSocketHandler),
-          ControllerSystem(hudCanvas, webSocketHandler),
+          MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
+          GamepadControllerSystem(webSocketHandler),
           // logic
           FoodGrowingSystem(),
           ConstantMovementSystem(),
