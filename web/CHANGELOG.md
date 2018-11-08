@@ -1,4 +1,5 @@
-# 0.7.0 (2018-11-05)
+# 0.8.0 (2018-11-11)
+# 0.7.0 (2018-11-07)
 
 ## Gameplay
 * using the boost reduces the size of the damacreat and produces dark energy
