@@ -423,7 +423,9 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
         Color(rgb[0], rgb[1], rgb[2], 1.0),
         Lifetime(1.0 + 2.0 * random.nextDouble()),
         Velocity(speed * 0.9 + random.nextDouble() * 0.2,
-            velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0)
+            velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0),
+        Orientation(velocityAngle),
+        Renderable('propulsion', scale: 1/8),
       ]);
     }
   }

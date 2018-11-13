@@ -9,6 +9,7 @@ import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
@@ -31,8 +32,11 @@ class Game extends GameBase {
 
   Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
       this.controllerManager)
-      : super.noAssets('damacreat_io', '#game',
-            webgl: true, depthTest: false, useMaxDelta: false) {
+      : super('damacreat_io', '#game',
+            webgl: true,
+            depthTest: false,
+            useMaxDelta: false,
+            bodyDefsName: null) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
@@ -90,6 +94,7 @@ class Game extends GameBase {
           PlayerRenderingSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
           ParticleRenderingSystem(gl),
+          SpriteRenderingSystem(gl, spriteSheet),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
           RankingRenderingSystem(hudCtx),
