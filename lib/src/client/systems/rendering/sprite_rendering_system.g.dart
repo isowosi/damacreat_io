@@ -6,7 +6,25 @@ part of 'sprite_rendering_system.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$SpriteRenderingSystem extends WebGlSpriteRenderingSystem {
-  _$SpriteRenderingSystem(RenderingContext gl, SpriteSheet sheet)
-      : super(gl, sheet, Aspect.empty());
+abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
+  Mapper<Position> positionMapper;
+  Mapper<Orientation> orientationMapper;
+  Mapper<Color> colorMapper;
+  Mapper<Renderable> renderableMapper;
+  TagManager tagManager;
+  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  _$SpriteRenderingSystem(RenderingContext gl)
+      : super(gl,
+            Aspect.empty()..allOf([Position, Orientation, Color, Renderable]));
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    orientationMapper = Mapper<Orientation>(world);
+    colorMapper = Mapper<Color>(world);
+    renderableMapper = Mapper<Renderable>(world);
+    tagManager = world.getManager<TagManager>();
+    webGlViewProjectionMatrixManager =
+        world.getManager<WebGlViewProjectionMatrixManager>();
+  }
 }

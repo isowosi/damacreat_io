@@ -19,6 +19,7 @@ part 'events.g.dart';
     DigestedBy,
     Velocity,
     Food,
+    ChangedPosition,
   ],
   manager: [
     TagManager,
@@ -135,9 +136,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = dist / world.delta
             ..rotational = 0.0;
         }
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -171,9 +174,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = dist / world.delta
             ..rotational = 0.0;
         }
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -201,9 +206,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..angle = atan2(y - oldY, x - oldX)
           ..value = dist / world.delta
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -233,9 +240,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..angle = atan2(y - oldY, x - oldX)
           ..value = dist / world.delta
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }

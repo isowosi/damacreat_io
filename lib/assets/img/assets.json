@@ -2,19 +2,19 @@
 
 "propulsion_0":
 {
-	"frame": {"x":2,"y":2,"w":16,"h":16},
+	"frame": {"x":2,"y":2,"w":140,"h":136},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
-	"sourceSize": {"w":16,"h":16}
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":7,"w":140,"h":136},
+	"sourceSize": {"w":160,"h":160}
 }},
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker ",
 	"version": "1.0",
 	"image": "assets.png",
 	"format": "RGBA8888",
-	"size": {"w":32,"h":32},
+	"size": {"w":256,"h":256},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:40404b5425ba19a276590663b0cb551d:20db26cabb8fdbd63224836d9139c20d:a759b6bbc8381ac9c472b28f589ad0d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ecc97c93a37ca3bc366d6b8a773f0628:670affe096e622ab76a06c44433ff49b:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }

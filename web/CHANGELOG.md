@@ -5,6 +5,7 @@
 
 ## Misc
 * added initial gamepad support; just press start on your gamepad and you are in
+* improved visuals of normal movement
 
 # 0.7.0 (2018-11-07)
 

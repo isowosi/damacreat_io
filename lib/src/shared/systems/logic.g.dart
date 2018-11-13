@@ -160,14 +160,17 @@ abstract class _$ThrusterParticleColorModificationSystem
   Mapper<ThrusterParticle> thrusterParticleMapper;
   Mapper<Color> colorMapper;
   Mapper<Lifetime> lifetimeMapper;
+  Mapper<Renderable> renderableMapper;
   _$ThrusterParticleColorModificationSystem()
-      : super(Aspect.empty()..allOf([ThrusterParticle, Color, Lifetime]));
+      : super(Aspect.empty()
+          ..allOf([ThrusterParticle, Color, Lifetime, Renderable]));
   @override
   void initialize() {
     super.initialize();
     thrusterParticleMapper = Mapper<ThrusterParticle>(world);
     colorMapper = Mapper<Color>(world);
     lifetimeMapper = Mapper<Lifetime>(world);
+    renderableMapper = Mapper<Renderable>(world);
   }
 }
 
@@ -198,5 +201,21 @@ abstract class _$CameraPositionSystem extends EntityProcessingSystem {
     controllerMapper = Mapper<Controller>(world);
     positionMapper = Mapper<Position>(world);
     tagManager = world.getManager<TagManager>();
+  }
+}
+
+abstract class _$ThrusterCellWallWeakeningSystem
+    extends EntityProcessingSystem {
+  Mapper<CellWall> cellWallMapper;
+  Mapper<Thruster> thrusterMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$ThrusterCellWallWeakeningSystem()
+      : super(Aspect.empty()..allOf([CellWall, Thruster, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    cellWallMapper = Mapper<CellWall>(world);
+    thrusterMapper = Mapper<Thruster>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
   }
 }

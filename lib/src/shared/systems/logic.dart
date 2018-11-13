@@ -405,10 +405,10 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     final velocityAngle = atan2(vy, vx);
     final speed = vx / cos(velocityAngle);
     final hsl = rgbToHsl(color.r, color.g, color.b);
+    hsl[1] += 0.1;
     hsl[2] += 0.1;
-    hsl[1] += 0.3;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
-    for (var i = 0; i < size.radius / 10; i++) {
+    for (var i = 0; i < sqrt(size.radius); i++) {
       final posFactor = random.nextDouble();
       final posFactorTime = random.nextDouble();
       final x = x1 + posFactor * (x2 - x1);
@@ -418,14 +418,14 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
       world.createAndAddEntity([
         Position(
             x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
-        Particle(),
+//        Particle(),
         ThrusterParticle(),
         Color(rgb[0], rgb[1], rgb[2], 1.0),
-        Lifetime(1.0 + 2.0 * random.nextDouble()),
+        Lifetime(0.5 + 1.0 * random.nextDouble()),
         Velocity(speed * 0.9 + random.nextDouble() * 0.2,
             velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0),
         Orientation(velocityAngle),
-        Renderable('propulsion', scale: 1/8),
+        Renderable('propulsion', scale: size.radius / 700),
       ]);
     }
   }
@@ -437,6 +437,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     ThrusterParticle,
     Color,
     Lifetime,
+    Renderable,
   ],
 )
 class ThrusterParticleColorModificationSystem
@@ -445,18 +446,22 @@ class ThrusterParticleColorModificationSystem
   void processEntity(Entity entity) {
     final color = colorMapper[entity];
     final lifetime = lifetimeMapper[entity];
+    final renderable = renderableMapper[entity];
 
+    final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
     final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = hsl[0] - 0.2 * (1.0 - lifetime.timeLeft / lifetime.timeMax);
-    hsl[1] = hsl[1] * lifetime.timeLeft / lifetime.timeMax;
-    hsl[2] = hsl[2] * lifetime.timeLeft / lifetime.timeMax;
+    hsl[0] = hsl[0] - 0.2 * (1.0 - lifetimePercentage);
+    hsl[1] = hsl[1] * lifetimePercentage;
+    hsl[2] = hsl[2] * lifetimePercentage;
+    renderable.scale +=
+        3.0 * world.delta * renderable.scale * lifetimePercentage;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
 
     color
       ..r = rgb[0]
       ..g = rgb[1]
       ..b = rgb[2]
-      ..a = lifetime.timeLeft / lifetime.timeMax;
+      ..a = lifetimePercentage;
   }
 }
 
@@ -495,5 +500,27 @@ class CameraPositionSystem extends _$CameraPositionSystem {
     positionMapper[tagManager.getEntity(cameraTag)]
       ..x = position.x
       ..y = position.y;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    CellWall,
+    Thruster,
+    OnScreen,
+  ],
+)
+class ThrusterCellWallWeakeningSystem
+    extends _$ThrusterCellWallWeakeningSystem {
+  @override
+  void processEntity(Entity entity) {
+    final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
+    final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
+    cellWallMapper[entity]
+      ..strengthFactor[leftThrusterIndex] = 0.0
+      ..strengthFactor[leftThrusterIndex + 1] = 0.0
+      ..strengthFactor[rightThrusterIndex] = 0.0
+      ..strengthFactor[rightThrusterIndex - 1] = 0.0;
   }
 }
