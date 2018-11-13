@@ -1,5 +1,8 @@
 # 0.8.0 (2018-11-11)
 
+## Gameplay
+* less and randomly distributed dark energy when a player disconnects
+
 ## Misc
 * added initial gamepad support; just press start on your gamepad and you are in
 
