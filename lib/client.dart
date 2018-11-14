@@ -85,7 +85,7 @@ class Game extends GameBase {
           // logic that changes visuals
           WobbleSystem(),
           CellWallSystem(),
-//          ThrusterCellWallWeakeningSystem(),
+          ThrusterCellWallWeakeningSystem(),
           EntityInteractionSystem(),
           ThrusterParticleEmissionSystem(),
           ThrusterParticleColorModificationSystem(),

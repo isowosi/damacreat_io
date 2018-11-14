@@ -518,9 +518,9 @@ class ThrusterCellWallWeakeningSystem
     final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
     final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
     cellWallMapper[entity]
-      ..strengthFactor[leftThrusterIndex] = 0.0
-      ..strengthFactor[leftThrusterIndex + 1] = 0.0
-      ..strengthFactor[rightThrusterIndex] = 0.0
-      ..strengthFactor[rightThrusterIndex - 1] = 0.0;
+      ..strengthFactor[leftThrusterIndex] = 0.3
+      ..strengthFactor[leftThrusterIndex + 1] = 0.3
+      ..strengthFactor[rightThrusterIndex] = 0.3
+      ..strengthFactor[rightThrusterIndex - 1] = 0.3;
   }
 }
