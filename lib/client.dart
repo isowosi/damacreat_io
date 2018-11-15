@@ -75,6 +75,7 @@ class Game extends GameBase {
           // logic
           FoodGrowingSystem(),
           ConstantMovementSystem(),
+          MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
           DigestiveSystem(),
           CameraPositionSystem(),

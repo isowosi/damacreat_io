@@ -323,6 +323,7 @@ class CellWallSystem extends _$CellWallSystem {
     Color,
     Wobble,
     OnScreen,
+    Booster,
   ],
 )
 class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
@@ -335,6 +336,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     final s = sizeMapper[entity];
     final c = colorMapper[entity];
     final w = wobbleMapper[entity];
+    final boosterFactor = boosterMapper[entity].inUse ? 1.5 : 1.0;
     final oldAngle = o.angle - v.rotational * world.delta;
 
     final leftThrusterAngle = o.angle + 3 / 4 * pi;
@@ -342,10 +344,10 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     final oldLeftThrusterAngle = oldAngle + 3 / 4 * pi;
     final oldRightThrusterAngle = oldAngle - 3 / 4 * pi;
 
-    spawnThrusterParticles(
-        p, op, s, v, c, leftThrusterAngle, oldLeftThrusterAngle, o, w, 1);
-    spawnThrusterParticles(
-        p, op, s, v, c, rightThrusterAngle, oldRightThrusterAngle, o, w, -1);
+    spawnThrusterParticles(p, op, s, v, c, leftThrusterAngle,
+        oldLeftThrusterAngle, o, w, 1, boosterFactor);
+    spawnThrusterParticles(p, op, s, v, c, rightThrusterAngle,
+        oldRightThrusterAngle, o, w, -1, boosterFactor);
   }
 
   void spawnThrusterParticles(
@@ -358,7 +360,8 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
       double oldThrusterAngle,
       Orientation orientation,
       Wobble wobble,
-      int direction) {
+      int direction,
+      double boosterFactor) {
     double w1, w2;
     if (direction == 1) {
       final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
@@ -408,7 +411,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     hsl[1] += 0.1;
     hsl[2] += 0.1;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
-    for (var i = 0; i < sqrt(size.radius); i++) {
+    for (var i = 0; i < sqrt(size.radius) * boosterFactor; i++) {
       final posFactor = random.nextDouble();
       final posFactorTime = random.nextDouble();
       final x = x1 + posFactor * (x2 - x1);
@@ -421,12 +424,12 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
 //        Particle(),
         ThrusterParticle(),
         Color(rgb[0], rgb[1], rgb[2], 1.0),
-        Lifetime(0.5 + 1.0 * random.nextDouble()),
-        Velocity(speed * 0.9 + random.nextDouble() * 0.2,
+        Lifetime(boosterFactor * (0.5 + 1.0 * random.nextDouble())),
+        Velocity(speed * 0.1 + random.nextDouble() * 0.2,
             velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0),
         Orientation(velocityAngle),
         Renderable('propulsion', scale: 1 / 80),
-        Size(size.radius / 10),
+        Size(boosterFactor * size.radius / 10),
       ]);
     }
   }
@@ -542,5 +545,29 @@ class FoodColoringSystem extends _$FoodColoringSystem {
       ..r = 0.4 + 0.4 * sin(time + food.r)
       ..g = 0.8 + 0.2 * sin(time + food.g)
       ..b = 0.4 + 0.4 * sin(time + food.b);
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Position,
+    Velocity,
+    Size,
+  ],
+  exclude: [
+    QuadTreeCandidate,
+  ],
+)
+class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
+  @override
+  void processEntity(Entity entity) {
+    final position = positionMapper[entity];
+    final velocity = velocityMapper[entity];
+
+    final velocityTimesDelta = velocity.value * world.delta;
+    position
+      ..x = position.x + velocityTimesDelta * cos(velocity.angle)
+      ..y = position.y + velocityTimesDelta * sin(velocity.angle);
   }
 }
