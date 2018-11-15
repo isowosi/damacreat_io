@@ -219,3 +219,18 @@ abstract class _$ThrusterCellWallWeakeningSystem
     onScreenMapper = Mapper<OnScreen>(world);
   }
 }
+
+abstract class _$FoodColoringSystem extends EntityProcessingSystem {
+  Mapper<Food> foodMapper;
+  Mapper<Color> colorMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$FoodColoringSystem()
+      : super(Aspect.empty()..allOf([Food, Color, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    foodMapper = Mapper<Food>(world);
+    colorMapper = Mapper<Color>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+  }
+}

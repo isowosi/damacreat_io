@@ -252,14 +252,19 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initFood(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final radius = reader.readUint8() / foodSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
-        Position(ByteUtils.byteToPosition(reader.readUint16()),
-            ByteUtils.byteToPosition(reader.readUint16())),
-        Size(reader.readUint8() / foodSizeFactor),
+        Position(x, y),
+        Size(radius),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
+        Renderable('food', scale: 1 / foodSpriteRadius),
+        Orientation(0.0),
+        QuadTreeCandidate(),
       ]);
       idManager.add(entity);
     }
@@ -268,16 +273,22 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initGrowingFood(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final radius = reader.readUint8() / foodSizeFactor;
+      final targetRadius = reader.readUint8() / foodSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
-        Position(ByteUtils.byteToPosition(reader.readUint16()),
-            ByteUtils.byteToPosition(reader.readUint16())),
-        Size(reader.readUint8() / foodSizeFactor),
-        Growing(reader.readUint8() / foodSizeFactor,
+        Position(x, y),
+        Size(radius),
+        Growing(targetRadius,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
+        Renderable('food', scale: 1 / foodSpriteRadius),
+        Orientation(0.0),
+        QuadTreeCandidate(),
       ]);
 
       idManager.add(entity);
@@ -307,6 +318,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Velocity(0.0, 0.0, 0.0),
         Booster(boosterMaxStartPower),
         Player(nickname),
+        QuadTreeCandidate(),
       ];
       if (playerId == id) {
         playerComponents.add(Controller());

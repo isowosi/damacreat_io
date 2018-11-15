@@ -113,8 +113,8 @@ class DigestiveSystem extends _$DigestiveSystem {
       final angle = random.nextDouble() * 2 * pi;
       world.createAndAddEntity([
         Particle(),
-        Position(foodPosition.x + foodSize.radius * cos(angle) * 0.9,
-            foodPosition.y + foodSize.radius * sin(angle) * 0.9),
+        Position(foodPosition.x + foodSize.radius * cos(angle),
+            foodPosition.y + foodSize.radius * sin(angle)),
         Color.fromHsl(hsl[0], hsl[1] + 0.1, hsl[2] + 0.1, 1.0),
         Lifetime(0.1)
       ]);
@@ -425,7 +425,8 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
         Velocity(speed * 0.9 + random.nextDouble() * 0.2,
             velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0),
         Orientation(velocityAngle),
-        Renderable('propulsion', scale: size.radius / 700),
+        Renderable('propulsion', scale: 1 / 80),
+        Size(size.radius / 10),
       ]);
     }
   }
@@ -450,7 +451,7 @@ class ThrusterParticleColorModificationSystem
 
     final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
     final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = hsl[0] - 0.2 * (1.0 - lifetimePercentage);
+    hsl[0] = hsl[0] - 0.1 * (1.0 - lifetimePercentage);
     hsl[1] = hsl[1] * lifetimePercentage;
     hsl[2] = hsl[2] * lifetimePercentage;
     renderable.scale +=
@@ -522,5 +523,24 @@ class ThrusterCellWallWeakeningSystem
       ..strengthFactor[leftThrusterIndex + 1] = 0.3
       ..strengthFactor[rightThrusterIndex] = 0.3
       ..strengthFactor[rightThrusterIndex - 1] = 0.3;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Food,
+    Color,
+    OnScreen,
+  ],
+)
+class FoodColoringSystem extends _$FoodColoringSystem {
+  @override
+  void processEntity(Entity entity) {
+    final food = foodMapper[entity];
+    colorMapper[entity]
+      ..r = 0.4 + 0.4 * sin(time + food.r)
+      ..g = 0.8 + 0.2 * sin(time + food.g)
+      ..b = 0.4 + 0.4 * sin(time + food.b);
   }
 }

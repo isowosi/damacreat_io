@@ -1,14 +1,22 @@
 import 'dart:typed_data';
 import 'dart:web_gl';
 
+import 'package:damacreat/damacreat.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 part 'sprite_rendering_system.g.dart';
 
-@Generate(WebGlRenderingSystem,
-    allOf: [Position, Orientation, Color, Renderable],
-    manager: [TagManager, WebGlViewProjectionMatrixManager])
+@Generate(WebGlRenderingSystem, allOf: [
+  Position,
+  Orientation,
+  Color,
+  Size,
+  Renderable,
+], manager: [
+  TagManager,
+  WebGlViewProjectionMatrixManager
+])
 class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   SpriteSheet sheet;
 
@@ -46,29 +54,35 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
 
   @override
   void processEntity(int index, Entity entity) {
-    final p = getPosition(entity);
-    final o = orientationMapper[entity];
-    final r = renderableMapper[entity];
+    final position = positionMapper[entity];
+    final orientation = orientationMapper[entity];
+    final renderable = renderableMapper[entity];
+    final size = sizeMapper[entity];
     final color = colorMapper[entity];
-    final sprite = sheet.sprites[r.spriteName];
+    final sprite = sheet.sprites[renderable.spriteName];
     final dst = sprite.dst;
     final src = sprite.src;
     final left = src.left.toDouble() + 1.0;
     final right = src.right.toDouble() - 1.0;
-    final dstLeft = (dst.left * r.scale).toInt();
-    final dstRight = (dst.right * r.scale).toInt();
-    final dstTop = (dst.top * r.scale).toInt();
-    final dstBottom = (dst.bottom * r.scale).toInt();
+    final dstMult = renderable.scale * size.radius;
+    final dstLeft = dst.left * dstMult;
+    final dstRight = dst.right * dstMult;
+    final dstTop = dst.top * dstMult;
+    final dstBottom = dst.bottom * dstMult;
 
     final bottom = src.bottom.toDouble();
     final top = src.top.toDouble();
 
     final bottomLeftAngle = atan2(dstBottom, dstLeft);
     var valueOffset = index * 32;
-    values[valueOffset++] =
-        p.x + dstLeft * cos(o.angle + bottomLeftAngle) / cos(bottomLeftAngle);
-    values[valueOffset++] =
-        p.y + dstBottom * sin(o.angle + bottomLeftAngle) / sin(bottomLeftAngle);
+    values[valueOffset++] = position.x +
+        dstLeft *
+            cos(orientation.angle + bottomLeftAngle) /
+            cos(bottomLeftAngle);
+    values[valueOffset++] = position.y +
+        dstBottom *
+            sin(orientation.angle + bottomLeftAngle) /
+            sin(bottomLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = bottom;
     values[valueOffset++] = color.r;
@@ -77,10 +91,14 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     values[valueOffset++] = color.a;
 
     final bottomRightAngle = atan2(dstBottom, dstRight);
-    values[valueOffset++] = p.x +
-        dstRight * cos(o.angle + bottomRightAngle) / cos(bottomRightAngle);
-    values[valueOffset++] = p.y +
-        dstBottom * sin(o.angle + bottomRightAngle) / sin(bottomRightAngle);
+    values[valueOffset++] = position.x +
+        dstRight *
+            cos(orientation.angle + bottomRightAngle) /
+            cos(bottomRightAngle);
+    values[valueOffset++] = position.y +
+        dstBottom *
+            sin(orientation.angle + bottomRightAngle) /
+            sin(bottomRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = bottom;
     values[valueOffset++] = color.r;
@@ -89,10 +107,10 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     values[valueOffset++] = color.a;
 
     final topLeftAngle = atan2(dstTop, dstLeft);
-    values[valueOffset++] =
-        p.x + dstLeft * cos(o.angle + topLeftAngle) / cos(topLeftAngle);
-    values[valueOffset++] =
-        p.y + dstTop * sin(o.angle + topLeftAngle) / sin(topLeftAngle);
+    values[valueOffset++] = position.x +
+        dstLeft * cos(orientation.angle + topLeftAngle) / cos(topLeftAngle);
+    values[valueOffset++] = position.y +
+        dstTop * sin(orientation.angle + topLeftAngle) / sin(topLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = top;
     values[valueOffset++] = color.r;
@@ -101,10 +119,10 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     values[valueOffset++] = color.a;
 
     final topRightAngle = atan2(dstTop, dstRight);
-    values[valueOffset++] =
-        p.x + dstRight * cos(o.angle + topRightAngle) / cos(topRightAngle);
-    values[valueOffset++] =
-        p.y + dstTop * sin(o.angle + topRightAngle) / sin(topRightAngle);
+    values[valueOffset++] = position.x +
+        dstRight * cos(orientation.angle + topRightAngle) / cos(topRightAngle);
+    values[valueOffset++] = position.y +
+        dstTop * sin(orientation.angle + topRightAngle) / sin(topRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = top;
     values[valueOffset++] = color.r;
@@ -120,8 +138,6 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     indices[indicesOffset++] = index * 4 + 3;
     indices[indicesOffset++] = index * 4 + 1;
   }
-
-  Position getPosition(Entity entity) => positionMapper[entity];
 
   @override
   void render(int length) {

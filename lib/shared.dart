@@ -9,6 +9,7 @@ export 'src/version.dart';
 const int fontSize = 16;
 const int playerCircleFragments = 64;
 const double initialGameZoom = 0.6;
+const int foodSpriteRadius = 50;
 
 const int boosterButtonCenterX = 75;
 const int boosterButtonCenterY = 75;

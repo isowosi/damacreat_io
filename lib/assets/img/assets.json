@@ -1,5 +1,13 @@
 {"frames": {
 
+"food_0":
+{
+	"frame": {"x":144,"y":2,"w":100,"h":100},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":100},
+	"sourceSize": {"w":100,"h":100}
+},
 "propulsion_0":
 {
 	"frame": {"x":2,"y":2,"w":140,"h":136},
@@ -15,6 +23,6 @@
 	"format": "RGBA8888",
 	"size": {"w":256,"h":256},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:ecc97c93a37ca3bc366d6b8a773f0628:670affe096e622ab76a06c44433ff49b:a759b6bbc8381ac9c472b28f589ad0d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:facd70a06a9bb7b6de02a360fca60ffd:73542c1cf63e8ba073d9081b300175bd:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }
