@@ -1,7 +1,8 @@
 <div id="main">
-  <input #nickname type="text" placeholder="Nickname" [attr.maxlength]="maxLength"
-         (keyup.enter)="joinGame(nickname.value)" [value]="name" (touchstart)="setTouchscreenDevice()">
-  <button (click)="joinGame(nickname.value)" *ngIf="connected" (touchstart)="setTouchscreenDevice()">Join Game</button>
+  <input #nicknameinput type="text" placeholder="Nickname" [attr.maxlength]="maxLength"
+         (keyup.enter)="joinGame()" [value]="nickname" (touchstart)="setTouchscreenDevice()"
+         (change)="nickname = nicknameinput.value">
+  <button (click)="joinGame()" *ngIf="connected" (touchstart)="setTouchscreenDevice()">Join Game</button>
   <div class="connecting" *ngIf="connecting">Connecting to server...</div>
   <div class="connectionerror" *ngIf="connectionError">Server could not be reached.</div>
   <div class="version"><a href="#" (click)="toggleChangelog()">{{version}}</a></div>

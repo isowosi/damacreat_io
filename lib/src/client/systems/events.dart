@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
@@ -11,105 +10,6 @@ import 'package:damacreat_io/src/shared/components.dart';
 part 'events.g.dart';
 
 @Generate(
-  EntityProcessingSystem,
-  allOf: [
-    Controller,
-    Booster,
-  ],
-  manager: [
-    GameStateManager,
-    CameraManager,
-  ],
-)
-class ControllerSystem extends _$ControllerSystem {
-  WebSocketHandler _webSocketHandler;
-  CanvasElement canvas;
-  Point<num> offset;
-  bool useBooster = false;
-  int boosterFinger;
-
-  ControllerSystem(this.canvas, this._webSocketHandler);
-
-  @override
-  void initialize() {
-    super.initialize();
-    canvas.onMouseMove.listen((event) {
-      offset = event.offset;
-    });
-    canvas.onTouchMove.listen(_handleTouchEvent);
-    canvas.onTouchStart.listen((event) {
-      _handleTouchEvent(event);
-      event.preventDefault();
-    });
-    canvas.onTouchEnd.listen((event) {
-      for (final touch in event.changedTouches) {
-        if (touch.identifier == boosterFinger) {
-          useBooster = false;
-          boosterFinger = null;
-        }
-      }
-      event.preventDefault();
-    });
-    canvas.onMouseDown.listen((event) {
-      if (event.buttons & 1 == 1) {
-        useBooster = true;
-      }
-    });
-    canvas.onMouseUp.listen((event) {
-      if (event.buttons & 1 == 0) {
-        useBooster = false;
-      }
-    });
-  }
-
-  void _handleTouchEvent(TouchEvent event) {
-    final boosterOffset = Point<double>(boosterButtonCenterX.toDouble(),
-        cameraManager.clientHeight - boosterButtonCenterY.toDouble());
-    for (final touch in event.targetTouches) {
-      final touchOffset = touch.page;
-      if (boosterOffset.distanceTo(touchOffset) <= boosterButtonRadius) {
-        useBooster = true;
-        boosterFinger = touch.identifier;
-      } else {
-        offset = touchOffset;
-        if (boosterFinger == touch.identifier) {
-          useBooster = false;
-          boosterFinger = null;
-        }
-      }
-    }
-  }
-
-  @override
-  void processEntity(Entity entity) {
-    boosterMapper[entity].inUse = useBooster;
-    if (offset != null) {
-      final center = Point<num>(canvas.width / 2, canvas.height / 2);
-      final maxDistance = min(canvas.width / 3, canvas.height / 3);
-      final distance = center.distanceTo(offset);
-      final velocity =
-          ByteUtils.speedToByte(min(maxDistance, distance) / maxDistance);
-      final angle = ByteUtils.angleToByte(
-          tau + atan2(center.y - offset.y, offset.x - center.x));
-
-      final type = useBooster
-          ? MessageToServer.updateVelocityAndUseBooster
-          : MessageToServer.updateVelocity;
-      _webSocketHandler.sendData(Uint8ListWriter.clientToServer(type)
-        ..writeUint16(velocity)
-        ..writeUint16(angle));
-    } else if (useBooster) {
-      _webSocketHandler
-          .sendData(Uint8ListWriter.clientToServer(MessageToServer.useBooster));
-    }
-    offset = null;
-  }
-
-  @override
-  bool checkProcessing() => gameStateManager.state == GameState.playing;
-}
-
-@Generate(
   VoidEntitySystem,
   mapper: [
     Position,
@@ -119,6 +19,7 @@ class ControllerSystem extends _$ControllerSystem {
     DigestedBy,
     Velocity,
     Food,
+    ChangedPosition,
   ],
   manager: [
     TagManager,
@@ -235,9 +136,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = dist / world.delta
             ..rotational = 0.0;
         }
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -271,9 +174,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = dist / world.delta
             ..rotational = 0.0;
         }
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -301,9 +206,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..angle = atan2(y - oldY, x - oldX)
           ..value = dist / world.delta
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -333,9 +240,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..angle = atan2(y - oldY, x - oldX)
           ..value = dist / world.delta
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        entity
-          ..addComponent(ChangedPosition(x, y))
-          ..changedInWorld();
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -343,14 +252,19 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initFood(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final radius = reader.readUint8() / foodSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
-        Position(ByteUtils.byteToPosition(reader.readUint16()),
-            ByteUtils.byteToPosition(reader.readUint16())),
-        Size(reader.readUint8() / foodSizeFactor),
+        Position(x, y),
+        Size(radius),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
+        Renderable('food', scale: 1 / foodSpriteRadius),
+        Orientation(0.0),
+        QuadTreeCandidate(),
       ]);
       idManager.add(entity);
     }
@@ -359,16 +273,22 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initGrowingFood(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final radius = reader.readUint8() / foodSizeFactor;
+      final targetRadius = reader.readUint8() / foodSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
-        Position(ByteUtils.byteToPosition(reader.readUint16()),
-            ByteUtils.byteToPosition(reader.readUint16())),
-        Size(reader.readUint8() / foodSizeFactor),
-        Growing(reader.readUint8() / foodSizeFactor,
+        Position(x, y),
+        Size(radius),
+        Growing(targetRadius,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1.0),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
+        Renderable('food', scale: 1 / foodSpriteRadius),
+        Orientation(0.0),
+        QuadTreeCandidate(),
       ]);
 
       idManager.add(entity);
@@ -398,6 +318,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Velocity(0.0, 0.0, 0.0),
         Booster(boosterMaxStartPower),
         Player(nickname),
+        QuadTreeCandidate(),
       ];
       if (playerId == id) {
         playerComponents.add(Controller());

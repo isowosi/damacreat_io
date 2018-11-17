@@ -5,11 +5,14 @@ import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
@@ -25,10 +28,15 @@ class Game extends GameBase {
   final WebSocketHandler webSocketHandler;
   final SettingsManager settingsManager;
   final GameStateManager gameStateManager;
+  final ControllerManager controllerManager;
 
-  Game(this.webSocketHandler, this.settingsManager, this.gameStateManager)
-      : super.noAssets('damacreat_io', '#game',
-            webgl: true, depthTest: false, useMaxDelta: false) {
+  Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
+      this.controllerManager)
+      : super('damacreat_io', '#game',
+            webgl: true,
+            depthTest: false,
+            useMaxDelta: false,
+            bodyDefsName: null) {
     container = querySelector('#gamecontainer');
     hudCanvas = querySelector('#hud');
     hudCtx = hudCanvas.context2D;
@@ -43,6 +51,7 @@ class Game extends GameBase {
       ..addManager(tagManager)
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
+      ..addManager(controllerManager)
       ..addManager(WebGlViewProjectionMatrixManager(1000))
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
@@ -61,10 +70,12 @@ class Game extends GameBase {
         GameBase.rendering: [
           // input
           WebSocketListeningSystem(webSocketHandler),
-          ControllerSystem(hudCanvas, webSocketHandler),
+          MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
+          GamepadControllerSystem(webSocketHandler),
           // logic
           FoodGrowingSystem(),
           ConstantMovementSystem(),
+          MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
           DigestiveSystem(),
           CameraPositionSystem(),
@@ -75,15 +86,17 @@ class Game extends GameBase {
           // logic that changes visuals
           WobbleSystem(),
           CellWallSystem(),
+          ThrusterCellWallWeakeningSystem(),
           EntityInteractionSystem(),
           ThrusterParticleEmissionSystem(),
           ThrusterParticleColorModificationSystem(),
+          FoodColoringSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
-          FoodRenderingSystem(gl),
-          PlayerRenderingSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
+          SpriteRenderingSystem(gl, spriteSheet),
           ParticleRenderingSystem(gl),
+          PlayerRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
           RankingRenderingSystem(hudCtx),

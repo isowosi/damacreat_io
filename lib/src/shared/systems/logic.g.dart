@@ -127,6 +127,7 @@ abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
   Mapper<Color> colorMapper;
   Mapper<Wobble> wobbleMapper;
   Mapper<OnScreen> onScreenMapper;
+  Mapper<Booster> boosterMapper;
   _$ThrusterParticleEmissionSystem()
       : super(Aspect.empty()
           ..allOf([
@@ -138,7 +139,8 @@ abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
             Size,
             Color,
             Wobble,
-            OnScreen
+            OnScreen,
+            Booster
           ]));
   @override
   void initialize() {
@@ -152,6 +154,7 @@ abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
     colorMapper = Mapper<Color>(world);
     wobbleMapper = Mapper<Wobble>(world);
     onScreenMapper = Mapper<OnScreen>(world);
+    boosterMapper = Mapper<Booster>(world);
   }
 }
 
@@ -160,14 +163,17 @@ abstract class _$ThrusterParticleColorModificationSystem
   Mapper<ThrusterParticle> thrusterParticleMapper;
   Mapper<Color> colorMapper;
   Mapper<Lifetime> lifetimeMapper;
+  Mapper<Renderable> renderableMapper;
   _$ThrusterParticleColorModificationSystem()
-      : super(Aspect.empty()..allOf([ThrusterParticle, Color, Lifetime]));
+      : super(Aspect.empty()
+          ..allOf([ThrusterParticle, Color, Lifetime, Renderable]));
   @override
   void initialize() {
     super.initialize();
     thrusterParticleMapper = Mapper<ThrusterParticle>(world);
     colorMapper = Mapper<Color>(world);
     lifetimeMapper = Mapper<Lifetime>(world);
+    renderableMapper = Mapper<Renderable>(world);
   }
 }
 
@@ -198,5 +204,53 @@ abstract class _$CameraPositionSystem extends EntityProcessingSystem {
     controllerMapper = Mapper<Controller>(world);
     positionMapper = Mapper<Position>(world);
     tagManager = world.getManager<TagManager>();
+  }
+}
+
+abstract class _$ThrusterCellWallWeakeningSystem
+    extends EntityProcessingSystem {
+  Mapper<CellWall> cellWallMapper;
+  Mapper<Thruster> thrusterMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$ThrusterCellWallWeakeningSystem()
+      : super(Aspect.empty()..allOf([CellWall, Thruster, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    cellWallMapper = Mapper<CellWall>(world);
+    thrusterMapper = Mapper<Thruster>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+  }
+}
+
+abstract class _$FoodColoringSystem extends EntityProcessingSystem {
+  Mapper<Food> foodMapper;
+  Mapper<Color> colorMapper;
+  Mapper<OnScreen> onScreenMapper;
+  _$FoodColoringSystem()
+      : super(Aspect.empty()..allOf([Food, Color, OnScreen]));
+  @override
+  void initialize() {
+    super.initialize();
+    foodMapper = Mapper<Food>(world);
+    colorMapper = Mapper<Color>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
+  }
+}
+
+abstract class _$MovementSystemWithoutQuadTree extends EntityProcessingSystem {
+  Mapper<Position> positionMapper;
+  Mapper<Velocity> velocityMapper;
+  Mapper<Size> sizeMapper;
+  _$MovementSystemWithoutQuadTree()
+      : super(Aspect.empty()
+          ..allOf([Position, Velocity, Size])
+          ..exclude([QuadTreeCandidate]));
+  @override
+  void initialize() {
+    super.initialize();
+    positionMapper = Mapper<Position>(world);
+    velocityMapper = Mapper<Velocity>(world);
+    sizeMapper = Mapper<Size>(world);
   }
 }

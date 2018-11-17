@@ -6,22 +6,6 @@ part of 'events.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$ControllerSystem extends EntityProcessingSystem {
-  Mapper<Controller> controllerMapper;
-  Mapper<Booster> boosterMapper;
-  GameStateManager gameStateManager;
-  CameraManager cameraManager;
-  _$ControllerSystem() : super(Aspect.empty()..allOf([Controller, Booster]));
-  @override
-  void initialize() {
-    super.initialize();
-    controllerMapper = Mapper<Controller>(world);
-    boosterMapper = Mapper<Booster>(world);
-    gameStateManager = world.getManager<GameStateManager>();
-    cameraManager = world.getManager<CameraManager>();
-  }
-}
-
 abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Position> positionMapper;
   Mapper<Size> sizeMapper;
@@ -30,6 +14,7 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<DigestedBy> digestedByMapper;
   Mapper<Velocity> velocityMapper;
   Mapper<Food> foodMapper;
+  Mapper<ChangedPosition> changedPositionMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
@@ -45,6 +30,7 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     digestedByMapper = Mapper<DigestedBy>(world);
     velocityMapper = Mapper<Velocity>(world);
     foodMapper = Mapper<Food>(world);
+    changedPositionMapper = Mapper<ChangedPosition>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();

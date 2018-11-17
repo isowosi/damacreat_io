@@ -14,12 +14,12 @@ class WebSocketHandler {
     _open = true;
     _webSocket.onMessage.listen((messageEvent) {
       final reader = FileReader();
+      final combiner = Uint8ListCombiner();
       reader.onLoad.listen((progressEvent) {
         final Uint8List data = reader.result;
-        final uint8ListReader = Uint8ListReader(data.sublist(1));
-        final type = MessageToClient.values[data[0]];
+        final messages = combiner.parse(data);
         if (!_controller.isClosed) {
-          _controller.add(Message(type, uint8ListReader));
+          messages.forEach(_controller.add);
         }
       });
       final blob = messageEvent.data;
@@ -38,10 +38,4 @@ class WebSocketHandler {
   }
 
   Stream<Message> get on => _controller.stream;
-}
-
-class Message {
-  final MessageToClient type;
-  final Uint8ListReader reader;
-  Message(this.type, this.reader);
 }
