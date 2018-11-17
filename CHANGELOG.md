@@ -1,4 +1,14 @@
-# 0.7.0 (2018-11-05)
+# 0.8.0 (2018-11-17)
+
+## Gameplay
+* less and randomly distributed dark energy when a player disconnects
+
+## Misc
+* added initial gamepad support; just press start on your gamepad and you are in
+* improved visuals of normal movement
+* improved visuals of boosted movement
+
+# 0.7.0 (2018-11-07)
 
 ## Gameplay
 * using the boost reduces the size of the damacreat and produces dark energy
