@@ -1,4 +1,4 @@
-# 0.8.0 (2018-11-11)
+# 0.8.0 (2018-11-17)
 
 ## Gameplay
 * less and randomly distributed dark energy when a player disconnects
