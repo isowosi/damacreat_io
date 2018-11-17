@@ -397,16 +397,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
             sin(oldThrusterAngle +
                 direction / (playerCircleFragments ~/ 2) * pi) *
             w2;
-    final thrusterSpeed = 1.1 * velocity.rotational * size.radius;
-    final vx = velocity.value * cos(velocity.angle) -
-        50.0 * cos(orientation.angle) +
-        thrusterSpeed * cos(thrusterAngle + pi / 2);
-    final vy = velocity.value * sin(velocity.angle) -
-        50.0 * sin(orientation.angle) +
-        thrusterSpeed * sin(thrusterAngle + pi / 2);
 
-    final velocityAngle = atan2(vy, vx);
-    final speed = vx / cos(velocityAngle);
     final hsl = rgbToHsl(color.r, color.g, color.b);
     hsl[1] += 0.1;
     hsl[2] += 0.1;
@@ -425,9 +416,11 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
         ThrusterParticle(),
         Color(rgb[0], rgb[1], rgb[2], 1.0),
         Lifetime(boosterFactor * (0.5 + 1.0 * random.nextDouble())),
-        Velocity(speed * 0.1 + random.nextDouble() * 0.2,
-            velocityAngle - pi / 64 + random.nextDouble() * pi / 32, 0.0),
-        Orientation(velocityAngle),
+        Velocity(
+            playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
+            (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32,
+            0.0),
+        Orientation(velocity.angle),
         Renderable('propulsion', scale: 1 / 80),
         Size(boosterFactor * size.radius / 10),
       ]);
