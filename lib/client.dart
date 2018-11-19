@@ -74,6 +74,7 @@ class Game extends GameBase {
           GamepadControllerSystem(webSocketHandler),
           // logic
           FoodGrowingSystem(),
+          BoosterMovementSystem(),
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
