@@ -335,6 +335,7 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
     var ranking = 0;
     ctx
       ..save()
+      ..font = '${fontSize}px Roboto'
       ..strokeStyle = 'white';
 
     const leaderboardWidth = 250;
@@ -346,21 +347,20 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
       ..beginPath()
       ..lineWidth = 1
       ..fillText(leaderboardLabel, leaderboardStartX, y)
-      ..moveTo(leaderboardStartX, y + 19)
-      ..lineTo(leaderboardStartX + leaderboardLabelWidth, y + 19)
+      ..moveTo(leaderboardStartX, y + fontSize + 1)
+      ..lineTo(leaderboardStartX + leaderboardLabelWidth, y + fontSize + 1)
       ..closePath()
       ..stroke()
       ..beginPath()
       ..lineWidth = 2
-      ..moveTo(cameraManager.clientWidth - leaderboardWidth, 28)
-      ..lineTo(cameraManager.clientWidth, 28)
+      ..moveTo(cameraManager.clientWidth - leaderboardWidth, y + fontSize + 5)
+      ..lineTo(cameraManager.clientWidth, y + fontSize + 5)
       ..closePath()
       ..stroke();
-    y = 7;
+    y += fontSize + 7;
     for (final score in highscore) {
       final value = score.radius ~/ 1;
       final scoreWidth = ctx.measureText('$value').width;
-      y += 20;
       ranking++;
       final rankingWidth = ctx.measureText('$ranking. ').width;
       ctx
@@ -369,6 +369,7 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
         ..fillText('${score.playerName}',
             cameraManager.clientWidth - leaderboardWidth, y)
         ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
+      y += fontSize + 2;
     }
   }
 }
