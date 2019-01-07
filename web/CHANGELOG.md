@@ -1,3 +1,9 @@
+# 0.9.0 (2019-01-12)
+
+## Gameplay
+* dark energy get digested faster
+* reduced max speed of players by 25% 
+
 # 0.8.0 (2018-11-17)
 
 ## Gameplay
