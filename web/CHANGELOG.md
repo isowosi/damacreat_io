@@ -2,7 +2,8 @@
 
 ## Gameplay
 * dark energy get digested faster
-* reduced max speed of players by 25% 
+* reduced max normal speed of players by 25% 
+* increased boosted speed of players tenfold
 
 # 0.8.0 (2018-11-17)
 
