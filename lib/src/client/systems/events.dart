@@ -67,14 +67,14 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.updatePosition:
         _updatePosition(reader);
         break;
-      case MessageToClient.updatePlayerPositionAndVelocity:
-        _updatePlayerPositionAndVelocity(reader);
+      case MessageToClient.updatePositionAndOrientation:
+        _updatePositionAndOrientation(reader);
         break;
       case MessageToClient.updatePositionAndSize:
         _updatePositionAndSize(reader);
         break;
-      case MessageToClient.updatePlayerPositionAndVelocityAndSize:
-        _updatePlayerPositionAndVelocityAndSize(reader);
+      case MessageToClient.updatePositionAndOrientationAndSize:
+        _updatePositionAndOrientationAndSize(reader);
         break;
       case MessageToClient.initPlayerId:
         _initPlayerId(reader);
@@ -84,10 +84,8 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         _deleteEntity(reader);
         break;
       case MessageToClient.addConstantVelocity:
-        _addConstantVelocity(reader);
-        break;
       case MessageToClient.vomit:
-        _vomitFood(reader);
+        _updateVelocity(reader);
         break;
       case MessageToClient.startDigestion:
         _startDigestion(reader);
@@ -118,9 +116,31 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final y = ByteUtils.byteToPosition(reader.readUint16());
       final entity = idManager.getEntity(id);
       if (entity != null) {
-        positionMapper[entity]
+        final position = positionMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        position
           ..x = x
           ..y = y;
+
+        if (constantVelocityMapper.has(entity)) {
+          // moving food that was caught by a player
+          entity
+            ..removeComponent<Velocity>()
+            ..removeComponent<ConstantVelocity>();
+        } else if (velocityMapper.has(entity)) {
+          // the player
+          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          velocityMapper[entity]
+            ..angle = atan2(y - oldY, x - oldX)
+            ..value = dist / world.delta
+            ..rotational = 0.0;
+        }
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -134,59 +154,97 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final entity = idManager.getEntity(id);
       if (entity != null) {
         sizeMapper[entity].radius = radius;
-        positionMapper[entity]
+        final position = positionMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        position
           ..x = x
           ..y = y;
+
+        if (constantVelocityMapper.has(entity)) {
+          // moving food that was caught by a player
+          entity
+            ..removeComponent<Velocity>()
+            ..removeComponent<ConstantVelocity>();
+        } else if (velocityMapper.has(entity)) {
+          // the player
+          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          velocityMapper[entity]
+            ..angle = atan2(y - oldY, x - oldX)
+            ..value = dist / world.delta
+            ..rotational = 0.0;
+        }
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
 
-  void _updatePlayerPositionAndVelocity(Uint8ListReader reader) {
+  void _updatePositionAndOrientation(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
-      final velocityValue = ByteUtils.byteToPlayerSpeed(reader.readUint16());
-      final velocityAngle = ByteUtils.byteToAngle(reader.readUint16());
+      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       final entity = idManager.getEntity(id);
       if (entity != null) {
         final position = positionMapper[entity];
         final orientation = orientationMapper[entity];
-        final velocity = velocityMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        final oldOrientation = orientation.angle;
         position
           ..x = x
           ..y = y;
-        velocity
-          ..value = velocityValue
-          ..angle = velocityAngle
-          ..rotational = (velocityAngle - orientation.angle) / world.delta;
-        orientation.angle = velocityAngle;
+        orientation.angle = orientationAngle;
+
+        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        velocityMapper[entity]
+          ..angle = atan2(y - oldY, x - oldX)
+          ..value = dist / world.delta
+          ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
 
-  void _updatePlayerPositionAndVelocityAndSize(Uint8ListReader reader) {
+  void _updatePositionAndOrientationAndSize(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
-      final velocityValue = ByteUtils.byteToPlayerSpeed(reader.readUint16());
-      final velocityAngle = ByteUtils.byteToAngle(reader.readUint16());
+      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
       final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
       final entity = idManager.getEntity(id);
       if (entity != null) {
         sizeMapper[entity].radius = radius;
         final position = positionMapper[entity];
         final orientation = orientationMapper[entity];
-        final velocity = velocityMapper[entity];
+        final oldX = position.x;
+        final oldY = position.y;
+        final oldOrientation = orientation.angle;
         position
           ..x = x
           ..y = y;
-        velocity
-          ..value = velocityValue
-          ..angle = velocityAngle
-          ..rotational = (velocityAngle - orientation.angle) / world.delta;
-        orientation.angle = velocityAngle;
+        orientation.angle = orientationAngle;
+
+        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        velocityMapper[entity]
+          ..angle = atan2(y - oldY, x - oldX)
+          ..value = dist / world.delta
+          ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        if (!changedPositionMapper.has(entity)) {
+          entity
+            ..addComponent(ChangedPosition(x, y))
+            ..changedInWorld();
+        }
       }
     }
   }
@@ -274,43 +332,26 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     playerId = reader.readUint16();
   }
 
-  void _addConstantVelocity(Uint8ListReader reader) {
+  void _updateVelocity(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final speedByte = reader.readUint16();
       final angleByte = reader.readUint16();
       final food = idManager.getEntity(id);
       if (food != null) {
-        final value = ByteUtils.byteToFoodSpeed(speedByte);
+        final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
-        food
-          ..addComponent(Velocity(value, angle, 0.0))
-          ..addComponent(ConstantVelocity())
-          ..changedInWorld();
-      }
-    }
-  }
-
-  void _vomitFood(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final speedByte = reader.readUint16();
-      final angleByte = reader.readUint16();
-      final food = idManager.getEntity(id);
-      if (food != null) {
-        final value = ByteUtils.byteToFoodSpeed(speedByte);
-        final angle = ByteUtils.byteToAngle(angleByte);
-        positionMapper[food]
-          ..x = x
-          ..y = y;
-        final digester = digestedByMapper[food].digester;
-        digestionManager.vomit(digester, food, RuntimeEnvironment.client);
-        food
-          ..addComponent(Velocity(value, angle, 0.0))
-          ..addComponent(ConstantVelocity())
-          ..changedInWorld();
+        if (digestedByMapper.has(food)) {
+          final digester = digestedByMapper[food].digester;
+          digestionManager.vomit(digester, food, RuntimeEnvironment.client);
+        }
+        // no constant velocity for players
+        if (foodMapper.has(food)) {
+          food
+            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
+            ..addComponent(ConstantVelocity())
+            ..changedInWorld();
+        }
       }
     }
   }

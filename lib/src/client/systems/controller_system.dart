@@ -35,7 +35,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
   void processEntity(Entity entity) {
     boosterMapper[entity].inUse = useBooster;
     if (velocityStrength != null && velocityAngle != null) {
-      final velocity = ByteUtils.playerSpeedToByte(velocityStrength);
+      final velocity = ByteUtils.speedToByte(velocityStrength);
       final angle = ByteUtils.angleToByte(velocityAngle);
 
       final type = useBooster
@@ -114,8 +114,7 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
     final center = Point<num>(canvas.width / 2, canvas.height / 2);
     final maxDistance = min(canvas.width / 3, canvas.height / 3);
     final distance = center.distanceTo(offset);
-    velocityStrength =
-        playerSpeedMultiplier * min(maxDistance, distance) / maxDistance;
+    velocityStrength = min(maxDistance, distance) / maxDistance;
     velocityAngle = tau + atan2(center.y - offset.y, offset.x - center.x);
   }
 
@@ -143,7 +142,7 @@ class GamepadControllerSystem extends ControllerSystem {
       } else {
         useBooster = false;
       }
-      velocityStrength = playerSpeedMultiplier * sqrt(x * x + y * y);
+      velocityStrength = sqrt(x * x + y * y);
       if (velocityAngle == null || y != 0.0 || x != 0.0) {
         velocityAngle = atan2(y, x);
       }
