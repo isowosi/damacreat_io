@@ -33,6 +33,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
 
   @override
   void processEntity(Entity entity) {
+    useBooster = useBooster && boosterMapper[entity].power > 0.0;
     boosterMapper[entity].inUse = useBooster;
     if (velocityStrength != null && velocityAngle != null) {
       final velocity = ByteUtils.speedToByte(velocityStrength);
