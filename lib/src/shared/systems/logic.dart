@@ -1,7 +1,8 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
-import 'package:gamedev_helpers/gamedev_helpers_shared.dart' hide Velocity;
+import 'package:gamedev_helpers/gamedev_helpers_shared.dart'
+    hide Velocity, Acceleration;
 
 part 'logic.g.dart';
 
@@ -87,6 +88,7 @@ class RemoveTemporaryComponentsSystem
   ],
   allOf: [
     Position,
+    OnScreen,
   ],
   mapper: [
     Color,
@@ -108,15 +110,20 @@ class DigestiveSystem extends _$DigestiveSystem {
     final foodPosition = positionMapper[food];
     final foodSize = sizeMapper[food];
     final digesterColor = colorMapper[digester];
-    final hsl = rgbToHsl(digesterColor.r, digesterColor.g, digesterColor.b);
+    final foodColor = colorMapper[food];
     for (var i = 0; i < foodSize.radius; i++) {
       final angle = random.nextDouble() * 2 * pi;
       world.createAndAddEntity([
         Particle(),
         Position(foodPosition.x + foodSize.radius * cos(angle),
             foodPosition.y + foodSize.radius * sin(angle)),
-        Color.fromHsl(hsl[0], hsl[1] + 0.1, hsl[2] + 0.1, 1.0),
-        Lifetime(0.1)
+        Velocity(foodSize.radius, angle, 0.0),
+        Acceleration(0.0, 0.0),
+        AttractedBy(digester),
+        Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
+        ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
+            digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
+        Lifetime(0.5)
       ]);
     }
   }
@@ -546,7 +553,6 @@ class FoodColoringSystem extends _$FoodColoringSystem {
   allOf: [
     Position,
     Velocity,
-    Size,
   ],
   exclude: [
     QuadTreeCandidate,
@@ -562,5 +568,77 @@ class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
     position
       ..x = position.x + velocityTimesDelta * cos(velocity.angle)
       ..y = position.y + velocityTimesDelta * sin(velocity.angle);
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Color,
+    ColorChanger,
+    Lifetime,
+  ],
+)
+class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
+  @override
+  void processEntity(Entity entity) {
+    final color = colorMapper[entity];
+    final colorChanger = colorChangerMapper[entity];
+    final lifeTime = lifetimeMapper[entity];
+    final percentLeft = sqrt(lifeTime.timeLeft / lifeTime.timeMax);
+    final percentGone = 1 - percentLeft;
+    color
+      ..r = colorChanger.rStart * percentLeft + colorChanger.rEnd * percentGone
+      ..g = colorChanger.gStart * percentLeft + colorChanger.gEnd * percentGone
+      ..b = colorChanger.bStart * percentLeft + colorChanger.bEnd * percentGone
+      ..a = colorChanger.aStart * percentLeft + colorChanger.aEnd * percentGone;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Acceleration,
+    AttractedBy,
+    Position,
+  ],
+)
+class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
+  @override
+  void processEntity(Entity entity) {
+    final attractor = attractedByMapper[entity].entity;
+    final attractorPosition = positionMapper[attractor];
+    final position = positionMapper[entity];
+    final xDiff = attractorPosition.x - position.x;
+    final yDiff = attractorPosition.y - position.y;
+    accelerationMapper[entity]
+      ..angle = atan2(yDiff, xDiff)
+      ..value = 250.0;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Acceleration,
+    Velocity,
+  ],
+)
+class AccelerationSystem extends _$AccelerationSystem {
+  @override
+  void processEntity(Entity entity) {
+    final acceleration = accelerationMapper[entity];
+    final velocity = velocityMapper[entity];
+
+    final velX = velocity.value * cos(velocity.angle);
+    final velY = velocity.value * sin(velocity.angle);
+    final velXAcc = acceleration.value * cos(acceleration.angle) * world.delta;
+    final velYAcc = acceleration.value * sin(acceleration.angle) * world.delta;
+    final velXTotal = velX + velXAcc;
+    final velYTotal = velY + velYAcc;
+
+    velocity
+      ..angle = atan2(velYTotal, velXTotal)
+      ..value = sqrt(velXTotal * velXTotal + velYTotal * velYTotal);
   }
 }

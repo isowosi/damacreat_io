@@ -1,6 +1,7 @@
 library shared;
 
-export 'package:gamedev_helpers/gamedev_helpers_shared.dart' hide Velocity;
+export 'package:gamedev_helpers/gamedev_helpers_shared.dart'
+    hide Velocity, Acceleration;
 
 export 'src/shared/components.dart';
 export 'src/shared/systems/logic.dart';

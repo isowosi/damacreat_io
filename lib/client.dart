@@ -77,13 +77,15 @@ class Game extends GameBase {
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
-          DigestiveSystem(),
           CameraPositionSystem(),
           CameraZoomCalculatingSystem(),
           QuadTreeUpdateChangedPositionSystem(),
+          AttractionAccelerationSystem(),
+          AccelerationSystem(),
           // pre-rendering
           OnScreenTagSystem(),
-          // logic that changes visuals
+          // logic that changes visuals/spawns particles
+          DigestiveSystem(),
           WobbleSystem(),
           CellWallSystem(),
           ThrusterCellWallWeakeningSystem(),
@@ -91,6 +93,7 @@ class Game extends GameBase {
           ThrusterParticleEmissionSystem(),
           ThrusterParticleColorModificationSystem(),
           FoodColoringSystem(),
+          ColorChangeOverLifetimeSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
