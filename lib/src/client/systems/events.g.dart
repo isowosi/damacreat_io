@@ -15,6 +15,7 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Velocity> velocityMapper;
   Mapper<Food> foodMapper;
   Mapper<ChangedPosition> changedPositionMapper;
+  Mapper<Booster> boosterMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
@@ -31,6 +32,7 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     velocityMapper = Mapper<Velocity>(world);
     foodMapper = Mapper<Food>(world);
     changedPositionMapper = Mapper<ChangedPosition>(world);
+    boosterMapper = Mapper<Booster>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();

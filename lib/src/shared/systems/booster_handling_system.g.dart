@@ -12,6 +12,10 @@ abstract class _$BoosterHandlingSystem extends BaseBoosterHandlingSystem {
   Mapper<Orientation> orientationMapper;
   Mapper<Velocity> velocityMapper;
   Mapper<Size> sizeMapper;
+  Mapper<Controller> controllerMapper;
+  _$BoosterHandlingSystem()
+      : super(Aspect.empty()
+          ..allOf([Player, Position, Orientation, Velocity, Size, Controller]));
   @override
   void initialize() {
     super.initialize();
@@ -20,5 +24,6 @@ abstract class _$BoosterHandlingSystem extends BaseBoosterHandlingSystem {
     orientationMapper = Mapper<Orientation>(world);
     velocityMapper = Mapper<Velocity>(world);
     sizeMapper = Mapper<Size>(world);
+    controllerMapper = Mapper<Controller>(world);
   }
 }

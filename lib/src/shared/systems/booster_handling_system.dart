@@ -13,6 +13,7 @@ part 'booster_handling_system.g.dart';
     Orientation,
     Velocity,
     Size,
+    Controller,
   ],
 )
 class BoosterHandlingSystem extends _$BoosterHandlingSystem {

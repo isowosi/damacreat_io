@@ -20,6 +20,7 @@ part 'events.g.dart';
     Velocity,
     Food,
     ChangedPosition,
+    Booster,
   ],
   manager: [
     TagManager,
@@ -131,10 +132,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          final velocity = dist / world.delta;
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
-            ..value = dist / world.delta
+            ..value = velocity
             ..rotational = 0.0;
+          _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
           entity
@@ -169,10 +172,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          final velocity = dist / world.delta;
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
-            ..value = dist / world.delta
+            ..value = velocity
             ..rotational = 0.0;
+          _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
           entity
@@ -202,10 +207,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         orientation.angle = orientationAngle;
 
         final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        final velocity = dist / world.delta;
         velocityMapper[entity]
           ..angle = atan2(y - oldY, x - oldX)
-          ..value = dist / world.delta
+          ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        _updateBooster(entity, velocity);
         if (!changedPositionMapper.has(entity)) {
           entity
             ..addComponent(ChangedPosition(x, y))
@@ -236,10 +243,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         orientation.angle = orientationAngle;
 
         final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        final velocity = dist / world.delta;
         velocityMapper[entity]
           ..angle = atan2(y - oldY, x - oldX)
-          ..value = dist / world.delta
+          ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        _updateBooster(entity, velocity);
         if (!changedPositionMapper.has(entity)) {
           entity
             ..addComponent(ChangedPosition(x, y))
@@ -337,22 +346,35 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final id = reader.readUint16();
       final speedByte = reader.readUint16();
       final angleByte = reader.readUint16();
-      final food = idManager.getEntity(id);
-      if (food != null) {
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
         final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
-        if (digestedByMapper.has(food)) {
-          final digester = digestedByMapper[food].digester;
-          digestionManager.vomit(digester, food, RuntimeEnvironment.client);
+        if (digestedByMapper.has(entity)) {
+          final digester = digestedByMapper[entity].digester;
+          digestionManager.vomit(digester, entity, RuntimeEnvironment.client);
         }
         // no constant velocity for players
-        if (foodMapper.has(food)) {
-          food
+        if (foodMapper.has(entity)) {
+          entity
             ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
             ..addComponent(ConstantVelocity())
             ..changedInWorld();
+        } else {
+          _updateBooster(
+              entity,
+              value *
+                  playerSpeedMultiplier *
+                  getVelocityFactor(sizeMapper[entity]));
         }
       }
+    }
+  }
+
+  void _updateBooster(Entity entity, double value) {
+    if (boosterMapper.has(entity)) {
+      boosterMapper[entity].inUse = value >
+          1.25 * playerSpeedMultiplier * getVelocityFactor(sizeMapper[entity]);
     }
   }
 
