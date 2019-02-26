@@ -19,7 +19,7 @@ class GameService {
   StackTrace stackTrace;
   String nickname = '';
   int hue = 0;
-  final Set<int> gamepadIndices = Set<int>();
+  final Set<int> gamepadIndices = <int>{};
   final Random random = Random();
 
   final SettingsManager settings;

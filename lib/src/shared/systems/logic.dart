@@ -304,6 +304,9 @@ class WobbleSystem extends _$WobbleSystem {
   allOf: [
     CellWall,
   ],
+  exclude: [
+    DigestedBy,
+  ],
 )
 class CellWallSystem extends _$CellWallSystem {
   @override
@@ -313,7 +316,27 @@ class CellWallSystem extends _$CellWallSystem {
     final strengthFactor = cw.strengthFactor;
     for (var i = 0; i < strengthFactor.length; i++) {
       strengthFactor[i] =
-          1.0 + (strengthFactor[i] - 1.0) * (1 - 0.999 * world.delta);
+          1.0 + (strengthFactor[i] - 1.0) * (1.0 - 0.999 * world.delta);
+    }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    CellWall,
+    DigestedBy,
+  ],
+)
+class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
+  @override
+  void processEntity(Entity entity) {
+    final cw = cellWallMapper[entity];
+
+    final strengthFactor = cw.strengthFactor;
+    for (var i = 0; i < strengthFactor.length; i++) {
+      strengthFactor[i] = max(
+          0.01, 1.0 + (strengthFactor[i] - 1.1) * (1.0 - 0.999 * world.delta));
     }
   }
 }

@@ -88,6 +88,7 @@ class Game extends GameBase {
           DigestiveSystem(),
           WobbleSystem(),
           CellWallSystem(),
+          CellWallDigestedBySystem(),
           ThrusterCellWallWeakeningSystem(),
           EntityInteractionSystem(),
           ThrusterParticleEmissionSystem(),

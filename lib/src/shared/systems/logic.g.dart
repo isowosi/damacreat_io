@@ -111,11 +111,27 @@ abstract class _$WobbleSystem extends EntityProcessingSystem {
 
 abstract class _$CellWallSystem extends EntityProcessingSystem {
   Mapper<CellWall> cellWallMapper;
-  _$CellWallSystem() : super(Aspect.empty()..allOf([CellWall]));
+  _$CellWallSystem()
+      : super(Aspect.empty()
+          ..allOf([CellWall])
+          ..exclude([DigestedBy]));
   @override
   void initialize() {
     super.initialize();
     cellWallMapper = Mapper<CellWall>(world);
+  }
+}
+
+abstract class _$CellWallDigestedBySystem extends EntityProcessingSystem {
+  Mapper<CellWall> cellWallMapper;
+  Mapper<DigestedBy> digestedByMapper;
+  _$CellWallDigestedBySystem()
+      : super(Aspect.empty()..allOf([CellWall, DigestedBy]));
+  @override
+  void initialize() {
+    super.initialize();
+    cellWallMapper = Mapper<CellWall>(world);
+    digestedByMapper = Mapper<DigestedBy>(world);
   }
 }
 
