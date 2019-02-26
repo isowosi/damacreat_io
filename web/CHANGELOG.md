@@ -7,6 +7,7 @@
 
 ## Misc
 * made digestion of dark energy visually more obvious
+* better default names
 
 # 0.8.0 (2018-11-17)
 
