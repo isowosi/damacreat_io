@@ -242,10 +242,10 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   ],
 )
 class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
-  double offsetX = -500000 + random.nextDouble() * 1000000.0;
-  double offsetY = -500000 + random.nextDouble() * 1000000.0;
-  Float32List rgb = Float32List.fromList([0.0, 0.0, 0.0]);
-  double parallaxFactor = 1.0;
+  double offsetX = -500000 + random.nextDouble() * 1000000;
+  double offsetY = -500000 + random.nextDouble() * 1000000;
+  Float32List rgb = Float32List.fromList([0, 0, 0]);
+  double parallaxFactor = 1;
 
   BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
@@ -278,8 +278,8 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
           gl.getUniformLocation(program, 'uDimension'),
           cameraManager.width.toDouble(),
           cameraManager.height.toDouble(),
-          0.0,
-          0.0)
+          0,
+          0)
       ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
       ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
     buffer('aPosition', background, 2);
@@ -407,12 +407,12 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
     final inverse = webGlViewProjectionMatrixManager
         .create2dViewProjectionMatrix()
           ..invert();
-    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
-    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
+    final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
     final scaling = cameraManager.clientWidth / (rightBottom.x - leftTop.x);
     ctx
       ..save()
-      ..transform(scaling, 0.0, 0.0, scaling, -leftTop.x * scaling,
+      ..transform(scaling, 0, 0, scaling, -leftTop.x * scaling,
           (cameraManager.clientHeight / scaling + leftTop.y) * scaling)
       ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Roboto'
       ..textBaseline = 'top'

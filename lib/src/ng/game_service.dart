@@ -69,7 +69,8 @@ class GameService {
     }, onError: (errorMessage, stackTrace) {
       error = true;
       this.errorMessage = errorMessage;
-      this.stackTrace = stackTrace;
+      // ignore: avoid_as
+      this.stackTrace = stackTrace as StackTrace;
     });
   }
 

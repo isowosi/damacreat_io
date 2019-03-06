@@ -136,7 +136,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
             ..value = velocity
-            ..rotational = 0.0;
+            ..rotational = 0;
           _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
@@ -176,7 +176,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
             ..value = velocity
-            ..rotational = 0.0;
+            ..rotational = 0;
           _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
@@ -268,11 +268,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Id(id),
         Position(x, y),
         Size(radius),
-        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
         Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0.0),
+        Orientation(0),
         QuadTreeCandidate(),
       ]);
       idManager.add(entity);
@@ -292,11 +292,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Size(radius),
         Growing(targetRadius,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
-        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
         Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0.0),
+        Orientation(0),
         QuadTreeCandidate(),
       ]);
 
@@ -322,9 +322,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Color.fromHsl(hue, 0.9, 0.6, 0.4),
         Orientation(orientationAngle),
         Wobble(),
-        CellWall(5.0),
+        CellWall(5),
         Thruster(),
-        Velocity(0.0, 0.0, 0.0),
+        Velocity(0, 0, 0),
         Booster(boosterMaxStartPower),
         Player(nickname),
         QuadTreeCandidate(),
@@ -357,7 +357,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         // no constant velocity for players
         if (foodMapper.has(entity)) {
           entity
-            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
+            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
             ..addComponent(ConstantVelocity())
             ..changedInWorld();
         } else {

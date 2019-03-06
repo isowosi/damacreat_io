@@ -23,7 +23,7 @@ class ColorPickerComponent implements OnInit {
   }
 
   @override
-  void ngOnInit() async {
+  Future<void> ngOnInit() async {
     final source =
         ImageElement(src: 'img/colorpickpreview.png', width: 100, height: 100);
     await source.onLoad.first;

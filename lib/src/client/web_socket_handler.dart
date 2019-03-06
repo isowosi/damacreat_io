@@ -16,13 +16,15 @@ class WebSocketHandler {
       final reader = FileReader();
       final combiner = Uint8ListCombiner();
       reader.onLoad.listen((progressEvent) {
-        final Uint8List data = reader.result;
+        // ignore: avoid_as
+        final data = reader.result as Uint8List;
         final messages = combiner.parse(data);
         if (!_controller.isClosed) {
           messages.forEach(_controller.add);
         }
       });
-      final blob = messageEvent.data;
+      // ignore: avoid_as
+      final blob = messageEvent.data as Blob;
       reader.readAsArrayBuffer(blob);
     });
     _webSocket.onClose.listen((_) {

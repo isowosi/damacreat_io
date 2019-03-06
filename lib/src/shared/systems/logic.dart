@@ -20,8 +20,8 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
     final inverse = webGlViewProjectionMatrixManager
         .create2dViewProjectionMatrix()
           ..invert();
-    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
-    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
+    final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
     quadTreeManager
         .getCollisionCandidates(leftTop.x, leftTop.y,
             width: rightBottom.x - leftTop.x, height: rightBottom.y - leftTop.y)
@@ -117,8 +117,8 @@ class DigestiveSystem extends _$DigestiveSystem {
         Particle(),
         Position(foodPosition.x + foodSize.radius * cos(angle),
             foodPosition.y + foodSize.radius * sin(angle)),
-        Velocity(foodSize.radius, angle, 0.0),
-        Acceleration(0.0, 0.0),
+        Velocity(foodSize.radius, angle, 0),
+        Acceleration(0, 0),
         AttractedBy(digester),
         Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
         ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
@@ -139,7 +139,7 @@ class ExpirationSystem extends _$ExpirationSystem {
   @override
   void processEntity(Entity entity) {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
-    if (l.timeLeft <= 0.0) {
+    if (l.timeLeft <= 0) {
       entity.deleteFromWorld();
     }
   }
@@ -176,7 +176,7 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       colliderWobble.wobbleFactor[fragmentIndex] = max(
           old,
-          1.0 +
+          1 +
               additionalDistRelation *
                   (1 - i * i / (fragmentRange * fragmentRange)));
     }
@@ -204,11 +204,11 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final indexSq = index * index;
       colliderWobble.wobbleFactor[fragmentIndex] = min(
           old,
-          1.0 -
+          1 -
               sizeRelation *
                   distRelation *
                   (1 - indexSq * indexSq / fragmentRangePow4));
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+      colliderCellWall.strengthFactor[fragmentIndex] = 1 -
           distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
     }
   }
@@ -237,18 +237,18 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       final indexSq = index * index;
       final enveloped = max(old,
-          1.0 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
+          1 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
       final pressing = min(
           old,
-          1.0 -
+          1 -
               sizeRelation *
                   distRelation *
                   (1 - indexSq * indexSq / fragmentRangePow4));
 
       colliderWobble.wobbleFactor[fragmentIndex] =
           pressingEnvelopedRatio * enveloped +
-              (1.0 - pressingEnvelopedRatio) * pressing;
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+              (1 - pressingEnvelopedRatio) * pressing;
+      colliderCellWall.strengthFactor[fragmentIndex] = 1 -
           distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
     }
   }
@@ -272,10 +272,10 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final indexPow3 = index * index * index;
       colliderWobble.wobbleFactor[fragmentIndex] = max(
           old,
-          1.0 +
+          1 +
               additionalDistRelation *
                   (1 - indexPow3.abs() / fragmentRangePow3));
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+      colliderCellWall.strengthFactor[fragmentIndex] = 1 -
           additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
     }
   }
@@ -316,7 +316,7 @@ class CellWallSystem extends _$CellWallSystem {
     final strengthFactor = cw.strengthFactor;
     for (var i = 0; i < strengthFactor.length; i++) {
       strengthFactor[i] =
-          1.0 + (strengthFactor[i] - 1.0) * (1.0 - 0.999 * world.delta);
+          1 + (strengthFactor[i] - 1) * (1 - 0.999 * world.delta);
     }
   }
 }
@@ -444,12 +444,12 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
             x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
 //        Particle(),
         ThrusterParticle(),
-        Color(rgb[0], rgb[1], rgb[2], 1.0),
-        Lifetime(boosterFactor * (0.5 + 1.0 * random.nextDouble())),
+        Color(rgb[0], rgb[1], rgb[2], 1),
+        Lifetime(boosterFactor * (0.5 + 1 * random.nextDouble())),
         Velocity(
             playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
             (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32,
-            0.0),
+            0),
         Orientation(velocity.angle),
         Renderable('propulsion', scale: 1 / 80),
         Size(boosterFactor * size.radius / 10),
@@ -477,11 +477,11 @@ class ThrusterParticleColorModificationSystem
 
     final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
     final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = hsl[0] - 0.1 * (1.0 - lifetimePercentage);
+    hsl[0] = hsl[0] - 0.1 * (1 - lifetimePercentage);
     hsl[1] = hsl[1] * lifetimePercentage;
     hsl[2] = hsl[2] * lifetimePercentage;
     renderable.scale +=
-        3.0 * world.delta * renderable.scale * lifetimePercentage;
+        3 * world.delta * renderable.scale * lifetimePercentage;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
 
     color
@@ -506,7 +506,7 @@ class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
   @override
   void processEntity(Entity entity) {
     final size = sizeMapper[entity];
-    cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300.0);
+    cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300);
   }
 }
 
@@ -636,7 +636,7 @@ class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
     final yDiff = attractorPosition.y - position.y;
     accelerationMapper[entity]
       ..angle = atan2(yDiff, xDiff)
-      ..value = 250.0;
+      ..value = 250;
   }
 }
 

@@ -62,8 +62,8 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     final sprite = sheet.sprites[renderable.spriteName];
     final dst = sprite.dst;
     final src = sprite.src;
-    final left = src.left.toDouble() + 1.0;
-    final right = src.right.toDouble() - 1.0;
+    final left = src.left.toDouble() + 1;
+    final right = src.right.toDouble() - 1;
     final dstMult = renderable.scale * size.radius;
     final dstLeft = dst.left * dstMult;
     final dstRight = dst.right * dstMult;

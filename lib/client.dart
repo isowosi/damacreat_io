@@ -2,6 +2,7 @@ library client;
 
 import 'dart:convert';
 import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
@@ -37,8 +38,10 @@ class Game extends GameBase {
             depthTest: false,
             useMaxDelta: false,
             bodyDefsName: null) {
-    container = querySelector('#gamecontainer');
-    hudCanvas = querySelector('#hud');
+    // ignore: avoid_as
+    container = querySelector('#gamecontainer') as DivElement;
+    // ignore: avoid_as
+    hudCanvas = querySelector('#hud') as CanvasElement;
     hudCtx = hudCanvas.context2D;
     _configureHud();
   }
@@ -55,7 +58,7 @@ class Game extends GameBase {
       ..addManager(WebGlViewProjectionMatrixManager(1000))
       ..addManager(DigestionManager())
       ..addManager(QuadTreeManager(
-          const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
+          const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
 
     final camera = addEntity([
@@ -137,8 +140,8 @@ class Game extends GameBase {
   }
 
   void joinGame(int color, String nickname) {
-    final utf8nickname = utf8
-        .encode(nickname.substring(0, min(maxLengthNickname, nickname.length)));
+    final utf8nickname = Uint8List.fromList(utf8.encode(
+        nickname.substring(0, min(maxLengthNickname, nickname.length))));
     webSocketHandler.sendData(Uint8ListWriter.clientToServer(
         MessageToServer.joinGame,
         additionalDynamicLength: 1 + utf8nickname.length)

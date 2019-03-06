@@ -26,8 +26,8 @@ class DebugSystem extends _$DebugSystem {
   final CanvasRenderingContext2D ctx;
   final WebSocketHandler webSocketHandler;
   int byteCount = 0;
-  double totalDelta = 0.0;
-  double lastPingTime = 0.0;
+  double totalDelta = 0;
+  double lastPingTime = 0;
   double ping;
   DebugSystem(this.ctx, this.webSocketHandler) {
     _countBytes();
@@ -70,8 +70,8 @@ class DebugSystem extends _$DebugSystem {
     final inverse = webGlViewProjectionMatrixManager
         .create2dViewProjectionMatrix()
           ..invert();
-    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
-    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
+    final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
     final visibleLeaves = leaves.where((leaf) => leaf.bounds.intersects(
         Rectangle(leftTop.x, leftTop.y, rightBottom.x - leftTop.x,
             rightBottom.y - leftTop.y)));
@@ -100,7 +100,7 @@ class DebugSystem extends _$DebugSystem {
       ..fillText('Resolution: $viewportWidth:$viewportHeight', 5, 95);
 
     final scaling = viewportWidth / (rightBottom.x - leftTop.x);
-    ctx.transform(scaling, 0.0, 0.0, -scaling, -leftTop.x * scaling,
+    ctx.transform(scaling, 0, 0, -scaling, -leftTop.x * scaling,
         (viewportHeight / scaling + leftTop.y) * scaling);
 
     for (final leaf in visibleLeaves) {

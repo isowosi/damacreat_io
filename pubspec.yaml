@@ -14,7 +14,7 @@ dependencies:
       ref: games/damacreat/0.7.0
   damacreat:
     path: ../damacreat
-  angular: ^5.1.0
+  angular: ^5.2.0
   isowosi_angular_components:
     git: git@bitbucket.org:dennis_kaselow/isowosi_angular_components
   markdown: ^2.0.2
@@ -24,7 +24,7 @@ dependencies:
       ref: b36d76770bf4771730fdcb00f925534c74be1d95
 dev_dependencies:
   build_runner: ^1.0.0
-  build_version: ^1.0.0
+  build_version: ^2.0.0
   build_web_compilers: any
   sass_builder: ^2.1.1
   dartemis_builder:
