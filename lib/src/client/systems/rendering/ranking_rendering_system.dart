@@ -71,27 +71,38 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
       ..closePath()
       ..stroke();
     y += fontSize + 7;
+    var currentPlayerShown = false;
     for (final score in highscore) {
-      final value = score.radius ~/ 1;
-      final scoreWidth = ctx.measureText('$value').width;
       ranking++;
-      final rankingWidth = ctx.measureText('$ranking. ').width;
-      ctx.fillStyle =
-          'rgb(${score.red * 255}, ${score.green * 255}, ${score.blue * 255})';
-      if (score.isCurrentPlayer) {
-        ctx.fillText(
-            '>',
-            cameraManager.clientWidth - leaderboardWidth - rankingWidth - 10,
-            y);
+      if (ranking > 10) {
+        if (currentPlayerShown) {
+          break;
+        } else if (!score.isCurrentPlayer) {
+          continue;
+        }
       }
-      ctx
-        ..fillText('$ranking. ',
-            cameraManager.clientWidth - leaderboardWidth - rankingWidth, y)
-        ..fillText('${score.playerName}',
-            cameraManager.clientWidth - leaderboardWidth, y)
-        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
+      _renderName(score, ranking, leaderboardWidth, y);
       y += fontSize + 2;
+      currentPlayerShown |= score.isCurrentPlayer;
     }
+  }
+
+  void _renderName(Score score, int ranking, int leaderboardWidth, int y) {
+    final value = score.radius ~/ 1;
+    final scoreWidth = ctx.measureText('$value').width;
+    final rankingWidth = ctx.measureText('$ranking. ').width;
+    ctx.fillStyle =
+        'rgb(${score.red * 255}, ${score.green * 255}, ${score.blue * 255})';
+    if (score.isCurrentPlayer) {
+      ctx.fillText('>',
+          cameraManager.clientWidth - leaderboardWidth - rankingWidth - 10, y);
+    }
+    ctx
+      ..fillText('$ranking. ',
+          cameraManager.clientWidth - leaderboardWidth - rankingWidth, y)
+      ..fillText('${score.playerName}',
+          cameraManager.clientWidth - leaderboardWidth, y)
+      ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
   }
 }
 
