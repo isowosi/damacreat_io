@@ -9,6 +9,9 @@
 * made digestion of dark energy visually more obvious
 * better default names
 
+## Bugfixes
+* fixed a source of several (actual and potential) bugs
+
 # 0.8.0 (2018-11-17)
 
 ## Gameplay

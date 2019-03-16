@@ -1,5 +1,6 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers_shared.dart'
     hide Velocity, Acceleration;
@@ -84,7 +85,7 @@ class RemoveTemporaryComponentsSystem
 @Generate(
   BaseDigestiveSystem,
   manager: [
-    DigestionManager,
+    AttractedByManager,
   ],
   allOf: [
     Position,
@@ -114,20 +115,20 @@ class DigestiveSystem extends _$DigestiveSystem {
     final foodRadius = foodSize.radius;
     for (var i = 0; i < foodRadius / 2; i++) {
       final angle = random.nextDouble() * tau;
-      world.createAndAddEntity([
+      final entity = world.createAndAddEntity([
         Renderable('digestion'),
         Position(foodPosition.x + foodRadius * cos(angle),
             foodPosition.y + foodRadius * sin(angle)),
         Velocity(foodRadius, angle, 0),
         Orientation(angle),
         Acceleration(0, 0),
-        AttractedBy(digester),
         Size(min(1.5, foodRadius / 10)),
         Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
         ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
             digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
         Lifetime(0.5)
       ]);
+      attractedByManager.setReference(entity, digester);
     }
   }
 }
@@ -624,11 +625,14 @@ class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
     AttractedBy,
     Position,
   ],
+  manager: [
+    AttractedByManager,
+  ],
 )
 class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
   @override
   void processEntity(Entity entity) {
-    final attractor = attractedByMapper[entity].entity;
+    final attractor = attractedByManager.refersTo(entity);
     final attractorPosition = positionMapper[attractor];
     final position = positionMapper[entity];
     final xDiff = attractorPosition.x - position.x;

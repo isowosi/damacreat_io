@@ -351,14 +351,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
         if (digestedByMapper.has(entity)) {
-          final digester = digestedByMapper[entity].digester;
-          digestionManager.vomit(digester, entity, RuntimeEnvironment.client);
+          digestionManager.removeReference(entity);
         }
         // no constant velocity for players
         if (foodMapper.has(entity)) {
           entity
             ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
-            ..addComponent(ConstantVelocity())
             ..changedInWorld();
         } else {
           _updateBooster(
@@ -385,11 +383,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final food = idManager.getEntity(id);
       final digester = idManager.getEntity(digesterId);
       if (food != null && digester != null) {
+        digestionManager.setReference(food, digester);
         food
-          ..addComponent(DigestedBy(digester))
           ..removeComponent<Growing>()
           ..changedInWorld();
-        digestionManager.startDigestion(digester, food);
       }
     }
   }

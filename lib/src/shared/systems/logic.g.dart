@@ -55,7 +55,7 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
   Mapper<Position> positionMapper;
   Mapper<OnScreen> onScreenMapper;
   Mapper<Color> colorMapper;
-  DigestionManager digestionManager;
+  AttractedByManager attractedByManager;
   _$DigestiveSystem()
       : super(Aspect.empty()
           ..allOf([Position, OnScreen])
@@ -66,7 +66,7 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
     positionMapper = Mapper<Position>(world);
     onScreenMapper = Mapper<OnScreen>(world);
     colorMapper = Mapper<Color>(world);
-    digestionManager = world.getManager<DigestionManager>();
+    attractedByManager = world.getManager<AttractedByManager>();
   }
 }
 
@@ -290,6 +290,7 @@ abstract class _$AttractionAccelerationSystem extends EntityProcessingSystem {
   Mapper<Acceleration> accelerationMapper;
   Mapper<AttractedBy> attractedByMapper;
   Mapper<Position> positionMapper;
+  AttractedByManager attractedByManager;
   _$AttractionAccelerationSystem()
       : super(Aspect.empty()..allOf([Acceleration, AttractedBy, Position]));
   @override
@@ -298,6 +299,7 @@ abstract class _$AttractionAccelerationSystem extends EntityProcessingSystem {
     accelerationMapper = Mapper<Acceleration>(world);
     attractedByMapper = Mapper<AttractedBy>(world);
     positionMapper = Mapper<Position>(world);
+    attractedByManager = world.getManager<AttractedByManager>();
   }
 }
 

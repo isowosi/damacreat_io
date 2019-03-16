@@ -14,6 +14,7 @@ import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_syst
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
@@ -57,7 +58,8 @@ class Game extends GameBase {
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
       ..addManager(WebGlViewProjectionMatrixManager(1000))
-      ..addManager(DigestionManager())
+      ..addManager(DigestionManager(RuntimeEnvironment.client))
+      ..addManager(AttractedByManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));

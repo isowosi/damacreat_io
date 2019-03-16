@@ -1,3 +1,4 @@
+import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 
@@ -41,10 +42,7 @@ class ColorChanger extends Component {
       this.gEnd, this.bEnd, this.aEnd);
 }
 
-class AttractedBy extends Component {
-  Entity entity;
-  AttractedBy(this.entity);
-}
+class AttractedBy extends EntityReferenceComponent {}
 
 class Acceleration extends Component {
   double value, angle;
