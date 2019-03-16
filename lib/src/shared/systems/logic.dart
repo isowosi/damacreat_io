@@ -111,15 +111,18 @@ class DigestiveSystem extends _$DigestiveSystem {
     final foodSize = sizeMapper[food];
     final digesterColor = colorMapper[digester];
     final foodColor = colorMapper[food];
-    for (var i = 0; i < foodSize.radius; i++) {
-      final angle = random.nextDouble() * 2 * pi;
+    final foodRadius = foodSize.radius;
+    for (var i = 0; i < foodRadius / 2; i++) {
+      final angle = random.nextDouble() * tau;
       world.createAndAddEntity([
-        Particle(),
-        Position(foodPosition.x + foodSize.radius * cos(angle),
-            foodPosition.y + foodSize.radius * sin(angle)),
-        Velocity(foodSize.radius, angle, 0),
+        Renderable('digestion'),
+        Position(foodPosition.x + foodRadius * cos(angle),
+            foodPosition.y + foodRadius * sin(angle)),
+        Velocity(foodRadius, angle, 0),
+        Orientation(angle),
         Acceleration(0, 0),
         AttractedBy(digester),
+        Size(min(1.5, foodRadius / 10)),
         Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
         ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
             digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
@@ -641,6 +644,7 @@ class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
   allOf: [
     Acceleration,
     Velocity,
+    Orientation,
   ],
 )
 class AccelerationSystem extends _$AccelerationSystem {
@@ -656,8 +660,11 @@ class AccelerationSystem extends _$AccelerationSystem {
     final velXTotal = velX + velXAcc;
     final velYTotal = velY + velYAcc;
 
+    final angle = atan2(velYTotal, velXTotal);
+
     velocity
-      ..angle = atan2(velYTotal, velXTotal)
+      ..angle = angle
       ..value = sqrt(velXTotal * velXTotal + velYTotal * velYTotal);
+    orientationMapper[entity].angle = angle;
   }
 }

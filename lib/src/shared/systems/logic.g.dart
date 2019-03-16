@@ -304,12 +304,14 @@ abstract class _$AttractionAccelerationSystem extends EntityProcessingSystem {
 abstract class _$AccelerationSystem extends EntityProcessingSystem {
   Mapper<Acceleration> accelerationMapper;
   Mapper<Velocity> velocityMapper;
+  Mapper<Orientation> orientationMapper;
   _$AccelerationSystem()
-      : super(Aspect.empty()..allOf([Acceleration, Velocity]));
+      : super(Aspect.empty()..allOf([Acceleration, Velocity, Orientation]));
   @override
   void initialize() {
     super.initialize();
     accelerationMapper = Mapper<Acceleration>(world);
     velocityMapper = Mapper<Velocity>(world);
+    orientationMapper = Mapper<Orientation>(world);
   }
 }
