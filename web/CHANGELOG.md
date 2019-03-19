@@ -3,7 +3,7 @@
 ## Gameplay
 * dark energy get digested faster
 * reduced max normal speed of players by 25% 
-* increased boosted speed of players by 500% and added a short warmup time to the booster
+* increased boosted speed of players by 500%
 
 ## Misc
 * made digestion of dark energy visually more obvious
