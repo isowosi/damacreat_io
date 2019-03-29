@@ -20,6 +20,7 @@ part 'debug.g.dart';
     WebGlViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
+    TagManager,
   ],
 )
 class DebugSystem extends _$DebugSystem {
@@ -68,7 +69,7 @@ class DebugSystem extends _$DebugSystem {
     final leaves = quadTreeManager.getLeaves().toList();
 
     final inverse = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrix()
+        .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
     final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));

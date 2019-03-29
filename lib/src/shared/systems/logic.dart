@@ -13,13 +13,22 @@ part 'logic.g.dart';
     CameraManager,
     QuadTreeManager,
     WebGlViewProjectionMatrixManager,
+    TagManager,
+    ComponentManager,
+  ],
+  mapper: [
+    Camera,
+    Position,
   ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
   @override
   void processSystem() {
+    final cameraEntity = tagManager.getEntity(cameraTag);
+    final components = Bag<Component>();
+    componentManager.getComponentsFor(cameraEntity, components);
     final inverse = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrix()
+        .create2dViewProjectionMatrix(cameraEntity)
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
     final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
@@ -495,18 +504,15 @@ class ThrusterParticleColorModificationSystem
 @Generate(
   EntityProcessingSystem,
   allOf: [
-    Controller,
+    Camera,
     Size,
-  ],
-  manager: [
-    CameraManager,
   ],
 )
 class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
   @override
   void processEntity(Entity entity) {
     final size = sizeMapper[entity];
-    cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300);
+    cameraMapper[entity].zoom = initialGameZoom + sqrt(size.radius / 300);
   }
 }
 

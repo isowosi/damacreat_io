@@ -27,6 +27,7 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Wobble> wobbleMapper;
   Mapper<OnScreen> onScreenMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  TagManager tagManager;
   _$CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(
             gl,
@@ -43,12 +44,14 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
     onScreenMapper = Mapper<OnScreen>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
+    tagManager = world.getManager<TagManager>();
   }
 }
 
 abstract class _$BackgroundRenderingSystemBase
     extends VoidWebGlRenderingSystem {
   Mapper<Position> positionMapper;
+  Mapper<Camera> cameraMapper;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   TagManager tagManager;
   CameraManager cameraManager;
@@ -57,6 +60,7 @@ abstract class _$BackgroundRenderingSystemBase
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
+    cameraMapper = Mapper<Camera>(world);
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
@@ -72,6 +76,7 @@ abstract class _$PlayerNameRenderingSystem extends EntityProcessingSystem {
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   CameraManager cameraManager;
   SettingsManager settingsManager;
+  TagManager tagManager;
   _$PlayerNameRenderingSystem()
       : super(Aspect.empty()..allOf([Player, Size, Position, OnScreen]));
   @override
@@ -85,5 +90,6 @@ abstract class _$PlayerNameRenderingSystem extends EntityProcessingSystem {
         world.getManager<WebGlViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();
     settingsManager = world.getManager<SettingsManager>();
+    tagManager = world.getManager<TagManager>();
   }
 }

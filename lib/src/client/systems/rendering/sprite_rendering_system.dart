@@ -149,8 +149,8 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
       ..drawElements(WebGL.TRIANGLES, length * 6, WebGL.UNSIGNED_SHORT, 0);
   }
 
-  Matrix4 create2dViewProjectionMatrix() =>
-      webGlViewProjectionMatrixManager.create2dViewProjectionMatrix();
+  Matrix4 create2dViewProjectionMatrix() => webGlViewProjectionMatrixManager
+      .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag));
 
   @override
   void updateLength(int length) {

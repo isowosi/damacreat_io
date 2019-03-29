@@ -136,6 +136,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   ],
   manager: [
     WebGlViewProjectionMatrixManager,
+    TagManager,
   ],
 )
 abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
@@ -205,7 +206,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
         gl.getUniformLocation(program, 'uViewProjection'),
         false,
         webGlViewProjectionMatrixManager
-            .create2dViewProjectionMatrix()
+            .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
             .storage);
 
     bufferElements(attributes, items, indices);
@@ -239,6 +240,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   ],
   mapper: [
     Position,
+    Camera,
   ],
 )
 class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
@@ -252,11 +254,13 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   @override
   void render() {
     final zoom = cameraManager.gameZoom;
-    final p = positionMapper[tagManager.getEntity(cameraTag)];
+    final cameraEntity = tagManager.getEntity(cameraTag);
+    final position = positionMapper[cameraEntity];
+    final camera = cameraMapper[cameraEntity];
     final width = cameraManager.width * zoom;
     final height = cameraManager.height * zoom;
-    final px = p.x * parallaxFactor;
-    final py = p.y * parallaxFactor;
+    final px = position.x * parallaxFactor;
+    final py = position.y * parallaxFactor;
     final background = Float32List.fromList([
       -width / 2 + px + offsetX,
       -height / 2 + py + offsetY,
@@ -268,18 +272,14 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
       -height / 2 + py + offsetY
     ]);
     final viewProjectionMatrix = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrixForPosition(px, py)
+        .create2dViewProjectionMatrixForPosition(px, py, camera.zoom)
           ..translate(-offsetX, -offsetY);
 
     gl
       ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
           false, viewProjectionMatrix.storage)
-      ..uniform4f(
-          gl.getUniformLocation(program, 'uDimension'),
-          cameraManager.width.toDouble(),
-          cameraManager.height.toDouble(),
-          0,
-          0)
+      ..uniform4f(gl.getUniformLocation(program, 'uDimension'),
+          cameraManager.width.toDouble(), cameraManager.height.toDouble(), 0, 0)
       ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
       ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
     buffer('aPosition', background, 2);
@@ -313,6 +313,7 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     WebGlViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
+    TagManager,
   ],
 )
 class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
@@ -321,12 +322,13 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
 
   @override
   void processEntity(Entity entity) {
+    final cameraEntity = tagManager.getEntity(cameraTag);
     final nickname = playerMapper[entity].nickname;
     final radius = sizeMapper[entity].radius;
     final position = positionMapper[entity];
 
     final inverse = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrix()
+        .create2dViewProjectionMatrix(cameraEntity)
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
     final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));

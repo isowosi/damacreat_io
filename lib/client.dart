@@ -50,7 +50,6 @@ class Game extends GameBase {
 
   @override
   void createEntities() {
-    world.getManager<CameraManager>().gameZoom = initialGameZoom;
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
@@ -64,9 +63,11 @@ class Game extends GameBase {
           const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
 
+
     final camera = addEntity([
       Position(
-          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble())
+          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble()),
+      Camera(zoom: initialGameZoom)
     ]);
     tagManager.register(camera, cameraTag);
   }

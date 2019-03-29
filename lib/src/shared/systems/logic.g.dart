@@ -7,16 +7,24 @@ part of 'logic.dart';
 // **************************************************************************
 
 abstract class _$OnScreenTagSystem extends VoidEntitySystem {
+  Mapper<Camera> cameraMapper;
+  Mapper<Position> positionMapper;
   CameraManager cameraManager;
   QuadTreeManager quadTreeManager;
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  TagManager tagManager;
+  ComponentManager componentManager;
   @override
   void initialize() {
     super.initialize();
+    cameraMapper = Mapper<Camera>(world);
+    positionMapper = Mapper<Position>(world);
     cameraManager = world.getManager<CameraManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
     webGlViewProjectionMatrixManager =
         world.getManager<WebGlViewProjectionMatrixManager>();
+    tagManager = world.getManager<TagManager>();
+    componentManager = world.getManager<ComponentManager>();
   }
 }
 
@@ -196,17 +204,15 @@ abstract class _$ThrusterParticleColorModificationSystem
 }
 
 abstract class _$CameraZoomCalculatingSystem extends EntityProcessingSystem {
-  Mapper<Controller> controllerMapper;
+  Mapper<Camera> cameraMapper;
   Mapper<Size> sizeMapper;
-  CameraManager cameraManager;
   _$CameraZoomCalculatingSystem()
-      : super(Aspect.empty()..allOf([Controller, Size]));
+      : super(Aspect.empty()..allOf([Camera, Size]));
   @override
   void initialize() {
     super.initialize();
-    controllerMapper = Mapper<Controller>(world);
+    cameraMapper = Mapper<Camera>(world);
     sizeMapper = Mapper<Size>(world);
-    cameraManager = world.getManager<CameraManager>();
   }
 }
 

@@ -13,6 +13,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
   WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
   CameraManager cameraManager;
   SettingsManager settingsManager;
+  TagManager tagManager;
   @override
   void initialize() {
     super.initialize();
@@ -23,6 +24,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
         world.getManager<WebGlViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();
     settingsManager = world.getManager<SettingsManager>();
+    tagManager = world.getManager<TagManager>();
   }
 }
 
