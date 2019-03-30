@@ -216,9 +216,11 @@ packages:
   dartemis:
     dependency: "direct main"
     description:
-      path: "..\\dartemis"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "185aadf455209575c90984a88c1afbc4d43a504b"
+      url: "git://github.com/denniskaselow/dartemis.git"
+    source: git
     version: "0.8.0-dev"
   dartemis_builder:
     dependency: "direct dev"
@@ -255,7 +257,7 @@ packages:
     description:
       path: "."
       ref: "games/damacreat/0.9.0"
-      resolved-ref: "0978712acf66013ec5b76b0f933341b13ff84dfd"
+      resolved-ref: daf9d840aff0e167c6f1c6cf3e4b13f16f90a02d
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"

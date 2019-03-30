@@ -135,7 +135,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     OnScreen,
   ],
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     TagManager,
   ],
 )
@@ -205,7 +205,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     gl.uniformMatrix4fv(
         gl.getUniformLocation(program, 'uViewProjection'),
         false,
-        webGlViewProjectionMatrixManager
+        viewProjectionMatrixManager
             .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
             .storage);
 
@@ -234,7 +234,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 @Generate(
   VoidWebGlRenderingSystem,
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     TagManager,
     CameraManager,
   ],
@@ -271,7 +271,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
       width / 2 + px + offsetX,
       -height / 2 + py + offsetY
     ]);
-    final viewProjectionMatrix = webGlViewProjectionMatrixManager
+    final viewProjectionMatrix = viewProjectionMatrixManager
         .create2dViewProjectionMatrixForPosition(px, py, camera.zoom)
           ..translate(-offsetX, -offsetY);
 
@@ -310,7 +310,7 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     OnScreen,
   ],
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
     TagManager,
@@ -327,7 +327,7 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
     final radius = sizeMapper[entity].radius;
     final position = positionMapper[entity];
 
-    final inverse = webGlViewProjectionMatrixManager
+    final inverse = viewProjectionMatrixManager
         .create2dViewProjectionMatrix(cameraEntity)
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));

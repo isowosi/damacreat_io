@@ -11,7 +11,7 @@ abstract class _$OnScreenTagSystem extends VoidEntitySystem {
   Mapper<Position> positionMapper;
   CameraManager cameraManager;
   QuadTreeManager quadTreeManager;
-  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  ViewProjectionMatrixManager viewProjectionMatrixManager;
   TagManager tagManager;
   ComponentManager componentManager;
   @override
@@ -21,8 +21,8 @@ abstract class _$OnScreenTagSystem extends VoidEntitySystem {
     positionMapper = Mapper<Position>(world);
     cameraManager = world.getManager<CameraManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
-    webGlViewProjectionMatrixManager =
-        world.getManager<WebGlViewProjectionMatrixManager>();
+    viewProjectionMatrixManager =
+        world.getManager<ViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
     componentManager = world.getManager<ComponentManager>();
   }
@@ -200,19 +200,6 @@ abstract class _$ThrusterParticleColorModificationSystem
     colorMapper = Mapper<Color>(world);
     lifetimeMapper = Mapper<Lifetime>(world);
     renderableMapper = Mapper<Renderable>(world);
-  }
-}
-
-abstract class _$CameraZoomCalculatingSystem extends EntityProcessingSystem {
-  Mapper<Camera> cameraMapper;
-  Mapper<Size> sizeMapper;
-  _$CameraZoomCalculatingSystem()
-      : super(Aspect.empty()..allOf([Camera, Size]));
-  @override
-  void initialize() {
-    super.initialize();
-    cameraMapper = Mapper<Camera>(world);
-    sizeMapper = Mapper<Size>(world);
   }
 }
 

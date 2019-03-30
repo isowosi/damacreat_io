@@ -56,7 +56,7 @@ class Game extends GameBase {
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
-      ..addManager(WebGlViewProjectionMatrixManager(1000))
+      ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
       ..addManager(QuadTreeManager(

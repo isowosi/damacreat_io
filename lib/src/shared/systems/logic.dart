@@ -12,7 +12,7 @@ part 'logic.g.dart';
   manager: [
     CameraManager,
     QuadTreeManager,
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     TagManager,
     ComponentManager,
   ],
@@ -27,11 +27,12 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
     final cameraEntity = tagManager.getEntity(cameraTag);
     final components = Bag<Component>();
     componentManager.getComponentsFor(cameraEntity, components);
-    final inverse = webGlViewProjectionMatrixManager
+    final inverse = viewProjectionMatrixManager
         .create2dViewProjectionMatrix(cameraEntity)
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
     final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
+
     quadTreeManager
         .getCollisionCandidates(leftTop.x, leftTop.y,
             width: rightBottom.x - leftTop.x, height: rightBottom.y - leftTop.y)
@@ -498,21 +499,6 @@ class ThrusterParticleColorModificationSystem
       ..g = rgb[1]
       ..b = rgb[2]
       ..a = lifetimePercentage;
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
-    Camera,
-    Size,
-  ],
-)
-class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
-  @override
-  void processEntity(Entity entity) {
-    final size = sizeMapper[entity];
-    cameraMapper[entity].zoom = initialGameZoom + sqrt(size.radius / 300);
   }
 }
 

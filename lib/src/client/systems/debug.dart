@@ -17,7 +17,7 @@ part 'debug.g.dart';
   ],
   manager: [
     QuadTreeManager,
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
     TagManager,
@@ -46,16 +46,17 @@ class DebugSystem extends _$DebugSystem {
   @override
   void processSystem() {
     final renderedCircles = world.componentManager
-        .getComponentsByType(ComponentTypeManager.getTypeFor(OnScreen))
+        .getComponentsByType<OnScreen>(
+            ComponentTypeManager.getTypeFor(OnScreen))
         .where((component) => component != null)
         .length;
     final movingThings = world.componentManager
-            .getComponentsByType(
+            .getComponentsByType<ChangedPosition>(
                 ComponentTypeManager.getTypeFor(ChangedPosition))
             .where((component) => component != null)
             .length +
         world.componentManager
-            .getComponentsByType(
+            .getComponentsByType<ConstantVelocity>(
                 ComponentTypeManager.getTypeFor(ConstantVelocity))
             .where((component) => component != null)
             .length;
@@ -68,7 +69,7 @@ class DebugSystem extends _$DebugSystem {
     }
     final leaves = quadTreeManager.getLeaves().toList();
 
-    final inverse = webGlViewProjectionMatrixManager
+    final inverse = viewProjectionMatrixManager
         .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
           ..invert();
     final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));

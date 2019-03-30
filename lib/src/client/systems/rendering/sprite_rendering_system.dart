@@ -2,21 +2,23 @@ import 'dart:typed_data';
 import 'dart:web_gl';
 
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 part 'sprite_rendering_system.g.dart';
 
-@Generate(WebGlRenderingSystem, allOf: [
-  Position,
-  Orientation,
-  Color,
-  Size,
-  Renderable,
-], manager: [
-  TagManager,
-  WebGlViewProjectionMatrixManager
-])
+@Generate(
+  WebGlRenderingSystem,
+  allOf: [
+    Position,
+    Orientation,
+    Color,
+    Size,
+    Renderable,
+  ],
+  manager: [TagManager, ViewProjectionMatrixManager],
+)
 class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   SpriteSheet sheet;
 
@@ -149,7 +151,7 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
       ..drawElements(WebGL.TRIANGLES, length * 6, WebGL.UNSIGNED_SHORT, 0);
   }
 
-  Matrix4 create2dViewProjectionMatrix() => webGlViewProjectionMatrixManager
+  Matrix4 create2dViewProjectionMatrix() => viewProjectionMatrixManager
       .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag));
 
   @override

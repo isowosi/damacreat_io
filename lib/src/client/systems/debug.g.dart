@@ -10,7 +10,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
   Mapper<Food> foodMapper;
   Mapper<Position> positionMapper;
   QuadTreeManager quadTreeManager;
-  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  ViewProjectionMatrixManager viewProjectionMatrixManager;
   CameraManager cameraManager;
   SettingsManager settingsManager;
   TagManager tagManager;
@@ -20,8 +20,8 @@ abstract class _$DebugSystem extends VoidEntitySystem {
     foodMapper = Mapper<Food>(world);
     positionMapper = Mapper<Position>(world);
     quadTreeManager = world.getManager<QuadTreeManager>();
-    webGlViewProjectionMatrixManager =
-        world.getManager<WebGlViewProjectionMatrixManager>();
+    viewProjectionMatrixManager =
+        world.getManager<ViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();
     settingsManager = world.getManager<SettingsManager>();
     tagManager = world.getManager<TagManager>();
