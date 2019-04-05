@@ -357,6 +357,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         if (foodMapper.has(entity)) {
           entity
             ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
+            ..addComponent(ConstantVelocity())
             ..changedInWorld();
         } else {
           _updateBooster(
