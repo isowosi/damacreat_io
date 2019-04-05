@@ -100,7 +100,7 @@ packages:
       name: build_modules
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.9"
+    version: "1.0.10"
   build_resolvers:
     dependency: transitive
     description:
@@ -142,7 +142,7 @@ packages:
       name: built_collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.0"
   built_value:
     dependency: transitive
     description:
@@ -295,7 +295,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.0+1"
+    version: "0.12.0+2"
   http_multi_server:
     dependency: transitive
     description:
@@ -346,7 +346,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   kernel:
     dependency: transitive
     description:
@@ -446,7 +446,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4"
+    version: "0.13.8"
   pub_semver:
     dependency: transitive
     description:
@@ -474,7 +474,7 @@ packages:
       name: sass
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.17.3"
+    version: "1.17.4"
   sass_builder:
     dependency: "direct dev"
     description:
@@ -495,7 +495,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.4+1"
+    version: "0.7.5"
   shelf_web_socket:
     dependency: transitive
     description:
