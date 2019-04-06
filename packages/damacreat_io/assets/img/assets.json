@@ -8,6 +8,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":5},
 	"sourceSize": {"w":100,"h":5}
 },
+"digestion_0":
+{
+	"frame": {"x":144,"y":111,"w":10,"h":3},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":10,"h":3},
+	"sourceSize": {"w":10,"h":5}
+},
 "food_0":
 {
 	"frame": {"x":144,"y":2,"w":100,"h":100},
@@ -31,6 +39,6 @@
 	"format": "RGBA8888",
 	"size": {"w":256,"h":256},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9813747901c0a823f70f55d96bbb11a1:a22a7beee4a9040f73746af98fec859a:a759b6bbc8381ac9c472b28f589ad0d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:59e106d4aed9b2a11a74505fdb012c4d:09072ad90c29ed6044feeff222047aa4:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }
