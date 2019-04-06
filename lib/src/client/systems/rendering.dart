@@ -290,6 +290,9 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   String get vShaderFile => 'BackgroundRenderingSystem';
   @override
   String get fShaderFile => 'BackgroundRenderingSystem';
+
+  @override
+  bool checkProcessing() => tagManager.isRegistered(cameraTag);
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {

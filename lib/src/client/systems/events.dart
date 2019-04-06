@@ -339,6 +339,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   void _initPlayerId(Uint8ListReader reader) {
     playerId = reader.readUint16();
+    final posX = ByteUtils.byteToPosition(reader.readUint16());
+    final posY = ByteUtils.byteToPosition(reader.readUint16());
+    final camera = world.createAndAddEntity([
+      Position(posX, posY),
+      Camera(zoom: initialGameZoom),
+    ]);
+    tagManager.register(camera, cameraTag);
   }
 
   void _updateVelocity(Uint8ListReader reader) {

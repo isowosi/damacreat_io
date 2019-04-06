@@ -8,7 +8,11 @@ import 'package:gamedev_helpers/gamedev_helpers_shared.dart'
 part 'logic.g.dart';
 
 @Generate(
-  VoidEntitySystem,
+  EntitySystem,
+  allOf: [
+    Camera,
+    Position,
+  ],
   manager: [
     CameraManager,
     QuadTreeManager,
@@ -16,27 +20,24 @@ part 'logic.g.dart';
     TagManager,
     ComponentManager,
   ],
-  mapper: [
-    Camera,
-    Position,
-  ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
   @override
-  void processSystem() {
-    final cameraEntity = tagManager.getEntity(cameraTag);
-    final components = Bag<Component>();
-    componentManager.getComponentsFor(cameraEntity, components);
-    final inverse = viewProjectionMatrixManager
-        .create2dViewProjectionMatrix(cameraEntity)
-          ..invert();
-    final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
-    final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
+  void processEntities(Iterable<Entity> entities) {
+    if (entities.isNotEmpty) {
+      final cameraEntity = entities.first;
+      final inverse = viewProjectionMatrixManager
+          .create2dViewProjectionMatrix(cameraEntity)
+            ..invert();
+      final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
+      final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
 
-    quadTreeManager
-        .getCollisionCandidates(leftTop.x, leftTop.y,
-            width: rightBottom.x - leftTop.x, height: rightBottom.y - leftTop.y)
-        .forEach(_tag);
+      quadTreeManager
+          .getCollisionCandidates(leftTop.x, leftTop.y,
+              width: rightBottom.x - leftTop.x,
+              height: rightBottom.y - leftTop.y)
+          .forEach(_tag);
+    }
   }
 
   void _tag(Entity entity) {
@@ -44,6 +45,9 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
       ..addComponent(OnScreen())
       ..changedInWorld();
   }
+
+  @override
+  bool checkProcessing() => true;
 }
 
 @Generate(

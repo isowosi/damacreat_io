@@ -62,14 +62,6 @@ class Game extends GameBase {
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
-
-
-    final camera = addEntity([
-      Position(
-          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble()),
-      Camera(zoom: initialGameZoom)
-    ]);
-    tagManager.register(camera, cameraTag);
   }
 
   @override

@@ -6,7 +6,7 @@ part of 'logic.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$OnScreenTagSystem extends VoidEntitySystem {
+abstract class _$OnScreenTagSystem extends EntitySystem {
   Mapper<Camera> cameraMapper;
   Mapper<Position> positionMapper;
   CameraManager cameraManager;
@@ -14,6 +14,7 @@ abstract class _$OnScreenTagSystem extends VoidEntitySystem {
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   TagManager tagManager;
   ComponentManager componentManager;
+  _$OnScreenTagSystem() : super(Aspect.empty()..allOf([Camera, Position]));
   @override
   void initialize() {
     super.initialize();

@@ -114,7 +114,8 @@ class DebugSystem extends _$DebugSystem {
   }
 
   @override
-  bool checkProcessing() => settingsManager.showDebug;
+  bool checkProcessing() =>
+      tagManager.isRegistered(cameraTag) && settingsManager.showDebug;
 }
 
 @Generate(
