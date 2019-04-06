@@ -1,30 +1,43 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:dartemis/dartemis.dart';
-import 'package:gamedev_helpers/gamedev_helpers_shared.dart' hide Velocity;
+import 'package:gamedev_helpers/gamedev_helpers_shared.dart'
+    hide Velocity, Acceleration;
 
 part 'logic.g.dart';
 
 @Generate(
-  VoidEntitySystem,
+  EntitySystem,
+  allOf: [
+    Camera,
+    Position,
+  ],
   manager: [
     CameraManager,
     QuadTreeManager,
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
+    TagManager,
+    ComponentManager,
   ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
   @override
-  void processSystem() {
-    final inverse = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrix()
-          ..invert();
-    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
-    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
-    quadTreeManager
-        .getCollisionCandidates(leftTop.x, leftTop.y,
-            width: rightBottom.x - leftTop.x, height: rightBottom.y - leftTop.y)
-        .forEach(_tag);
+  void processEntities(Iterable<Entity> entities) {
+    if (entities.isNotEmpty) {
+      final cameraEntity = entities.first;
+      final inverse = viewProjectionMatrixManager
+          .create2dViewProjectionMatrix(cameraEntity)
+            ..invert();
+      final leftTop = inverse.transformed(Vector4(-1.1, -1.1, 0, 1));
+      final rightBottom = inverse.transformed(Vector4(1.1, 1.1, 0, 1));
+
+      quadTreeManager
+          .getCollisionCandidates(leftTop.x, leftTop.y,
+              width: rightBottom.x - leftTop.x,
+              height: rightBottom.y - leftTop.y)
+          .forEach(_tag);
+    }
   }
 
   void _tag(Entity entity) {
@@ -32,6 +45,9 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
       ..addComponent(OnScreen())
       ..changedInWorld();
   }
+
+  @override
+  bool checkProcessing() => true;
 }
 
 @Generate(
@@ -83,10 +99,11 @@ class RemoveTemporaryComponentsSystem
 @Generate(
   BaseDigestiveSystem,
   manager: [
-    DigestionManager,
+    AttractedByManager,
   ],
   allOf: [
     Position,
+    OnScreen,
   ],
   mapper: [
     Color,
@@ -108,16 +125,24 @@ class DigestiveSystem extends _$DigestiveSystem {
     final foodPosition = positionMapper[food];
     final foodSize = sizeMapper[food];
     final digesterColor = colorMapper[digester];
-    final hsl = rgbToHsl(digesterColor.r, digesterColor.g, digesterColor.b);
-    for (var i = 0; i < foodSize.radius; i++) {
-      final angle = random.nextDouble() * 2 * pi;
-      world.createAndAddEntity([
-        Particle(),
-        Position(foodPosition.x + foodSize.radius * cos(angle),
-            foodPosition.y + foodSize.radius * sin(angle)),
-        Color.fromHsl(hsl[0], hsl[1] + 0.1, hsl[2] + 0.1, 1.0),
-        Lifetime(0.1)
+    final foodColor = colorMapper[food];
+    final foodRadius = foodSize.radius;
+    for (var i = 0; i < foodRadius / 2; i++) {
+      final angle = random.nextDouble() * tau;
+      final entity = world.createAndAddEntity([
+        Renderable('digestion'),
+        Position(foodPosition.x + foodRadius * cos(angle),
+            foodPosition.y + foodRadius * sin(angle)),
+        Velocity(foodRadius, angle, 0),
+        Orientation(angle),
+        Acceleration(0, 0),
+        Size(max(0.2, min(1, foodRadius / 10))),
+        Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
+        ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
+            digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
+        Lifetime(0.5)
       ]);
+      attractedByManager.setReference(entity, digester);
     }
   }
 }
@@ -132,7 +157,7 @@ class ExpirationSystem extends _$ExpirationSystem {
   @override
   void processEntity(Entity entity) {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
-    if (l.timeLeft <= 0.0) {
+    if (l.timeLeft <= 0) {
       entity.deleteFromWorld();
     }
   }
@@ -169,7 +194,7 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       colliderWobble.wobbleFactor[fragmentIndex] = max(
           old,
-          1.0 +
+          1 +
               additionalDistRelation *
                   (1 - i * i / (fragmentRange * fragmentRange)));
     }
@@ -197,12 +222,12 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final indexSq = index * index;
       colliderWobble.wobbleFactor[fragmentIndex] = min(
           old,
-          1.0 -
+          1 -
               sizeRelation *
                   distRelation *
                   (1 - indexSq * indexSq / fragmentRangePow4));
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
-          distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
+      colliderCellWall.strengthFactor[fragmentIndex] =
+          1 - distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
     }
   }
 
@@ -229,20 +254,20 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final fragmentIndex = (fragment + index) % playerCircleFragments;
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       final indexSq = index * index;
-      final enveloped = max(old,
-          1.0 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
+      final enveloped = max(
+          old, 1 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
       final pressing = min(
           old,
-          1.0 -
+          1 -
               sizeRelation *
                   distRelation *
                   (1 - indexSq * indexSq / fragmentRangePow4));
 
       colliderWobble.wobbleFactor[fragmentIndex] =
           pressingEnvelopedRatio * enveloped +
-              (1.0 - pressingEnvelopedRatio) * pressing;
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
-          distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
+              (1 - pressingEnvelopedRatio) * pressing;
+      colliderCellWall.strengthFactor[fragmentIndex] =
+          1 - distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
     }
   }
 
@@ -265,10 +290,10 @@ class EntityInteractionSystem extends _$EntityInteractionSystem {
       final indexPow3 = index * index * index;
       colliderWobble.wobbleFactor[fragmentIndex] = max(
           old,
-          1.0 +
+          1 +
               additionalDistRelation *
                   (1 - indexPow3.abs() / fragmentRangePow3));
-      colliderCellWall.strengthFactor[fragmentIndex] = 1.0 -
+      colliderCellWall.strengthFactor[fragmentIndex] = 1 -
           additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
     }
   }
@@ -297,6 +322,9 @@ class WobbleSystem extends _$WobbleSystem {
   allOf: [
     CellWall,
   ],
+  exclude: [
+    DigestedBy,
+  ],
 )
 class CellWallSystem extends _$CellWallSystem {
   @override
@@ -306,7 +334,27 @@ class CellWallSystem extends _$CellWallSystem {
     final strengthFactor = cw.strengthFactor;
     for (var i = 0; i < strengthFactor.length; i++) {
       strengthFactor[i] =
-          1.0 + (strengthFactor[i] - 1.0) * (1 - 0.999 * world.delta);
+          1 + (strengthFactor[i] - 1) * (1 - 0.999 * world.delta);
+    }
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    CellWall,
+    DigestedBy,
+  ],
+)
+class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
+  @override
+  void processEntity(Entity entity) {
+    final cw = cellWallMapper[entity];
+
+    final strengthFactor = cw.strengthFactor;
+    for (var i = 0; i < strengthFactor.length; i++) {
+      strengthFactor[i] = max(
+          0.01, 1.0 + (strengthFactor[i] - 1.1) * (1.0 - 0.999 * world.delta));
     }
   }
 }
@@ -402,7 +450,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     hsl[1] += 0.1;
     hsl[2] += 0.1;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
-    for (var i = 0; i < sqrt(size.radius) * boosterFactor; i++) {
+    for (var i = 0; i < 4 * boosterFactor; i++) {
       final posFactor = random.nextDouble();
       final posFactorTime = random.nextDouble();
       final x = x1 + posFactor * (x2 - x1);
@@ -412,14 +460,11 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
       world.createAndAddEntity([
         Position(
             x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
-//        Particle(),
         ThrusterParticle(),
-        Color(rgb[0], rgb[1], rgb[2], 1.0),
-        Lifetime(boosterFactor * (0.5 + 1.0 * random.nextDouble())),
-        Velocity(
-            playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
-            (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32,
-            0.0),
+        Color(rgb[0], rgb[1], rgb[2], 1),
+        Lifetime(boosterFactor * (0.5 + random.nextDouble())),
+        Velocity(playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
+            (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32, 0),
         Orientation(velocity.angle),
         Renderable('propulsion', scale: 1 / 80),
         Size(boosterFactor * size.radius / 10),
@@ -447,11 +492,10 @@ class ThrusterParticleColorModificationSystem
 
     final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
     final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = hsl[0] - 0.1 * (1.0 - lifetimePercentage);
+    hsl[0] = (hsl[0] - 0.15 * (lifetime.timeMax - lifetime.timeLeft)) % 1.0;
     hsl[1] = hsl[1] * lifetimePercentage;
     hsl[2] = hsl[2] * lifetimePercentage;
-    renderable.scale +=
-        3.0 * world.delta * renderable.scale * lifetimePercentage;
+    renderable.scale += 3 * world.delta * renderable.scale * lifetimePercentage;
     final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
 
     color
@@ -459,24 +503,6 @@ class ThrusterParticleColorModificationSystem
       ..g = rgb[1]
       ..b = rgb[2]
       ..a = lifetimePercentage;
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
-    Controller,
-    Size,
-  ],
-  manager: [
-    CameraManager,
-  ],
-)
-class CameraZoomCalculatingSystem extends _$CameraZoomCalculatingSystem {
-  @override
-  void processEntity(Entity entity) {
-    final size = sizeMapper[entity];
-    cameraManager.gameZoom = initialGameZoom + sqrt(size.radius / 300.0);
   }
 }
 
@@ -546,7 +572,6 @@ class FoodColoringSystem extends _$FoodColoringSystem {
   allOf: [
     Position,
     Velocity,
-    Size,
   ],
   exclude: [
     QuadTreeCandidate,
@@ -562,5 +587,84 @@ class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
     position
       ..x = position.x + velocityTimesDelta * cos(velocity.angle)
       ..y = position.y + velocityTimesDelta * sin(velocity.angle);
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Color,
+    ColorChanger,
+    Lifetime,
+  ],
+)
+class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
+  @override
+  void processEntity(Entity entity) {
+    final color = colorMapper[entity];
+    final colorChanger = colorChangerMapper[entity];
+    final lifeTime = lifetimeMapper[entity];
+    final percentLeft = sqrt(lifeTime.timeLeft / lifeTime.timeMax);
+    final percentGone = 1 - percentLeft;
+    color
+      ..r = colorChanger.rStart * percentLeft + colorChanger.rEnd * percentGone
+      ..g = colorChanger.gStart * percentLeft + colorChanger.gEnd * percentGone
+      ..b = colorChanger.bStart * percentLeft + colorChanger.bEnd * percentGone
+      ..a = colorChanger.aStart * percentLeft + colorChanger.aEnd * percentGone;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Acceleration,
+    AttractedBy,
+    Position,
+  ],
+  manager: [
+    AttractedByManager,
+  ],
+)
+class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
+  @override
+  void processEntity(Entity entity) {
+    final attractor = attractedByManager.refersTo(entity);
+    final attractorPosition = positionMapper[attractor];
+    final position = positionMapper[entity];
+    final xDiff = attractorPosition.x - position.x;
+    final yDiff = attractorPosition.y - position.y;
+    accelerationMapper[entity]
+      ..angle = atan2(yDiff, xDiff)
+      ..value = 250;
+  }
+}
+
+@Generate(
+  EntityProcessingSystem,
+  allOf: [
+    Acceleration,
+    Velocity,
+    Orientation,
+  ],
+)
+class AccelerationSystem extends _$AccelerationSystem {
+  @override
+  void processEntity(Entity entity) {
+    final acceleration = accelerationMapper[entity];
+    final velocity = velocityMapper[entity];
+
+    final velX = velocity.value * cos(velocity.angle);
+    final velY = velocity.value * sin(velocity.angle);
+    final velXAcc = acceleration.value * cos(acceleration.angle) * world.delta;
+    final velYAcc = acceleration.value * sin(acceleration.angle) * world.delta;
+    final velXTotal = velX + velXAcc;
+    final velYTotal = velY + velYAcc;
+
+    final angle = atan2(velYTotal, velXTotal);
+
+    velocity
+      ..angle = angle
+      ..value = sqrt(velXTotal * velXTotal + velYTotal * velYTotal);
+    orientationMapper[entity].angle = angle;
   }
 }

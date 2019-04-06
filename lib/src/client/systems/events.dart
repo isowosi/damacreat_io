@@ -20,6 +20,7 @@ part 'events.g.dart';
     Velocity,
     Food,
     ChangedPosition,
+    Booster,
   ],
   manager: [
     TagManager,
@@ -131,10 +132,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          final velocity = dist / world.delta;
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
-            ..value = dist / world.delta
-            ..rotational = 0.0;
+            ..value = velocity
+            ..rotational = 0;
+          _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
           entity
@@ -169,10 +172,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+          final velocity = dist / world.delta;
           velocityMapper[entity]
             ..angle = atan2(y - oldY, x - oldX)
-            ..value = dist / world.delta
-            ..rotational = 0.0;
+            ..value = velocity
+            ..rotational = 0;
+          _updateBooster(entity, velocity);
         }
         if (!changedPositionMapper.has(entity)) {
           entity
@@ -202,10 +207,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         orientation.angle = orientationAngle;
 
         final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        final velocity = dist / world.delta;
         velocityMapper[entity]
           ..angle = atan2(y - oldY, x - oldX)
-          ..value = dist / world.delta
+          ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        _updateBooster(entity, velocity);
         if (!changedPositionMapper.has(entity)) {
           entity
             ..addComponent(ChangedPosition(x, y))
@@ -236,10 +243,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         orientation.angle = orientationAngle;
 
         final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
+        final velocity = dist / world.delta;
         velocityMapper[entity]
           ..angle = atan2(y - oldY, x - oldX)
-          ..value = dist / world.delta
+          ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
+        _updateBooster(entity, velocity);
         if (!changedPositionMapper.has(entity)) {
           entity
             ..addComponent(ChangedPosition(x, y))
@@ -259,11 +268,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Id(id),
         Position(x, y),
         Size(radius),
-        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
         Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0.0),
+        Orientation(0),
         QuadTreeCandidate(),
       ]);
       idManager.add(entity);
@@ -283,11 +292,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Size(radius),
         Growing(targetRadius,
             minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
-        Color.fromHsl(0.35, 0.4, 0.4, 1.0),
+        Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
         Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0.0),
+        Orientation(0),
         QuadTreeCandidate(),
       ]);
 
@@ -313,9 +322,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Color.fromHsl(hue, 0.9, 0.6, 0.4),
         Orientation(orientationAngle),
         Wobble(),
-        CellWall(5.0),
+        CellWall(5),
         Thruster(),
-        Velocity(0.0, 0.0, 0.0),
+        Velocity(0, 0, 0),
         Booster(boosterMaxStartPower),
         Player(nickname),
         QuadTreeCandidate(),
@@ -330,6 +339,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
   void _initPlayerId(Uint8ListReader reader) {
     playerId = reader.readUint16();
+    final posX = ByteUtils.byteToPosition(reader.readUint16());
+    final posY = ByteUtils.byteToPosition(reader.readUint16());
+    final camera = world.createAndAddEntity([
+      Position(posX, posY),
+      Camera(zoom: initialGameZoom),
+    ]);
+    tagManager.register(camera, cameraTag);
   }
 
   void _updateVelocity(Uint8ListReader reader) {
@@ -337,22 +353,34 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final id = reader.readUint16();
       final speedByte = reader.readUint16();
       final angleByte = reader.readUint16();
-      final food = idManager.getEntity(id);
-      if (food != null) {
+      final entity = idManager.getEntity(id);
+      if (entity != null) {
         final value = ByteUtils.byteToSpeed(speedByte);
         final angle = ByteUtils.byteToAngle(angleByte);
-        if (digestedByMapper.has(food)) {
-          final digester = digestedByMapper[food].digester;
-          digestionManager.vomit(digester, food, RuntimeEnvironment.client);
+        if (digestedByMapper.has(entity)) {
+          digestionManager.removeReference(entity);
         }
         // no constant velocity for players
-        if (foodMapper.has(food)) {
-          food
-            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0.0))
+        if (foodMapper.has(entity)) {
+          entity
+            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
             ..addComponent(ConstantVelocity())
             ..changedInWorld();
+        } else {
+          _updateBooster(
+              entity,
+              value *
+                  playerSpeedMultiplier *
+                  getVelocityFactor(sizeMapper[entity]));
         }
       }
+    }
+  }
+
+  void _updateBooster(Entity entity, double value) {
+    if (boosterMapper.has(entity)) {
+      boosterMapper[entity].inUse = value >
+          1.25 * playerSpeedMultiplier * getVelocityFactor(sizeMapper[entity]);
     }
   }
 
@@ -363,11 +391,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final food = idManager.getEntity(id);
       final digester = idManager.getEntity(digesterId);
       if (food != null && digester != null) {
+        digestionManager.setReference(food, digester);
         food
-          ..addComponent(DigestedBy(digester))
           ..removeComponent<Growing>()
           ..changedInWorld();
-        digestionManager.startDigestion(digester, food);
       }
     }
   }

@@ -15,7 +15,7 @@ class GameChangelogComponent implements OnInit {
   GameChangelogComponent(this.service);
 
   @override
-  void ngOnInit() async {
+  Future<void> ngOnInit() async {
     final markdown = await HttpRequest.getString('CHANGELOG.md');
 
     content = markdownToHtml(markdown);

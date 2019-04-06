@@ -32,12 +32,12 @@ class MinimapRenderingSystem extends _$MinimapRenderingSystem {
   void begin() {
     ctx
       ..save()
-      ..transform(200.0 / maxAreaSize, 0.0, 0.0, -200.0 / maxAreaSize,
+      ..transform(200 / maxAreaSize, 0, 0, -200 / maxAreaSize,
           cameraManager.clientWidth - 200, cameraManager.clientHeight)
       ..fillStyle = 'grey'
       ..globalAlpha = 0.1
       ..fillRect(0, 0, maxAreaSize, maxAreaSize)
-      ..globalAlpha = 1.0;
+      ..globalAlpha = 1;
   }
 
   @override

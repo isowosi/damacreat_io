@@ -2,6 +2,7 @@ library client;
 
 import 'dart:convert';
 import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
@@ -9,9 +10,11 @@ import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
 import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
@@ -37,32 +40,28 @@ class Game extends GameBase {
             depthTest: false,
             useMaxDelta: false,
             bodyDefsName: null) {
-    container = querySelector('#gamecontainer');
-    hudCanvas = querySelector('#hud');
+    // ignore: avoid_as
+    container = querySelector('#gamecontainer') as DivElement;
+    // ignore: avoid_as
+    hudCanvas = querySelector('#hud') as CanvasElement;
     hudCtx = hudCanvas.context2D;
     _configureHud();
   }
 
   @override
   void createEntities() {
-    world.getManager<CameraManager>().gameZoom = initialGameZoom;
     final tagManager = TagManager();
     world
       ..addManager(tagManager)
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
-      ..addManager(WebGlViewProjectionMatrixManager(1000))
-      ..addManager(DigestionManager())
+      ..addManager(ViewProjectionMatrixManager())
+      ..addManager(DigestionManager(RuntimeEnvironment.client))
+      ..addManager(AttractedByManager())
       ..addManager(QuadTreeManager(
-          const Rectangle<double>(0.0, 0.0, maxAreaSize, maxAreaSize), 16))
+          const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
-
-    final camera = addEntity([
-      Position(
-          maxAreaSize * random.nextDouble(), maxAreaSize * random.nextDouble())
-    ]);
-    tagManager.register(camera, cameraTag);
   }
 
   @override
@@ -77,20 +76,24 @@ class Game extends GameBase {
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
-          DigestiveSystem(),
           CameraPositionSystem(),
           CameraZoomCalculatingSystem(),
           QuadTreeUpdateChangedPositionSystem(),
+          AttractionAccelerationSystem(),
+          AccelerationSystem(),
           // pre-rendering
           OnScreenTagSystem(),
-          // logic that changes visuals
+          // logic that changes visuals/spawns particles
+          DigestiveSystem(),
           WobbleSystem(),
           CellWallSystem(),
+          CellWallDigestedBySystem(),
           ThrusterCellWallWeakeningSystem(),
           EntityInteractionSystem(),
           ThrusterParticleEmissionSystem(),
           ThrusterParticleColorModificationSystem(),
           FoodColoringSystem(),
+          ColorChangeOverLifetimeSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
@@ -133,8 +136,8 @@ class Game extends GameBase {
   }
 
   void joinGame(int color, String nickname) {
-    final utf8nickname = utf8
-        .encode(nickname.substring(0, min(maxLengthNickname, nickname.length)));
+    final utf8nickname = Uint8List.fromList(utf8.encode(
+        nickname.substring(0, min(maxLengthNickname, nickname.length))));
     webSocketHandler.sendData(Uint8ListWriter.clientToServer(
         MessageToServer.joinGame,
         additionalDynamicLength: 1 + utf8nickname.length)

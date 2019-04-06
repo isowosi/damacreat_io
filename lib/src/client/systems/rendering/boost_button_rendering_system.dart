@@ -42,7 +42,7 @@ class BoostButtonRenderingSystem extends _$BoostButtonRenderingSystem {
       ..fillRect(0, 0, boosterButtonSize * powerPercentage, boosterButtonSize)
       ..globalCompositeOperation = 'source-in'
       ..arc(boosterButtonRadius, boosterButtonRadius, boosterButtonRadius - 3,
-          0.0, tau)
+          0, tau)
       ..fill()
       ..closePath()
       ..strokeStyle = 'gainsboro'
@@ -50,7 +50,7 @@ class BoostButtonRenderingSystem extends _$BoostButtonRenderingSystem {
       ..lineWidth = booster.inUse ? 3 : 2
       ..globalCompositeOperation = 'source-over'
       ..arc(boosterButtonRadius, boosterButtonRadius, boosterButtonRadius - 3,
-          0.0, tau)
+          0, tau)
       ..stroke()
       ..closePath()
       ..fillStyle = 'gainsboro'

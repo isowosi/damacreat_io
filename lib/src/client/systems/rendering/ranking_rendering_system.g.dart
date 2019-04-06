@@ -1,29 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'booster_handling_system.dart';
+part of 'ranking_rendering_system.dart';
 
 // **************************************************************************
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$BoosterHandlingSystem extends BaseBoosterHandlingSystem {
+abstract class _$RankingRenderingSystem extends EntityProcessingSystem {
   Mapper<Player> playerMapper;
-  Mapper<Position> positionMapper;
-  Mapper<Orientation> orientationMapper;
-  Mapper<Velocity> velocityMapper;
   Mapper<Size> sizeMapper;
+  Mapper<Color> colorMapper;
   Mapper<Controller> controllerMapper;
-  _$BoosterHandlingSystem()
-      : super(Aspect.empty()
-          ..allOf([Player, Position, Orientation, Velocity, Size, Controller]));
+  CameraManager cameraManager;
+  _$RankingRenderingSystem()
+      : super(Aspect.empty()..allOf([Player, Size, Color]));
   @override
   void initialize() {
     super.initialize();
     playerMapper = Mapper<Player>(world);
-    positionMapper = Mapper<Position>(world);
-    orientationMapper = Mapper<Orientation>(world);
-    velocityMapper = Mapper<Velocity>(world);
     sizeMapper = Mapper<Size>(world);
+    colorMapper = Mapper<Color>(world);
     controllerMapper = Mapper<Controller>(world);
+    cameraManager = world.getManager<CameraManager>();
   }
 }

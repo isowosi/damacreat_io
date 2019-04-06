@@ -15,9 +15,10 @@ const InjectorFactory injector = self.injector$Injector;
 
 Store _settingsStore;
 
-void main() async {
+Future<void> main() async {
   try {
     _settingsStore = await Store.open('damacreat.io', 'settings');
+    // ignore: avoid_catches_without_on_clauses
   } catch (_) {
     print('Cannot access local storage - settings will not be stored');
     _settingsStore = NoopStore();

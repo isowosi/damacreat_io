@@ -33,6 +33,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
 
   @override
   void processEntity(Entity entity) {
+    useBooster = useBooster && boosterMapper[entity].power > 0;
     boosterMapper[entity].inUse = useBooster;
     if (velocityStrength != null && velocityAngle != null) {
       final velocity = ByteUtils.speedToByte(velocityStrength);
@@ -93,7 +94,7 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
   }
 
   void _handleTouchEvent(TouchEvent event) {
-    final boosterOffset = Point<double>(boosterButtonCenterX.toDouble(),
+    final boosterOffset = Point<num>(boosterButtonCenterX.toDouble(),
         cameraManager.clientHeight - boosterButtonCenterY.toDouble());
     for (final touch in event.targetTouches) {
       final touchOffset = touch.page;
@@ -143,7 +144,7 @@ class GamepadControllerSystem extends ControllerSystem {
         useBooster = false;
       }
       velocityStrength = sqrt(x * x + y * y);
-      if (velocityAngle == null || y != 0.0 || x != 0.0) {
+      if (velocityAngle == null || y != 0 || x != 0) {
         velocityAngle = atan2(y, x);
       }
       super.processEntity(entity);

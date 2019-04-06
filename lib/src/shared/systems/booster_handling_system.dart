@@ -13,6 +13,7 @@ part 'booster_handling_system.g.dart';
     Orientation,
     Velocity,
     Size,
+    Controller,
   ],
 )
 class BoosterHandlingSystem extends _$BoosterHandlingSystem {
@@ -33,13 +34,12 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
             position.y +
                 sin(velocity.angle) * 500 +
                 sin(velocity.angle + pi / 2) * distance),
-        Orientation(0.0),
-        Size(1.0),
+        Size(1),
         Renderable('boost'),
-        Lifetime(0.5),
-        Color(1.0, 1.0, 1.0, booster.power / booster.maxPower),
+        Lifetime(booster.maxPower),
+        Color(1, 1, 1, booster.power / booster.maxPower),
         Orientation(orientation.angle),
-        Velocity(velocity.value * distance / 3, velocity.angle - pi, 0.0),
+        Velocity(velocity.value * distance / 3, velocity.angle - pi, 0),
         ConstantVelocity(),
       ])
       ..createAndAddEntity([
@@ -50,13 +50,12 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
             position.y +
                 sin(velocity.angle) * 500 +
                 sin(velocity.angle - pi / 2) * distance),
-        Orientation(0.0),
-        Size(1.0),
+        Size(1),
         Renderable('boost'),
-        Lifetime(0.5),
-        Color(1.0, 1.0, 1.0, booster.power / booster.maxPower),
+        Lifetime(booster.maxPower),
+        Color(1, 1, 1, booster.power / booster.maxPower),
         Orientation(orientation.angle),
-        Velocity(velocity.value * distance / 3, velocity.angle - pi, 0.0),
+        Velocity(velocity.value * distance / 3, velocity.angle - pi, 0),
         ConstantVelocity(),
       ]);
   }

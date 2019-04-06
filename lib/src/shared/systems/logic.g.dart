@@ -6,17 +6,26 @@ part of 'logic.dart';
 // SystemGenerator
 // **************************************************************************
 
-abstract class _$OnScreenTagSystem extends VoidEntitySystem {
+abstract class _$OnScreenTagSystem extends EntitySystem {
+  Mapper<Camera> cameraMapper;
+  Mapper<Position> positionMapper;
   CameraManager cameraManager;
   QuadTreeManager quadTreeManager;
-  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  ViewProjectionMatrixManager viewProjectionMatrixManager;
+  TagManager tagManager;
+  ComponentManager componentManager;
+  _$OnScreenTagSystem() : super(Aspect.empty()..allOf([Camera, Position]));
   @override
   void initialize() {
     super.initialize();
+    cameraMapper = Mapper<Camera>(world);
+    positionMapper = Mapper<Position>(world);
     cameraManager = world.getManager<CameraManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
-    webGlViewProjectionMatrixManager =
-        world.getManager<WebGlViewProjectionMatrixManager>();
+    viewProjectionMatrixManager =
+        world.getManager<ViewProjectionMatrixManager>();
+    tagManager = world.getManager<TagManager>();
+    componentManager = world.getManager<ComponentManager>();
   }
 }
 
@@ -53,18 +62,20 @@ abstract class _$RemoveTemporaryComponentsSystem
 
 abstract class _$DigestiveSystem extends BaseDigestiveSystem {
   Mapper<Position> positionMapper;
+  Mapper<OnScreen> onScreenMapper;
   Mapper<Color> colorMapper;
-  DigestionManager digestionManager;
+  AttractedByManager attractedByManager;
   _$DigestiveSystem()
       : super(Aspect.empty()
-          ..allOf([Position])
+          ..allOf([Position, OnScreen])
           ..exclude([DigestionComplete]));
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
     colorMapper = Mapper<Color>(world);
-    digestionManager = world.getManager<DigestionManager>();
+    attractedByManager = world.getManager<AttractedByManager>();
   }
 }
 
@@ -109,11 +120,27 @@ abstract class _$WobbleSystem extends EntityProcessingSystem {
 
 abstract class _$CellWallSystem extends EntityProcessingSystem {
   Mapper<CellWall> cellWallMapper;
-  _$CellWallSystem() : super(Aspect.empty()..allOf([CellWall]));
+  _$CellWallSystem()
+      : super(Aspect.empty()
+          ..allOf([CellWall])
+          ..exclude([DigestedBy]));
   @override
   void initialize() {
     super.initialize();
     cellWallMapper = Mapper<CellWall>(world);
+  }
+}
+
+abstract class _$CellWallDigestedBySystem extends EntityProcessingSystem {
+  Mapper<CellWall> cellWallMapper;
+  Mapper<DigestedBy> digestedByMapper;
+  _$CellWallDigestedBySystem()
+      : super(Aspect.empty()..allOf([CellWall, DigestedBy]));
+  @override
+  void initialize() {
+    super.initialize();
+    cellWallMapper = Mapper<CellWall>(world);
+    digestedByMapper = Mapper<DigestedBy>(world);
   }
 }
 
@@ -177,21 +204,6 @@ abstract class _$ThrusterParticleColorModificationSystem
   }
 }
 
-abstract class _$CameraZoomCalculatingSystem extends EntityProcessingSystem {
-  Mapper<Controller> controllerMapper;
-  Mapper<Size> sizeMapper;
-  CameraManager cameraManager;
-  _$CameraZoomCalculatingSystem()
-      : super(Aspect.empty()..allOf([Controller, Size]));
-  @override
-  void initialize() {
-    super.initialize();
-    controllerMapper = Mapper<Controller>(world);
-    sizeMapper = Mapper<Size>(world);
-    cameraManager = world.getManager<CameraManager>();
-  }
-}
-
 abstract class _$CameraPositionSystem extends EntityProcessingSystem {
   Mapper<Controller> controllerMapper;
   Mapper<Position> positionMapper;
@@ -241,16 +253,61 @@ abstract class _$FoodColoringSystem extends EntityProcessingSystem {
 abstract class _$MovementSystemWithoutQuadTree extends EntityProcessingSystem {
   Mapper<Position> positionMapper;
   Mapper<Velocity> velocityMapper;
-  Mapper<Size> sizeMapper;
   _$MovementSystemWithoutQuadTree()
       : super(Aspect.empty()
-          ..allOf([Position, Velocity, Size])
+          ..allOf([Position, Velocity])
           ..exclude([QuadTreeCandidate]));
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
     velocityMapper = Mapper<Velocity>(world);
-    sizeMapper = Mapper<Size>(world);
+  }
+}
+
+abstract class _$ColorChangeOverLifetimeSystem extends EntityProcessingSystem {
+  Mapper<Color> colorMapper;
+  Mapper<ColorChanger> colorChangerMapper;
+  Mapper<Lifetime> lifetimeMapper;
+  _$ColorChangeOverLifetimeSystem()
+      : super(Aspect.empty()..allOf([Color, ColorChanger, Lifetime]));
+  @override
+  void initialize() {
+    super.initialize();
+    colorMapper = Mapper<Color>(world);
+    colorChangerMapper = Mapper<ColorChanger>(world);
+    lifetimeMapper = Mapper<Lifetime>(world);
+  }
+}
+
+abstract class _$AttractionAccelerationSystem extends EntityProcessingSystem {
+  Mapper<Acceleration> accelerationMapper;
+  Mapper<AttractedBy> attractedByMapper;
+  Mapper<Position> positionMapper;
+  AttractedByManager attractedByManager;
+  _$AttractionAccelerationSystem()
+      : super(Aspect.empty()..allOf([Acceleration, AttractedBy, Position]));
+  @override
+  void initialize() {
+    super.initialize();
+    accelerationMapper = Mapper<Acceleration>(world);
+    attractedByMapper = Mapper<AttractedBy>(world);
+    positionMapper = Mapper<Position>(world);
+    attractedByManager = world.getManager<AttractedByManager>();
+  }
+}
+
+abstract class _$AccelerationSystem extends EntityProcessingSystem {
+  Mapper<Acceleration> accelerationMapper;
+  Mapper<Velocity> velocityMapper;
+  Mapper<Orientation> orientationMapper;
+  _$AccelerationSystem()
+      : super(Aspect.empty()..allOf([Acceleration, Velocity, Orientation]));
+  @override
+  void initialize() {
+    super.initialize();
+    accelerationMapper = Mapper<Acceleration>(world);
+    velocityMapper = Mapper<Velocity>(world);
+    orientationMapper = Mapper<Orientation>(world);
   }
 }

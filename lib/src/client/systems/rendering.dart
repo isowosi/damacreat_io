@@ -135,7 +135,8 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     OnScreen,
   ],
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
+    TagManager,
   ],
 )
 abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
@@ -204,8 +205,8 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     gl.uniformMatrix4fv(
         gl.getUniformLocation(program, 'uViewProjection'),
         false,
-        webGlViewProjectionMatrixManager
-            .create2dViewProjectionMatrix()
+        viewProjectionMatrixManager
+            .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
             .storage);
 
     bufferElements(attributes, items, indices);
@@ -233,30 +234,33 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 @Generate(
   VoidWebGlRenderingSystem,
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     TagManager,
     CameraManager,
   ],
   mapper: [
     Position,
+    Camera,
   ],
 )
 class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
-  double offsetX = -500000 + random.nextDouble() * 1000000.0;
-  double offsetY = -500000 + random.nextDouble() * 1000000.0;
-  Float32List rgb = Float32List.fromList([0.0, 0.0, 0.0]);
-  double parallaxFactor = 1.0;
+  double offsetX = -500000 + random.nextDouble() * 1000000;
+  double offsetY = -500000 + random.nextDouble() * 1000000;
+  Float32List rgb = Float32List.fromList([0, 0, 0]);
+  double parallaxFactor = 1;
 
   BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
   @override
   void render() {
     final zoom = cameraManager.gameZoom;
-    final p = positionMapper[tagManager.getEntity(cameraTag)];
+    final cameraEntity = tagManager.getEntity(cameraTag);
+    final position = positionMapper[cameraEntity];
+    final camera = cameraMapper[cameraEntity];
     final width = cameraManager.width * zoom;
     final height = cameraManager.height * zoom;
-    final px = p.x * parallaxFactor;
-    final py = p.y * parallaxFactor;
+    final px = position.x * parallaxFactor;
+    final py = position.y * parallaxFactor;
     final background = Float32List.fromList([
       -width / 2 + px + offsetX,
       -height / 2 + py + offsetY,
@@ -267,19 +271,15 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
       width / 2 + px + offsetX,
       -height / 2 + py + offsetY
     ]);
-    final viewProjectionMatrix = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrixForPosition(px, py)
+    final viewProjectionMatrix = viewProjectionMatrixManager
+        .create2dViewProjectionMatrixForPosition(px, py, camera.zoom)
           ..translate(-offsetX, -offsetY);
 
     gl
       ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
           false, viewProjectionMatrix.storage)
-      ..uniform4f(
-          gl.getUniformLocation(program, 'uDimension'),
-          cameraManager.width.toDouble(),
-          cameraManager.height.toDouble(),
-          0.0,
-          0.0)
+      ..uniform4f(gl.getUniformLocation(program, 'uDimension'),
+          cameraManager.width.toDouble(), cameraManager.height.toDouble(), 0, 0)
       ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
       ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
     buffer('aPosition', background, 2);
@@ -290,6 +290,9 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   String get vShaderFile => 'BackgroundRenderingSystem';
   @override
   String get fShaderFile => 'BackgroundRenderingSystem';
+
+  @override
+  bool checkProcessing() => tagManager.isRegistered(cameraTag);
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
@@ -306,91 +309,14 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
   allOf: [
     Player,
     Size,
-  ],
-  manager: [
-    CameraManager,
-  ],
-)
-class RankingRenderingSystem extends _$RankingRenderingSystem {
-  final CanvasRenderingContext2D ctx;
-  final List<Score> highscore = <Score>[];
-  RankingRenderingSystem(this.ctx);
-
-  @override
-  void begin() {
-    highscore.clear();
-  }
-
-  @override
-  void processEntity(Entity entity) {
-    final size = sizeMapper[entity];
-    final name = playerMapper[entity].nickname;
-    highscore.add(Score(name, size.radius));
-  }
-
-  @override
-  void end() {
-    highscore.sort((a, b) => b.radius.compareTo(a.radius));
-    var y = 5;
-    var ranking = 0;
-    ctx
-      ..save()
-      ..strokeStyle = 'white';
-
-    const leaderboardWidth = 250;
-    const leaderboardLabel = 'Leaderboard';
-    final leaderboardLabelWidth = ctx.measureText(leaderboardLabel).width;
-    final leaderboardStartX = cameraManager.clientWidth -
-        (leaderboardWidth + leaderboardLabelWidth) / 2;
-    ctx
-      ..beginPath()
-      ..lineWidth = 1
-      ..fillText(leaderboardLabel, leaderboardStartX, y)
-      ..moveTo(leaderboardStartX, y + 19)
-      ..lineTo(leaderboardStartX + leaderboardLabelWidth, y + 19)
-      ..closePath()
-      ..stroke()
-      ..beginPath()
-      ..lineWidth = 2
-      ..moveTo(cameraManager.clientWidth - leaderboardWidth, 28)
-      ..lineTo(cameraManager.clientWidth, 28)
-      ..closePath()
-      ..stroke();
-    y = 7;
-    for (final score in highscore) {
-      final value = score.radius ~/ 1;
-      final scoreWidth = ctx.measureText('$value').width;
-      y += 20;
-      ranking++;
-      final rankingWidth = ctx.measureText('$ranking. ').width;
-      ctx
-        ..fillText('$ranking. ',
-            cameraManager.clientWidth - leaderboardWidth - rankingWidth, y)
-        ..fillText('${score.playerName}',
-            cameraManager.clientWidth - leaderboardWidth, y)
-        ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
-    }
-  }
-}
-
-class Score {
-  String playerName;
-  double radius;
-  Score(this.playerName, this.radius);
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
-    Player,
-    Size,
     Position,
     OnScreen,
   ],
   manager: [
-    WebGlViewProjectionMatrixManager,
+    ViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
+    TagManager,
   ],
 )
 class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
@@ -399,19 +325,20 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
 
   @override
   void processEntity(Entity entity) {
+    final cameraEntity = tagManager.getEntity(cameraTag);
     final nickname = playerMapper[entity].nickname;
     final radius = sizeMapper[entity].radius;
     final position = positionMapper[entity];
 
-    final inverse = webGlViewProjectionMatrixManager
-        .create2dViewProjectionMatrix()
+    final inverse = viewProjectionMatrixManager
+        .create2dViewProjectionMatrix(cameraEntity)
           ..invert();
-    final leftTop = inverse.transformed(Vector4(-1.0, -1.0, 0.0, 1.0));
-    final rightBottom = inverse.transformed(Vector4(1.0, 1.0, 0.0, 1.0));
+    final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
+    final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
     final scaling = cameraManager.clientWidth / (rightBottom.x - leftTop.x);
     ctx
       ..save()
-      ..transform(scaling, 0.0, 0.0, scaling, -leftTop.x * scaling,
+      ..transform(scaling, 0, 0, scaling, -leftTop.x * scaling,
           (cameraManager.clientHeight / scaling + leftTop.y) * scaling)
       ..font = '${max(14, cameraManager.scalingFactor * radius / 3)}px Roboto'
       ..textBaseline = 'top'

@@ -13,7 +13,7 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
   Mapper<Size> sizeMapper;
   Mapper<Renderable> renderableMapper;
   TagManager tagManager;
-  WebGlViewProjectionMatrixManager webGlViewProjectionMatrixManager;
+  ViewProjectionMatrixManager viewProjectionMatrixManager;
   _$SpriteRenderingSystem(RenderingContext gl)
       : super(
             gl,
@@ -28,7 +28,7 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
     sizeMapper = Mapper<Size>(world);
     renderableMapper = Mapper<Renderable>(world);
     tagManager = world.getManager<TagManager>();
-    webGlViewProjectionMatrixManager =
-        world.getManager<WebGlViewProjectionMatrixManager>();
+    viewProjectionMatrixManager =
+        world.getManager<ViewProjectionMatrixManager>();
   }
 }
