@@ -136,7 +136,7 @@ class DigestiveSystem extends _$DigestiveSystem {
         Velocity(foodRadius, angle, 0),
         Orientation(angle),
         Acceleration(0, 0),
-        Size(min(1.5, foodRadius / 10)),
+        Size(max(0.2, min(1, foodRadius / 10))),
         Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
         ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
             digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
@@ -462,7 +462,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
             x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
         ThrusterParticle(),
         Color(rgb[0], rgb[1], rgb[2], 1),
-        Lifetime(boosterFactor * (0.5 + 1 * random.nextDouble())),
+        Lifetime(boosterFactor * (0.5 + random.nextDouble())),
         Velocity(playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
             (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32, 0),
         Orientation(velocity.angle),
@@ -492,7 +492,7 @@ class ThrusterParticleColorModificationSystem
 
     final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
     final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = hsl[0] - 0.1 * (1 - lifetimePercentage);
+    hsl[0] = (hsl[0] - 0.15 * (lifetime.timeMax - lifetime.timeLeft)) % 1.0;
     hsl[1] = hsl[1] * lifetimePercentage;
     hsl[2] = hsl[2] * lifetimePercentage;
     renderable.scale += 3 * world.delta * renderable.scale * lifetimePercentage;
