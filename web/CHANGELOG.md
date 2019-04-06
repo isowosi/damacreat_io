@@ -1,13 +1,16 @@
-# 0.9.0 (2019-01-12)
+# 0.9.0 (2019-04-06)
 
 ## Gameplay
-* dark energy get digested faster
+* dark energy gets digested faster
 * reduced max normal speed of players by 25% 
 * increased boosted speed of players by 500%
+* increased amount of food by 50%
+* added bots (maximum of 20 bots, no bots spawn if there are at least 40 damacreats)
 
 ## Misc
 * made digestion of dark energy visually more obvious
 * better default names
+* improved netcode and reduced amount of traffic
 
 ## Bugfixes
 * fixed a source of several (actual and potential) bugs
