@@ -29,8 +29,8 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
       final inverse = viewProjectionMatrixManager
           .create2dViewProjectionMatrix(cameraEntity)
             ..invert();
-      final leftTop = inverse.transformed(Vector4(-1, -1, 0, 1));
-      final rightBottom = inverse.transformed(Vector4(1, 1, 0, 1));
+      final leftTop = inverse.transformed(Vector4(-1.1, -1.1, 0, 1));
+      final rightBottom = inverse.transformed(Vector4(1.1, 1.1, 0, 1));
 
       quadTreeManager
           .getCollisionCandidates(leftTop.x, leftTop.y,
