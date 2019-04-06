@@ -4,7 +4,7 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr 210px 200px 210px 1fr;
-  grid-template-rows: 0.3fr 0.7fr 200px 1fr 30px;
+  grid-template-rows: 0.5fr 0.5fr 200px 1fr 30px;
   width: 100vw;
   height: 100vh;
   z-index: 0;
@@ -18,12 +18,13 @@
   grid-row: 1/2;
   div {
     display: inline-block;
-    background-color: rgba(200, 200, 200, 0.7);
+    background-color: rgba(220, 220, 220, 0.8);
     margin: 10px;
     padding: 10px;
 
     a {
-      margin: 0 10px;
+      display: block;
+      margin: 10px 10px;
       color: #2900ae;
       text-decoration: none;
 
@@ -71,7 +72,7 @@ canvas {
 @media #{$smallScreen}, #{$mobileLandscape} {
   #gamecontainer {
     grid-template-columns: 1fr 200px 1fr;
-    grid-template-rows: 0.3fr 0.7fr 200px 1fr 100px;
+    grid-template-rows: 0.5fr 0.5fr 200px 1fr 100px;
   }
 
   privacy-policy, game-changelog {
