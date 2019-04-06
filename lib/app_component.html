@@ -1,6 +1,12 @@
 <div id="gamecontainer">
   <canvas id="game"></canvas>
   <canvas id="hud"></canvas>
+  <div *ngIf="menuVisible" id="feedbacklink">
+    <div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSe3iGnr-pQ6GfCagbTRSB6AiadurLe6_GlNjLxuFkkrjCbJSw/viewform"
+         target="_blank">Feedback?</a>
+    </div>
+  </div>
   <game-menu *ngIf="menuVisible"></game-menu>
   <game-error *ngIf="gameError"></game-error>
   <ng-container *ngIf="showPrivacyPolicy">

@@ -11,6 +11,7 @@
 * made digestion of dark energy visually more obvious
 * better default names
 * improved netcode and reduced amount of traffic
+* added link to feedback form
 
 ## Bugfixes
 * fixed a source of several (actual and potential) bugs
