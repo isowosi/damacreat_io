@@ -218,7 +218,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "185aadf455209575c90984a88c1afbc4d43a504b"
+      resolved-ref: "643d4d234a49ff08769873e658577b0e3be2449e"
       url: "git://github.com/denniskaselow/dartemis.git"
     source: git
     version: "0.8.0-dev"

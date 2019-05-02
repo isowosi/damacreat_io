@@ -99,7 +99,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _deleteEntity(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      if (!idManager.deleteEntity(id, RuntimeEnvironment.client)) {
+      if (!idManager.deleteEntity(id)) {
         // entities that have been added and deleted in the same frame
         // should no longer be a problem
         print('tried to delete $id but failed');
