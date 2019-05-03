@@ -253,12 +253,11 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 
   @override
   void render() {
-    final zoom = cameraManager.gameZoom;
     final cameraEntity = tagManager.getEntity(cameraTag);
     final position = positionMapper[cameraEntity];
     final camera = cameraMapper[cameraEntity];
-    final width = cameraManager.width * zoom;
-    final height = cameraManager.height * zoom;
+    final width = cameraManager.width * camera.zoom;
+    final height = cameraManager.height * camera.zoom;
     final px = position.x * parallaxFactor;
     final py = position.y * parallaxFactor;
     final background = Float32List.fromList([

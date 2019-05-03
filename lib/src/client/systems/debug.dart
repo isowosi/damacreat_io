@@ -88,18 +88,19 @@ class DebugSystem extends _$DebugSystem {
       ..fillText('Entities: ${world.entityManager.activeEntityCount}', 5, 15)
       ..fillText('Rendered circles: $renderedCircles', 5, 25)
       ..fillText('Moving entities: $movingThings', 5, 35)
-      ..fillText(
-          'QuadTree leaves (visible/total): ${visibleLeaves.length}/${leaves.length}',
-          5,
+      ..fillText('''
+QuadTree leaves (visible/total): ${visibleLeaves.length}/${leaves.length}''', 5,
           45)
       ..fillText('Received: ${(byteCount / 1024).toStringAsFixed(3)}kB', 5, 55)
-      ..fillText(
-          'Rate: ${(byteCount / 1024 / totalDelta).toStringAsFixed(3)}kB/s (${(8 * byteCount / 1024 / 1024 / totalDelta).toStringAsFixed(3)}Mbit/s)',
-          5,
-          65)
+      ..fillText('''
+Rate ${(byteCount / 1024 / totalDelta).toStringAsFixed(3)}kB/s (${(8 * byteCount / 1024 / 1024 / totalDelta).toStringAsFixed(3)}Mbit/s)''',
+          5, 65)
       ..fillText('Ping: ${ping?.round() ?? 'unknown'}ms', 5, 75)
       ..fillText('Version: $packageVersion', 5, 85)
-      ..fillText('Resolution: $viewportWidth:$viewportHeight', 5, 95);
+      ..fillText('Resolution: $viewportWidth:$viewportHeight', 5, 95)
+      ..fillText('''
+Visible Area: ${(rightBottom.x - leftTop.x).toInt()} * ${(rightBottom.y - leftTop.y).toInt()}''',
+          5, 105);
 
     final scaling = viewportWidth / (rightBottom.x - leftTop.x);
     ctx.transform(scaling, 0, 0, -scaling, -leftTop.x * scaling,

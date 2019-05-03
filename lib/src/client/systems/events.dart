@@ -99,13 +99,22 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _deleteEntity(Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      final entity = idManager.getEntity(id);
       if (!idManager.deleteEntity(id)) {
         // entities that have been added and deleted in the same frame
         // should no longer be a problem
-        print('tried to delete $id but failed');
+        // print('tried to delete $id but failed');
       }
       if (id == playerId) {
         gameStateManager.state = GameState.menu;
+        final position = positionMapper[entity];
+        final camera = world.createAndAddEntity([
+          Position(position.x, position.y),
+          Camera(zoom: initialGameZoom),
+        ]);
+        tagManager
+          ..unregister(cameraTag)
+          ..register(camera, cameraTag);
       }
     }
   }
@@ -330,9 +339,15 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         QuadTreeCandidate(),
       ];
       if (playerId == id) {
-        playerComponents.add(Controller());
+        playerComponents..add(Controller())..add(Camera());
+        final camera = tagManager.getEntity(cameraTag);
+        tagManager.unregister(cameraTag);
+        camera.deleteFromWorld();
       }
       final entity = world.createAndAddEntity(playerComponents);
+      if (playerId == id) {
+        tagManager.register(entity, cameraTag);
+      }
       idManager.add(entity);
     }
   }
