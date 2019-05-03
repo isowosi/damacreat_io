@@ -1,6 +1,7 @@
 # 0.10.0 (2019-05-??)
 
 ## Gameplay
+* increased loss of size over time for bigger players and reduced for smaller players
 
 # 0.9.0 (2019-04-06)
 
