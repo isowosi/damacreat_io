@@ -80,7 +80,6 @@ class SettingsManager extends Manager {
     }
     gtag('js', new Date());
     gtag('config', 'UA-99122887-2', {'anonymize_ip': true});
-    ga('create', 'UA-XXXXX-Y', {'storage': 'none'});
       ''';
       document.head.append(gtag);
       document.head.append(gtagConfig);

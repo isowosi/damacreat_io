@@ -142,14 +142,14 @@ packages:
       name: built_collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.0"
+    version: "4.2.2"
   built_value:
     dependency: transitive
     description:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.4.0"
+    version: "6.5.0"
   charcode:
     dependency: transitive
     description:
@@ -257,7 +257,7 @@ packages:
     description:
       path: "."
       ref: "games/damacreat/0.9.0"
-      resolved-ref: daf9d840aff0e167c6f1c6cf3e4b13f16f90a02d
+      resolved-ref: "27630dd952dea1f00c325bf83895dd32a1428a7f"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -339,7 +339,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   kernel:
     dependency: transitive
     description:
@@ -418,7 +418,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.0"
+    version: "1.7.0"
   pool:
     dependency: transitive
     description:
@@ -460,7 +460,7 @@ packages:
       name: sass
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.19.0"
+    version: "1.20.1"
   sass_builder:
     dependency: "direct dev"
     description:
@@ -530,7 +530,7 @@ packages:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.18"
+    version: "0.0.19"
   string_scanner:
     dependency: transitive
     description:
