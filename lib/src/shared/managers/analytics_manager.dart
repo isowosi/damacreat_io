@@ -14,10 +14,22 @@ class AnalyticsManager extends Manager {
   // ignore: avoid_as
   JsFunction get _gtag => context['gtag'] as JsFunction;
 
+  void joinGame({bool defaultNickname = true}) {
+    _log('joinGame', 'gameplay',
+        eventLabel: defaultNickname ? 'default' : 'custom');
+  }
+
   void _endSession() {
+    _log('endSession', 'session');
+  }
+
+  void _log(String event, String category, {String eventLabel}) {
     if (_settings.allowAnalytics) {
-      _gtag?.apply(
-          ['event', 'endSession', _eventData(eventCategory: 'session')]);
+      _gtag?.apply([
+        'event',
+        event,
+        _eventData(eventCategory: category, eventLabel: eventLabel)
+      ]);
     }
   }
 

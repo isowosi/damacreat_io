@@ -104,6 +104,7 @@ class GameService {
       }
       _game.joinGame(hue ?? random.nextInt(256), nickname);
       gameStateManager.state = GameState.playing;
+      analyticsManager.joinGame(defaultNickname: nickname.isEmpty);
     }
   }
 
