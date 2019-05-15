@@ -52,6 +52,10 @@ class GameService {
       });
       webSocket.onError.listen((errorEvent) {
         connectionState = ServerConnectionState.error;
+        analyticsManager.serverDown();
+      });
+      webSocket.onClose.listen((_) {
+        analyticsManager.connectionLost();
       });
 
       if (window.navigator.getGamepads != null) {
@@ -74,6 +78,7 @@ class GameService {
       this.errorMessage = errorMessage;
       // ignore: avoid_as
       this.stackTrace = stackTrace as StackTrace;
+      analyticsManager.clientError(errorMessage.toString());
     });
   }
 
