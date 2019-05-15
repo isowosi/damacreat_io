@@ -54,8 +54,10 @@ class GameService {
         connectionState = ServerConnectionState.error;
         analyticsManager.serverDown();
       });
-      webSocket.onClose.listen((_) {
-        analyticsManager.connectionLost();
+      webSocket.onClose.listen((data) {
+        if (data.code == 1006) {
+          analyticsManager.connectionLost();
+        }
       });
 
       if (window.navigator.getGamepads != null) {
