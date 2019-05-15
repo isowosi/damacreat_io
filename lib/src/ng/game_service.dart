@@ -43,8 +43,8 @@ class GameService {
       webSocket.onOpen.listen((openEvent) {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
-        _game = Game(
-            webSocketHandler, settings, gameStateManager, controllerManager)
+        _game = Game(webSocketHandler, settings, gameStateManager,
+            controllerManager, analyticsManager)
           ..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();

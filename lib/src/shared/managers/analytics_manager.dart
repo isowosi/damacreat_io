@@ -26,12 +26,13 @@ class AnalyticsManager extends Manager {
     _log('endSession', categorySession);
   }
 
-  void _log(String event, String category, {String eventLabel}) {
+  void _log(String event, String category, {String eventLabel, int value}) {
     if (_settings.allowAnalytics) {
       _gtag?.apply([
         'event',
         event,
-        _eventData(eventCategory: category, eventLabel: eventLabel)
+        _eventData(
+            eventCategory: category, eventLabel: eventLabel, value: value)
       ]);
     }
   }
@@ -46,8 +47,7 @@ class AnalyticsManager extends Manager {
     }
   }
 
-  JsObject _eventData(
-          {String eventCategory, String eventLabel, String value}) =>
+  JsObject _eventData({String eventCategory, String eventLabel, int value}) =>
       JsObject.jsify({
         if (eventCategory != null) 'event_category': eventCategory,
         if (eventLabel != null) 'event_label': eventLabel,
@@ -65,5 +65,16 @@ class AnalyticsManager extends Manager {
 
   void connectionLost() {
     _log('connectionLost', categorySession);
+  }
+
+  void logFps(int fps) {
+    if (_settings.allowAnalytics) {
+      print(fps);
+      _gtag?.apply([
+        'event',
+        'performance',
+        JsObject.jsify({'fps': fps})
+      ]);
+    }
   }
 }

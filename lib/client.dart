@@ -14,6 +14,7 @@ import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_syst
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
@@ -28,13 +29,16 @@ class Game extends GameBase {
   CanvasElement hudCanvas;
   CanvasRenderingContext2D hudCtx;
   DivElement container;
+  double timeSinceStart = 0;
+  bool fpsLogged = false;
   final WebSocketHandler webSocketHandler;
   final SettingsManager settingsManager;
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
+  final AnalyticsManager analyticsManager;
 
   Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
-      this.controllerManager)
+      this.controllerManager, this.analyticsManager)
       : super('damacreat_io', '#game',
             webgl: true,
             depthTest: false,
@@ -56,6 +60,7 @@ class Game extends GameBase {
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
+      ..addManager(analyticsManager)
       ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
@@ -143,5 +148,17 @@ class Game extends GameBase {
         additionalDynamicLength: 1 + utf8nickname.length)
       ..writeUint8(color)
       ..writeUint8List(utf8nickname));
+  }
+
+  @override
+  void update({double time}) {
+    super.update(time: time);
+    if (!fpsLogged) {
+      timeSinceStart += world.delta;
+      if (timeSinceStart > 15) {
+        analyticsManager.logFps(world.frame(0) ~/ timeSinceStart);
+        fpsLogged = true;
+      }
+    }
   }
 }
