@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
@@ -25,7 +26,9 @@ class GameService {
   final SettingsManager settings;
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
-  GameService(this.settings, this.gameStateManager, this.controllerManager);
+  final AnalyticsManager analyticsManager;
+  GameService(this.settings, this.gameStateManager, this.controllerManager,
+      this.analyticsManager);
 
   Future<void> init() async {
     hue = random.nextInt(256);

@@ -79,7 +79,7 @@ class SettingsManager extends Manager {
       dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'UA-99122887-1', {'anonymize_ip': true});
+    gtag('config', 'UA-99122887-1', {'anonymize_ip': true, 'transport_type': 'beacon'});
       ''';
       document.head.append(gtag);
       document.head.append(gtagConfig);
