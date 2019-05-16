@@ -42,7 +42,11 @@ class AnalyticsManager extends Manager {
       _gtag?.apply([
         'event',
         'exception',
-        JsObject.jsify({'description': description, 'fatal': true})
+        JsObject.jsify({
+          'event_category': categorySession,
+          'description': description,
+          'fatal': true
+        })
       ]);
     }
   }
