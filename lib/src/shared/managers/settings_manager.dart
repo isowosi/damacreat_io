@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 import 'dart:js';
 
@@ -72,6 +73,11 @@ class SettingsManager extends Manager {
       final gtag = ScriptElement()
         ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-1'
         ..defer = true;
+      final config = {
+        'anonymize_ip': true,
+        'transport_type': 'beacon',
+        'custom_map': {'metric1': 'fps', 'metric2': 'fpscount'}
+      };
       final gtagConfig = ScriptElement()
         ..text = '''
     window.dataLayer = window.dataLayer || [];
@@ -79,7 +85,7 @@ class SettingsManager extends Manager {
       dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'UA-99122887-1', {'anonymize_ip': true, 'transport_type': 'beacon', 'custom_map': {'metric1': 'fps'}});
+    gtag('config', 'UA-99122887-1', ${jsonEncode(config)});
       ''';
       document.head.append(gtag);
       document.head.append(gtagConfig);

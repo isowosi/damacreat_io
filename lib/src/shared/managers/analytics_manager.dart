@@ -69,11 +69,15 @@ class AnalyticsManager extends Manager {
 
   void logFps(int fps) {
     if (_settings.allowAnalytics) {
-      print(fps);
       _gtag?.apply([
         'event',
-        'performance',
-        JsObject.jsify({'fps': fps})
+        'FPS',
+        JsObject.jsify({
+          'event_category': 'performance',
+          'fps': fps,
+          'fpscount': 1,
+          'value': 1
+        })
       ]);
     }
   }
