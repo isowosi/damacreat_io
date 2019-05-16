@@ -9,6 +9,7 @@
 
 ## Bugfixes
 * fixed several bugs introduced by the new netcode
+* exhaust dark energy created by boosting was not correctly displayed when created by very large damacreats
 
 # 0.9.0 (2019-04-06)
 
