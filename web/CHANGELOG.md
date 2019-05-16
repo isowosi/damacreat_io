@@ -2,6 +2,7 @@
 
 ## Gameplay
 * increased loss of size over time for bigger players and reduced for smaller players
+* generate less food when a player disconnects
 
 # 0.9.0 (2019-04-06)
 
