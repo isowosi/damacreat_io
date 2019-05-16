@@ -80,7 +80,6 @@ class AnalyticsManager extends Manager {
           'event_category': 'performance',
           'fps': fps,
           'fpscount': 1,
-          'value': 1
         })
       ]);
     }
