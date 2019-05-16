@@ -4,11 +4,11 @@
 * increased loss of size over time for bigger players and reduced for smaller players
 * generate less food when a player disconnects
 
-## Nisc
+## Misc
 * improved analytics 
 
 ## Bugfixes
-* fixed several bugs introduced by the new netcode that could cause crashes
+* fixed several bugs introduced by the new netcode
 
 # 0.9.0 (2019-04-06)
 
