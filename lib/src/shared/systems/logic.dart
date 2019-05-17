@@ -668,3 +668,37 @@ class AccelerationSystem extends _$AccelerationSystem {
     orientationMapper[entity].angle = angle;
   }
 }
+
+@Generate(
+  BaseFoodSizeLossSystem,
+  allOf: [
+    Color,
+    Position,
+    Renderable,
+    Velocity,
+  ],
+)
+class FoodSizeLossSystem extends _$FoodSizeLossSystem {
+  @override
+  void onFoodSizeBelowMinimum(Entity entity) {}
+
+  @override
+  void onFoodSizeLoss(Entity entity, double foodRadius) {
+    final position = positionMapper[entity];
+    final velocity = velocityMapper[entity];
+    final foodColor = colorMapper[entity];
+    final angle = velocity.angle - pi - pi / 4 + random.nextDouble() * pi / 2;
+    world.createAndAddEntity([
+      Renderable('digestion'),
+      Position(position.x + foodRadius * cos(angle),
+          position.y + foodRadius * sin(angle)),
+      Velocity(foodRadius, angle, 0),
+      Orientation(angle),
+      Size(max(0.2, min(1, foodRadius / 10))),
+      Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
+      ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
+          foodColor.r, foodColor.g, foodColor.b, 0.1),
+      Lifetime(0.5)
+    ]);
+  }
+}

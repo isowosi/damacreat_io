@@ -311,3 +311,20 @@ abstract class _$AccelerationSystem extends EntityProcessingSystem {
     orientationMapper = Mapper<Orientation>(world);
   }
 }
+
+abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
+  Mapper<Color> colorMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Renderable> renderableMapper;
+  Mapper<Velocity> velocityMapper;
+  _$FoodSizeLossSystem()
+      : super(Aspect.empty()..allOf([Color, Position, Renderable, Velocity]));
+  @override
+  void initialize() {
+    super.initialize();
+    colorMapper = Mapper<Color>(world);
+    positionMapper = Mapper<Position>(world);
+    renderableMapper = Mapper<Renderable>(world);
+    velocityMapper = Mapper<Velocity>(world);
+  }
+}

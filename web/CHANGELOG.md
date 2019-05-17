@@ -2,7 +2,8 @@
 
 ## Gameplay
 * increased loss of size over time for bigger players and reduced for smaller players
-* generate less food when a player disconnects
+* generate less dark energy when a player disconnects
+* moving dark energy slowly dissipates even if it's not being absorbed by a damacreat
 
 ## Misc
 * improved analytics 
