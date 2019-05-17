@@ -8,6 +8,7 @@
 ## Misc
 * improved analytics
 * visibility of leaderboard can be toogled
+* added keyboard shortcuts for nicknames, leaderboard, fps, debug info and the minimap
 
 ## Bugfixes
 * fixed several bugs introduced by the new netcode

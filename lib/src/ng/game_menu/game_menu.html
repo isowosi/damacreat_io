@@ -11,25 +11,25 @@
   <label>
     <input type="checkbox" [checked]="settings.showNicknames"
            (change)="settings.showNicknames = !settings.showNicknames">
-    show nicknames
+    (N)icknames
   </label>
   <label>
     <input type="checkbox" [checked]="settings.showMinimap"
            (change)="settings.showMinimap = !settings.showMinimap">
-    show minimap
+    (M)inimap
   </label>
   <label>
     <input type="checkbox" [checked]="settings.showLeaderboard"
            (change)="settings.showLeaderboard = !settings.showLeaderboard">
-    show leaderboard
+    (L)eaderboard
   </label>
   <label>
     <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
-    show FPS
+    (F)PS
   </label>
   <label>
     <input type="checkbox" [checked]="settings.showDebug" (change)="settings.showDebug = !settings.showDebug">
-    show debug info
+    Debug (I)nfo
   </label>
   <label *ngIf="!settings.doNotTrack">
     <input type="checkbox" [checked]="settings.allowAnalytics"

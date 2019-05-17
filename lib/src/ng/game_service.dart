@@ -27,6 +27,8 @@ class GameService {
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
   final AnalyticsManager analyticsManager;
+
+  final List<Element> inputs = [];
   GameService(this.settings, this.gameStateManager, this.controllerManager,
       this.analyticsManager);
 
@@ -44,7 +46,7 @@ class GameService {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
         _game = Game(webSocketHandler, settings, gameStateManager,
-            controllerManager, analyticsManager)
+            controllerManager, analyticsManager, inputs)
           ..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();

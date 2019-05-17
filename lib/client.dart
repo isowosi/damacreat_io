@@ -36,9 +36,9 @@ class Game extends GameBase {
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
   final AnalyticsManager analyticsManager;
-
+  final List<Element> inputs;
   Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
-      this.controllerManager, this.analyticsManager)
+      this.controllerManager, this.analyticsManager, this.inputs)
       : super('damacreat_io', '#game',
             webgl: true,
             depthTest: false,
@@ -76,6 +76,7 @@ class Game extends GameBase {
           WebSocketListeningSystem(webSocketHandler),
           MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
           GamepadControllerSystem(webSocketHandler),
+          KeyboardControllerSystem(ignoreInputFromElements: inputs),
           // logic
           FoodGrowingSystem(),
           FoodSizeLossSystem(),

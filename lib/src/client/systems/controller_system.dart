@@ -5,10 +5,49 @@ import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
 
 part 'controller_system.g.dart';
+
+@Generate(
+  GenericInputHandlingSystem,
+  allOf: [
+    Camera,
+  ],
+  manager: [
+    SettingsManager,
+  ],
+)
+class KeyboardControllerSystem extends _$KeyboardControllerSystem {
+  KeyboardControllerSystem({List<Element> ignoreInputFromElements = const []})
+      : super(ignoreInputFromElements);
+
+  @override
+  void processEntity(Entity entity) {
+    if (isPressed(KeyCode.M)) {
+      settingsManager.showMinimap = !settingsManager.showMinimap;
+      unpress[KeyCode.M] = true;
+    }
+    if (isPressed(KeyCode.L)) {
+      settingsManager.showLeaderboard = !settingsManager.showLeaderboard;
+      unpress[KeyCode.L] = true;
+    }
+    if (isPressed(KeyCode.N)) {
+      settingsManager.showNicknames = !settingsManager.showNicknames;
+      unpress[KeyCode.N] = true;
+    }
+    if (isPressed(KeyCode.F)) {
+      settingsManager.showFps = !settingsManager.showFps;
+      unpress[KeyCode.F] = true;
+    }
+    if (isPressed(KeyCode.I)) {
+      settingsManager.showDebug = !settingsManager.showDebug;
+      unpress[KeyCode.I] = true;
+    }
+  }
+}
 
 @Generate(
   EntityProcessingSystem,
@@ -20,6 +59,7 @@ part 'controller_system.g.dart';
     GameStateManager,
     CameraManager,
     ControllerManager,
+    SettingsManager,
   ],
 )
 abstract class ControllerSystem extends _$ControllerSystem {
