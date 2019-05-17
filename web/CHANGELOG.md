@@ -6,7 +6,8 @@
 * moving dark energy slowly dissipates even if it's not being absorbed by a damacreat
 
 ## Misc
-* improved analytics 
+* improved analytics
+* visibility of leaderboard can be toogled
 
 ## Bugfixes
 * fixed several bugs introduced by the new netcode

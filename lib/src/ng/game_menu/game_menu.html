@@ -19,6 +19,11 @@
     show minimap
   </label>
   <label>
+    <input type="checkbox" [checked]="settings.showLeaderboard"
+           (change)="settings.showLeaderboard = !settings.showLeaderboard">
+    show leaderboard
+  </label>
+  <label>
     <input type="checkbox" [checked]="settings.showFps" (change)="settings.showFps = !settings.showFps">
     show FPS
   </label>

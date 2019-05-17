@@ -12,6 +12,7 @@ class SettingsManager extends Manager {
   bool _showDebug = false;
   bool _showNicknames = true;
   bool _showMinimap = true;
+  bool _showLeaderboard = true;
   bool doNotTrack = '1' == window.navigator.doNotTrack;
   bool _allowAnalytics = '1' != window.navigator.doNotTrack;
 
@@ -23,6 +24,7 @@ class SettingsManager extends Manager {
     _showFps = await _getValue(showFpsKey, _showFps);
     _showNicknames = await _getValue(showNicknamesKey, _showNicknames);
     _showMinimap = await _getValue(showMinimapKey, _showMinimap);
+    _showLeaderboard = await _getValue(showLeaderboardKey, _showLeaderboard);
     if (doNotTrack) {
       _allowAnalytics = false;
     } else {
@@ -58,6 +60,13 @@ class SettingsManager extends Manager {
   set showMinimap(bool value) {
     _store.save(value.toString(), showMinimapKey);
     _showMinimap = value;
+  }
+
+  bool get showLeaderboard => _showLeaderboard;
+
+  set showLeaderboard(bool value) {
+    _store.save(value.toString(), showLeaderboardKey);
+    _showLeaderboard = value;
   }
 
   bool get allowAnalytics => !doNotTrack && _allowAnalytics;
