@@ -1,4 +1,4 @@
 <div class="slider-container">
-  <input class="slider" type="range" min="0" max="255" #slider (input)="setHue(slider.value)" [value]="hue">
+  <input class="slider" type="range" min="0" max="255" #slider (input)="setHue(slider.value)" [value]="hue.toString()">
 </div>
 <canvas #preview width="100px" height="100px"></canvas>
