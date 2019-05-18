@@ -60,7 +60,13 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         _initFood(reader);
         break;
       case MessageToClient.initGrowingFood:
-        _initGrowingFood(reader);
+        _initFood(reader, growing: true);
+        break;
+      case MessageToClient.initBlackHole:
+        _initBlackHole(reader);
+        break;
+      case MessageToClient.initGrowingBlackHole:
+        _initBlackHole(reader, growing: true);
         break;
       case MessageToClient.initPlayers:
         _initPlayers(reader);
@@ -267,7 +273,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
-  void _initFood(Uint8ListReader reader) {
+  void _initFood(Uint8ListReader reader, {bool growing = false}) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
@@ -277,6 +283,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Id(id),
         Position(x, y),
         Size(radius),
+        if (growing)
+          Growing(reader.readUint8() / foodSizeFactor,
+              minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
@@ -288,27 +297,31 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
-  void _initGrowingFood(Uint8ListReader reader) {
+  void _initBlackHole(Uint8ListReader reader, {bool growing = false}) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
+      final velocity =
+          ByteUtils.byteToSpeed(reader.readUint16()) * blackHoleSpeedMultiplier;
+      final angle = ByteUtils.byteToAngle(reader.readUint16());
       final radius = reader.readUint8() / foodSizeFactor;
-      final targetRadius = reader.readUint8() / foodSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
         Position(x, y),
+        Velocity(velocity, angle, 0),
         Size(radius),
-        Growing(targetRadius,
-            minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
+        if (growing)
+          Growing(reader.readUint8() / foodSizeFactor,
+              minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1),
+        BlackHole(),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
         Renderable('food', scale: 1 / foodSpriteRadius),
         Orientation(0),
         QuadTreeCandidate(),
       ]);
-
       idManager.add(entity);
     }
   }

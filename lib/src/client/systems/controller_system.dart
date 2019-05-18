@@ -65,6 +65,7 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
 abstract class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   bool useBooster = false;
+  bool fireBlackHole = false;
   int boosterFinger;
   double velocityStrength;
   double velocityAngle;
@@ -74,6 +75,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
   @override
   void processEntity(Entity entity) {
     useBooster = useBooster && boosterMapper[entity].power > 0;
+    fireBlackHole = !useBooster && fireBlackHole;
     boosterMapper[entity].inUse = useBooster;
     if (velocityStrength != null && velocityAngle != null) {
       final velocity = ByteUtils.speedToByte(velocityStrength);
@@ -81,15 +83,21 @@ abstract class ControllerSystem extends _$ControllerSystem {
 
       final type = useBooster
           ? MessageToServer.updateVelocityAndUseBooster
-          : MessageToServer.updateVelocity;
+          : fireBlackHole
+              ? MessageToServer.updateVelocityAndFireBlackHole
+              : MessageToServer.updateVelocity;
       _webSocketHandler.sendData(Uint8ListWriter.clientToServer(type)
         ..writeUint16(velocity)
         ..writeUint16(angle));
     } else if (useBooster) {
       _webSocketHandler
           .sendData(Uint8ListWriter.clientToServer(MessageToServer.useBooster));
+    } else if (fireBlackHole) {
+      _webSocketHandler.sendData(
+          Uint8ListWriter.clientToServer(MessageToServer.fireBlackHole));
     }
     velocityStrength = null;
+    fireBlackHole = false;
   }
 
   @override
@@ -123,13 +131,22 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
     });
     canvas.onMouseDown.listen((event) {
       if (event.buttons & 1 == 1) {
+        fireBlackHole = true;
+      }
+      if (event.buttons & 2 == 2) {
         useBooster = true;
       }
     });
     canvas.onMouseUp.listen((event) {
       if (event.buttons & 1 == 0) {
+        fireBlackHole = false;
+      }
+      if (event.buttons & 2 == 0) {
         useBooster = false;
       }
+    });
+    canvas.onContextMenu.listen((event) {
+      event.preventDefault();
     });
   }
 

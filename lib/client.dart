@@ -19,6 +19,7 @@ import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
+import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
 import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -88,6 +89,7 @@ class Game extends GameBase {
           QuadTreeUpdateChangedPositionSystem(),
           AttractionAccelerationSystem(),
           AccelerationSystem(),
+          BlackHoleCannonHandlingSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
