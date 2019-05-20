@@ -318,7 +318,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         BlackHole(),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
-        Renderable('food', scale: 1 / foodSpriteRadius),
+//        Renderable('food', scale: 1 / foodSpriteRadius),
         Orientation(0),
         QuadTreeCandidate(),
       ]);

@@ -8,6 +8,7 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
+import 'package:damacreat_io/src/client/systems/rendering/black_hole_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
@@ -109,6 +110,7 @@ class Game extends GameBase {
           SpriteRenderingSystem(gl, spriteSheet),
           ParticleRenderingSystem(gl),
           PlayerRenderingSystem(gl),
+          BlackHoleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
           RankingRenderingSystem(hudCtx),
