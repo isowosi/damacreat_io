@@ -17,7 +17,10 @@ part 'sprite_rendering_system.g.dart';
     Size,
     Renderable,
   ],
-  manager: [TagManager, ViewProjectionMatrixManager],
+  manager: [
+    TagManager,
+    ViewProjectionMatrixManager,
+  ],
 )
 class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   SpriteSheet sheet;

@@ -7,7 +7,7 @@ import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
 
-part 'events.g.dart';
+part 'web_socket_listening_system.g.dart';
 
 @Generate(
   VoidEntitySystem,
@@ -300,26 +300,27 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initBlackHole(Uint8ListReader reader, {bool growing = false}) {
     while (reader.hasNext) {
       final id = reader.readUint16();
+      print(id);
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
       final velocity =
           ByteUtils.byteToSpeed(reader.readUint16()) * blackHoleSpeedMultiplier;
       final angle = ByteUtils.byteToAngle(reader.readUint16());
-      final radius = reader.readUint8() / foodSizeFactor;
+      final radius = reader.readUint8() / blackHoleSizeFactor;
       final entity = world.createAndAddEntity([
         Id(id),
         Position(x, y),
         Velocity(velocity, angle, 0),
+        ConstantVelocity(),
         Size(radius),
         if (growing)
-          Growing(reader.readUint8() / foodSizeFactor,
-              minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
+          Growing(
+              reader.readUint8() / blackHoleSizeFactor,
+              minBlackHoleGrowthSpeed *
+                  reader.readUint8() /
+                  blackHoleGrowthSpeedFactor),
         Color.fromHsl(0.35, 0.4, 0.4, 1),
         BlackHole(),
-        Food(random.nextDouble() * tau, random.nextDouble() * tau,
-            random.nextDouble() * tau),
-//        Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0),
         QuadTreeCandidate(),
       ]);
       idManager.add(entity);

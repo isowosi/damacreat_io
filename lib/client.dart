@@ -24,7 +24,7 @@ import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_syste
 import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
-import 'src/client/systems/events.dart';
+import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
 import 'src/client/systems/rendering.dart';
 
 class Game extends GameBase {
@@ -80,7 +80,7 @@ class Game extends GameBase {
           GamepadControllerSystem(webSocketHandler),
           KeyboardControllerSystem(ignoreInputFromElements: inputs),
           // logic
-          FoodGrowingSystem(),
+          GrowingSystem(),
           FoodSizeLossSystem(),
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),

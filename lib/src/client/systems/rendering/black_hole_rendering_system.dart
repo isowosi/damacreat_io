@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:web_gl';
 
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -13,6 +14,7 @@ part 'black_hole_rendering_system.g.dart';
     Position,
     Size,
     BlackHole,
+    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
@@ -32,6 +34,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   void processEntity(int index, Entity entity) {
+    print(entity);
     final position = positionMapper[entity];
     final size = sizeMapper[entity];
     final radius = size.radius;

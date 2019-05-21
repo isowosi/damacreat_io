@@ -29,23 +29,6 @@ abstract class _$OnScreenTagSystem extends EntitySystem {
   }
 }
 
-abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
-  Mapper<Food> foodMapper;
-  Mapper<Size> sizeMapper;
-  Mapper<Growing> growingMapper;
-  _$FoodGrowingSystem()
-      : super(Aspect.empty()
-          ..allOf([Food, Size, Growing])
-          ..exclude([DigestedBy]));
-  @override
-  void initialize() {
-    super.initialize();
-    foodMapper = Mapper<Food>(world);
-    sizeMapper = Mapper<Size>(world);
-    growingMapper = Mapper<Growing>(world);
-  }
-}
-
 abstract class _$RemoveTemporaryComponentsSystem
     extends EntityProcessingSystem {
   Mapper<ChangedPosition> changedPositionMapper;

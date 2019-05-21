@@ -10,17 +10,19 @@ abstract class _$BlackHoleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Position> positionMapper;
   Mapper<Size> sizeMapper;
   Mapper<BlackHole> blackHoleMapper;
+  Mapper<OnScreen> onScreenMapper;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   TagManager tagManager;
   CameraManager cameraManager;
   _$BlackHoleRenderingSystem(RenderingContext gl)
-      : super(gl, Aspect.empty()..allOf([Position, Size, BlackHole]));
+      : super(gl, Aspect.empty()..allOf([Position, Size, BlackHole, OnScreen]));
   @override
   void initialize() {
     super.initialize();
     positionMapper = Mapper<Position>(world);
     sizeMapper = Mapper<Size>(world);
     blackHoleMapper = Mapper<BlackHole>(world);
+    onScreenMapper = Mapper<OnScreen>(world);
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
