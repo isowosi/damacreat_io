@@ -300,7 +300,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _initBlackHole(Uint8ListReader reader, {bool growing = false}) {
     while (reader.hasNext) {
       final id = reader.readUint16();
-      print(id);
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
       final velocity =

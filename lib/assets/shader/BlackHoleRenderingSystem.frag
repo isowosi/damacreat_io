@@ -15,13 +15,14 @@ void main() {
     } else if (distToCenter < 0.1) {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     } else {
-        pointCoord = pointCoord / 4.0 + vec2(0.375, 0.375);
-        pointCoord *= vec2(vBlackHoleSize, -vBlackHoleSize * uSize.y / uSize.x);
-        float blackHoleStrength = (0.45 - distToCenter) / 0.4;
-        blackHoleStrength *= blackHoleStrength;
-        float roatationAngle = blackHoleStrength * 3.14159 * 2.0;
-        vec2 rotated = mat2(cos(roatationAngle), -sin(roatationAngle), sin(roatationAngle), cos(roatationAngle)) * pointCoord * blackHoleStrength;
-        vec2 offsetCoord = (rotated + gl_FragCoord.xy)/uSize;
+        vec2 blackHoleCenter = (vec2(1.0, 1.0) + vBlackHoleCenter) / 2.0 * uSize;
+        float stretchedLength = distToCenter / 2.0 + 0.25;
+        pointCoord = pointCoord * stretchedLength / distToCenter;
+        pointCoord *= vec2(vBlackHoleSize, -vBlackHoleSize);
+        float blackHoleStrength = pow((0.5 - distToCenter) / 0.4, 2.0);
+        float roatationAngle = blackHoleStrength * 3.14159 * 0.75;
+        vec2 rotated = mat2(cos(roatationAngle), -sin(roatationAngle), sin(roatationAngle), cos(roatationAngle)) * pointCoord;
+        vec2 offsetCoord = (rotated + blackHoleCenter.xy)/uSize;
 
         vec4 texColor = texture2D(uBackground, offsetCoord);
         texColor = texColor * texColor.a;

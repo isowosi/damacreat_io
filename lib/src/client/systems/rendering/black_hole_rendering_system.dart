@@ -34,7 +34,6 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   void processEntity(int index, Entity entity) {
-    print(entity);
     final position = positionMapper[entity];
     final size = sizeMapper[entity];
     final radius = size.radius;
