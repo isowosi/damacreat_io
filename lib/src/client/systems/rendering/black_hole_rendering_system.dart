@@ -33,6 +33,23 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   BlackHoleRenderingSystem(RenderingContext gl) : super(gl);
 
   @override
+  void initialize() {
+    super.initialize();
+
+    final texture = gl.createTexture();
+
+    gl
+      ..activeTexture(WebGL.TEXTURE1)
+      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 1)
+      ..bindTexture(WebGL.TEXTURE_2D, texture)
+      ..texParameteri(
+          WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_S, WebGL.CLAMP_TO_EDGE)
+      ..texParameteri(
+          WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_T, WebGL.CLAMP_TO_EDGE)
+      ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.LINEAR);
+  }
+
+  @override
   void processEntity(int index, Entity entity) {
     final position = positionMapper[entity];
     final size = sizeMapper[entity];
@@ -51,27 +68,16 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   void render(int length) {
-    final texture = gl.createTexture();
     final uBackground = gl.getUniformLocation(program, 'uBackground');
-
-    gl
-      ..activeTexture(WebGL.TEXTURE1)
-      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 1)
-      ..bindTexture(WebGL.TEXTURE_2D, texture)
-      ..texParameteri(
-          WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_S, WebGL.CLAMP_TO_EDGE)
-      ..texParameteri(
-          WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_T, WebGL.CLAMP_TO_EDGE)
-      ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.LINEAR)
-      ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
-          WebGL.UNSIGNED_BYTE, gl.canvas)
-      ..uniform1i(uBackground, 1)
-      ..uniform2f(gl.getUniformLocation(program, 'uSize'), gl.canvas.width,
-          gl.canvas.height);
 
     bufferElements(attributes, values, indices);
 
     gl
+      ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
+          WebGL.UNSIGNED_BYTE, gl.canvas)
+      ..uniform1i(uBackground, 1)
+      ..uniform2f(gl.getUniformLocation(program, 'uSize'), gl.canvas.width,
+          gl.canvas.height)
       ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
           false, create2dViewProjectionMatrix().storage)
       ..drawElements(WebGL.POINTS, length, WebGL.UNSIGNED_SHORT, 0);
