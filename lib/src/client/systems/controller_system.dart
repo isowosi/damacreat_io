@@ -53,6 +53,7 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
   EntityProcessingSystem,
   allOf: [
     Booster,
+    BlackHoleCannon,
     Controller,
   ],
   manager: [
@@ -66,7 +67,6 @@ abstract class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   bool useBooster = false;
   bool fireBlackHole = false;
-  int boosterFinger;
   double velocityStrength;
   double velocityAngle;
 
@@ -77,6 +77,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
     useBooster = useBooster && boosterMapper[entity].power > 0;
     fireBlackHole = !useBooster && fireBlackHole;
     boosterMapper[entity].inUse = useBooster;
+    blackHoleCannonMapper[entity].fire = fireBlackHole;
     if (velocityStrength != null && velocityAngle != null) {
       final velocity = ByteUtils.speedToByte(velocityStrength);
       final angle = ByteUtils.angleToByte(velocityAngle);
@@ -105,6 +106,8 @@ abstract class ControllerSystem extends _$ControllerSystem {
 }
 
 class MouseAndTouchControllerSystem extends ControllerSystem {
+  int boosterFinger;
+  int blackHoleFinger;
   CanvasElement canvas;
   MouseAndTouchControllerSystem(this.canvas, WebSocketHandler webSocketHandler)
       : super(webSocketHandler);
@@ -125,6 +128,10 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
         if (touch.identifier == boosterFinger) {
           useBooster = false;
           boosterFinger = null;
+        }
+        if (touch.identifier == blackHoleFinger) {
+          fireBlackHole = false;
+          blackHoleFinger = null;
         }
       }
       event.preventDefault();
@@ -153,16 +160,27 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
   void _handleTouchEvent(TouchEvent event) {
     final boosterOffset = Point<num>(boosterButtonCenterX.toDouble(),
         cameraManager.clientHeight - boosterButtonCenterY.toDouble());
+    final blackHoleCannonOffset = Point<num>(
+        blackHoleCannonButtonCenterX.toDouble(),
+        cameraManager.clientHeight - blackHoleCannonButtonCenterY.toDouble());
     for (final touch in event.targetTouches) {
       final touchOffset = touch.page;
-      if (boosterOffset.distanceTo(touchOffset) <= boosterButtonRadius) {
+      if (boosterOffset.distanceTo(touchOffset) <= actionButtonRadius) {
         useBooster = true;
         boosterFinger = touch.identifier;
+      } else if (blackHoleCannonOffset.distanceTo(touchOffset) <=
+          actionButtonRadius) {
+        fireBlackHole = true;
+        blackHoleFinger = touch.identifier;
       } else {
         _calculateVelocityValues(touchOffset);
         if (boosterFinger == touch.identifier) {
           useBooster = false;
           boosterFinger = null;
+        }
+        if (blackHoleFinger == touch.identifier) {
+          fireBlackHole = false;
+          blackHoleFinger = null;
         }
       }
     }

@@ -348,6 +348,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Thruster(),
         Velocity(0, 0, 0),
         Booster(boosterMaxStartPower),
+        BlackHoleCannon(1),
         Player(nickname),
         QuadTreeCandidate(),
       ];

@@ -21,16 +21,19 @@ abstract class _$KeyboardControllerSystem extends GenericInputHandlingSystem {
 
 abstract class _$ControllerSystem extends EntityProcessingSystem {
   Mapper<Booster> boosterMapper;
+  Mapper<BlackHoleCannon> blackHoleCannonMapper;
   Mapper<Controller> controllerMapper;
   GameStateManager gameStateManager;
   CameraManager cameraManager;
   ControllerManager controllerManager;
   SettingsManager settingsManager;
-  _$ControllerSystem() : super(Aspect.empty()..allOf([Booster, Controller]));
+  _$ControllerSystem()
+      : super(Aspect.empty()..allOf([Booster, BlackHoleCannon, Controller]));
   @override
   void initialize() {
     super.initialize();
     boosterMapper = Mapper<Booster>(world);
+    blackHoleCannonMapper = Mapper<BlackHoleCannon>(world);
     controllerMapper = Mapper<Controller>(world);
     gameStateManager = world.getManager<GameStateManager>();
     cameraManager = world.getManager<CameraManager>();

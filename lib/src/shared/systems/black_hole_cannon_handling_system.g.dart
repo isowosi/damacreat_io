@@ -7,6 +7,6 @@ part of 'black_hole_cannon_handling_system.dart';
 // **************************************************************************
 
 abstract class _$BlackHoleCannonHandlingSystem
-    extends BaseBlackHoleHandlingSystem {
+    extends BaseBlackHoleCannonHandlingSystem {
   _$BlackHoleCannonHandlingSystem() : super(Aspect.empty());
 }
