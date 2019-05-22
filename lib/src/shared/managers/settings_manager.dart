@@ -80,7 +80,7 @@ class SettingsManager extends Manager {
   void _handleAnalytics() {
     if (_allowAnalytics) {
       final gtag = ScriptElement()
-        ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-1'
+        ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-2'
         ..defer = true;
       final config = {
         'anonymize_ip': true,
@@ -94,7 +94,7 @@ class SettingsManager extends Manager {
       dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'UA-99122887-1', ${jsonEncode(config)});
+    gtag('config', 'UA-99122887-2', ${jsonEncode(config)});
       ''';
       document.head.append(gtag);
       document.head.append(gtagConfig);
