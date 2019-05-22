@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
+import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
@@ -41,7 +42,9 @@ class GameService {
 
   void startGame() {
     runZoned(() {
-      final webSocket = WebSocket('wss://ws.damacreat.io/v0/');
+      final minorVersion = int.parse(packageVersion.split('.')[1]);
+      final urlVersion = (minorVersion + 1) % 2;
+      final webSocket = WebSocket('wss://ws.damacreat.io/v$urlVersion/');
       webSocket.onOpen.listen((openEvent) {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
