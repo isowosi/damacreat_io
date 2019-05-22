@@ -1,9 +1,11 @@
 # 0.10.0 (2019-05-??)
 
 ## Gameplay
-* increased loss of size over time for bigger players and reduced for smaller players
+* increased loss of size over time for bigger damacreats and reduced for smaller damacreats
 * generate less dark energy when a player disconnects
 * moving dark energy slowly dissipates even if it's not being absorbed by a damacreat
+* added black holes to the world, black holes reduce the size of nearby damacreats (as long as the damacreat has a score of at least 30)
+* damacreats can fire black holes with their black hole cannon (can be fire before it's loaded fully, but the resulting black hole will be smaller and shorter lived)
 
 ## Misc
 * improved analytics
