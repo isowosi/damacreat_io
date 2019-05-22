@@ -16,11 +16,19 @@ part 'controller_system.g.dart';
   allOf: [
     Camera,
   ],
+  mapper: [
+    Controller,
+  ],
   manager: [
     SettingsManager,
+    TagManager,
+  ],
+  systems: [
+    MouseAndTouchControllerSystem,
   ],
 )
 class KeyboardControllerSystem extends _$KeyboardControllerSystem {
+  bool useBooster = false;
   KeyboardControllerSystem({List<Element> ignoreInputFromElements = const []})
       : super(ignoreInputFromElements);
 
@@ -45,6 +53,20 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
     if (isPressed(KeyCode.I)) {
       settingsManager.showDebug = !settingsManager.showDebug;
       unpress[KeyCode.I] = true;
+    }
+    print(mouseAndTouchControllerSystem);
+    if (mouseAndTouchControllerSystem != null &&
+        controllerMapper.has(tagManager.getEntity(cameraTag))) {
+      if (isPressed(KeyCode.SPACE)) {
+        mouseAndTouchControllerSystem.useBooster = true;
+        useBooster = true;
+      } else if (!isPressed(KeyCode.SPACE) && useBooster) {
+        mouseAndTouchControllerSystem.useBooster = false;
+        useBooster = false;
+      } else if (isPressed(KeyCode.W)) {
+        mouseAndTouchControllerSystem.fireBlackHole = true;
+        unpress[KeyCode.W] = true;
+      }
     }
   }
 }

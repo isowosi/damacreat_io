@@ -8,14 +8,21 @@ part of 'controller_system.dart';
 
 abstract class _$KeyboardControllerSystem extends GenericInputHandlingSystem {
   Mapper<Camera> cameraMapper;
+  Mapper<Controller> controllerMapper;
+  MouseAndTouchControllerSystem mouseAndTouchControllerSystem;
   SettingsManager settingsManager;
+  TagManager tagManager;
   _$KeyboardControllerSystem(List<Element> ignoreInputFromElements)
       : super(Aspect.empty()..allOf([Camera]), ignoreInputFromElements);
   @override
   void initialize() {
     super.initialize();
     cameraMapper = Mapper<Camera>(world);
+    controllerMapper = Mapper<Controller>(world);
+    mouseAndTouchControllerSystem =
+        world.getSystem<MouseAndTouchControllerSystem>();
     settingsManager = world.getManager<SettingsManager>();
+    tagManager = world.getManager<TagManager>();
   }
 }
 
