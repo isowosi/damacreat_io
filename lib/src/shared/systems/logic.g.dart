@@ -29,23 +29,6 @@ abstract class _$OnScreenTagSystem extends EntitySystem {
   }
 }
 
-abstract class _$FoodGrowingSystem extends EntityProcessingSystem {
-  Mapper<Food> foodMapper;
-  Mapper<Size> sizeMapper;
-  Mapper<Growing> growingMapper;
-  _$FoodGrowingSystem()
-      : super(Aspect.empty()
-          ..allOf([Food, Size, Growing])
-          ..exclude([DigestedBy]));
-  @override
-  void initialize() {
-    super.initialize();
-    foodMapper = Mapper<Food>(world);
-    sizeMapper = Mapper<Size>(world);
-    growingMapper = Mapper<Growing>(world);
-  }
-}
-
 abstract class _$RemoveTemporaryComponentsSystem
     extends EntityProcessingSystem {
   Mapper<ChangedPosition> changedPositionMapper;
@@ -86,25 +69,6 @@ abstract class _$ExpirationSystem extends EntityProcessingSystem {
   void initialize() {
     super.initialize();
     lifetimeMapper = Mapper<Lifetime>(world);
-  }
-}
-
-abstract class _$EntityInteractionSystem extends BaseEntityInteractionSystem {
-  Mapper<Wobble> wobbleMapper;
-  Mapper<CellWall> cellWallMapper;
-  Mapper<Orientation> orientationMapper;
-  Mapper<OnScreen> onScreenMapper;
-  TagManager tagManager;
-  _$EntityInteractionSystem()
-      : super(Aspect.empty()..allOf([Wobble, CellWall, Orientation, OnScreen]));
-  @override
-  void initialize() {
-    super.initialize();
-    wobbleMapper = Mapper<Wobble>(world);
-    cellWallMapper = Mapper<CellWall>(world);
-    orientationMapper = Mapper<Orientation>(world);
-    onScreenMapper = Mapper<OnScreen>(world);
-    tagManager = world.getManager<TagManager>();
   }
 }
 
@@ -309,5 +273,22 @@ abstract class _$AccelerationSystem extends EntityProcessingSystem {
     accelerationMapper = Mapper<Acceleration>(world);
     velocityMapper = Mapper<Velocity>(world);
     orientationMapper = Mapper<Orientation>(world);
+  }
+}
+
+abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
+  Mapper<Color> colorMapper;
+  Mapper<Position> positionMapper;
+  Mapper<Renderable> renderableMapper;
+  Mapper<Velocity> velocityMapper;
+  _$FoodSizeLossSystem()
+      : super(Aspect.empty()..allOf([Color, Position, Renderable, Velocity]));
+  @override
+  void initialize() {
+    super.initialize();
+    colorMapper = Mapper<Color>(world);
+    positionMapper = Mapper<Position>(world);
+    renderableMapper = Mapper<Renderable>(world);
+    velocityMapper = Mapper<Velocity>(world);
   }
 }

@@ -25,12 +25,6 @@ class OnScreen extends Component {}
 
 class DigestionComplete extends Component {}
 
-class Lifetime extends Component {
-  double timeLeft, timeMax;
-
-  Lifetime(this.timeMax) : timeLeft = timeMax;
-}
-
 class Thruster extends Component {}
 
 class ThrusterParticle extends Component {}

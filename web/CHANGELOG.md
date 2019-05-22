@@ -1,3 +1,21 @@
+# 0.10.0 (2019-05-22)
+
+## Gameplay
+* increased loss of size over time for bigger damacreats and reduced for smaller damacreats
+* generate less dark energy when a player disconnects
+* moving dark energy slowly dissipates even if it's not being absorbed by a damacreat
+* added black holes to the world, black holes reduce the size of nearby damacreats (as long as the damacreat has a score of at least 30)
+* damacreats can fire black holes with their black hole cannon (can be fire before it's loaded fully, but the resulting black hole will be smaller and shorter lived)
+
+## Misc
+* improved analytics
+* visibility of leaderboard can be toogled
+* added keyboard shortcuts for nicknames, leaderboard, fps, debug info and the minimap
+
+## Bugfixes
+* fixed several bugs introduced by the new netcode
+* exhaust dark energy created by boosting was not correctly displayed when created by very large damacreats
+
 # 0.9.0 (2019-04-06)
 
 ## Gameplay

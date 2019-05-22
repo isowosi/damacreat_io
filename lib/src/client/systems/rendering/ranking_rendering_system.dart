@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:dartemis/dartemis.dart';
 
 part 'ranking_rendering_system.g.dart';
@@ -18,6 +19,7 @@ part 'ranking_rendering_system.g.dart';
   ],
   manager: [
     CameraManager,
+    SettingsManager,
   ],
 )
 class RankingRenderingSystem extends _$RankingRenderingSystem {
@@ -104,6 +106,9 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
           cameraManager.clientWidth - leaderboardWidth, y)
       ..fillText('$value', cameraManager.clientWidth - scoreWidth - 5, y);
   }
+
+  @override
+  bool checkProcessing() => settingsManager.showLeaderboard;
 }
 
 class Score {

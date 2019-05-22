@@ -5,27 +5,90 @@ import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
+import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
 
 part 'controller_system.g.dart';
 
 @Generate(
+  GenericInputHandlingSystem,
+  allOf: [
+    Camera,
+  ],
+  mapper: [
+    Controller,
+  ],
+  manager: [
+    SettingsManager,
+    TagManager,
+  ],
+  systems: [
+    MouseAndTouchControllerSystem,
+  ],
+)
+class KeyboardControllerSystem extends _$KeyboardControllerSystem {
+  bool useBooster = false;
+  KeyboardControllerSystem({List<Element> ignoreInputFromElements = const []})
+      : super(ignoreInputFromElements);
+
+  @override
+  void processEntity(Entity entity) {
+    if (isPressed(KeyCode.M)) {
+      settingsManager.showMinimap = !settingsManager.showMinimap;
+      unpress[KeyCode.M] = true;
+    }
+    if (isPressed(KeyCode.L)) {
+      settingsManager.showLeaderboard = !settingsManager.showLeaderboard;
+      unpress[KeyCode.L] = true;
+    }
+    if (isPressed(KeyCode.N)) {
+      settingsManager.showNicknames = !settingsManager.showNicknames;
+      unpress[KeyCode.N] = true;
+    }
+    if (isPressed(KeyCode.F)) {
+      settingsManager.showFps = !settingsManager.showFps;
+      unpress[KeyCode.F] = true;
+    }
+    if (isPressed(KeyCode.I)) {
+      settingsManager.showDebug = !settingsManager.showDebug;
+      unpress[KeyCode.I] = true;
+    }
+    print(mouseAndTouchControllerSystem);
+    if (mouseAndTouchControllerSystem != null &&
+        controllerMapper.has(tagManager.getEntity(cameraTag))) {
+      if (isPressed(KeyCode.SPACE)) {
+        mouseAndTouchControllerSystem.useBooster = true;
+        useBooster = true;
+      } else if (!isPressed(KeyCode.SPACE) && useBooster) {
+        mouseAndTouchControllerSystem.useBooster = false;
+        useBooster = false;
+      } else if (isPressed(KeyCode.W)) {
+        mouseAndTouchControllerSystem.fireBlackHole = true;
+        unpress[KeyCode.W] = true;
+      }
+    }
+  }
+}
+
+@Generate(
   EntityProcessingSystem,
   allOf: [
     Booster,
+    BlackHoleCannon,
     Controller,
   ],
   manager: [
     GameStateManager,
     CameraManager,
     ControllerManager,
+    SettingsManager,
   ],
 )
 abstract class ControllerSystem extends _$ControllerSystem {
   WebSocketHandler _webSocketHandler;
   bool useBooster = false;
-  int boosterFinger;
+  bool fireBlackHole = false;
   double velocityStrength;
   double velocityAngle;
 
@@ -34,22 +97,30 @@ abstract class ControllerSystem extends _$ControllerSystem {
   @override
   void processEntity(Entity entity) {
     useBooster = useBooster && boosterMapper[entity].power > 0;
+    fireBlackHole = !useBooster && fireBlackHole;
     boosterMapper[entity].inUse = useBooster;
+    blackHoleCannonMapper[entity].fire = fireBlackHole;
     if (velocityStrength != null && velocityAngle != null) {
       final velocity = ByteUtils.speedToByte(velocityStrength);
       final angle = ByteUtils.angleToByte(velocityAngle);
 
       final type = useBooster
           ? MessageToServer.updateVelocityAndUseBooster
-          : MessageToServer.updateVelocity;
+          : fireBlackHole
+              ? MessageToServer.updateVelocityAndFireBlackHole
+              : MessageToServer.updateVelocity;
       _webSocketHandler.sendData(Uint8ListWriter.clientToServer(type)
         ..writeUint16(velocity)
         ..writeUint16(angle));
     } else if (useBooster) {
       _webSocketHandler
           .sendData(Uint8ListWriter.clientToServer(MessageToServer.useBooster));
+    } else if (fireBlackHole) {
+      _webSocketHandler.sendData(
+          Uint8ListWriter.clientToServer(MessageToServer.fireBlackHole));
     }
     velocityStrength = null;
+    fireBlackHole = false;
   }
 
   @override
@@ -57,6 +128,8 @@ abstract class ControllerSystem extends _$ControllerSystem {
 }
 
 class MouseAndTouchControllerSystem extends ControllerSystem {
+  int boosterFinger;
+  int blackHoleFinger;
   CanvasElement canvas;
   MouseAndTouchControllerSystem(this.canvas, WebSocketHandler webSocketHandler)
       : super(webSocketHandler);
@@ -78,34 +151,58 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
           useBooster = false;
           boosterFinger = null;
         }
+        if (touch.identifier == blackHoleFinger) {
+          fireBlackHole = false;
+          blackHoleFinger = null;
+        }
       }
       event.preventDefault();
     });
     canvas.onMouseDown.listen((event) {
       if (event.buttons & 1 == 1) {
+        fireBlackHole = true;
+      }
+      if (event.buttons & 2 == 2) {
         useBooster = true;
       }
     });
     canvas.onMouseUp.listen((event) {
       if (event.buttons & 1 == 0) {
+        fireBlackHole = false;
+      }
+      if (event.buttons & 2 == 0) {
         useBooster = false;
       }
+    });
+    canvas.onContextMenu.listen((event) {
+      event.preventDefault();
     });
   }
 
   void _handleTouchEvent(TouchEvent event) {
     final boosterOffset = Point<num>(boosterButtonCenterX.toDouble(),
         cameraManager.clientHeight - boosterButtonCenterY.toDouble());
+    final blackHoleCannonOffset = Point<num>(
+        blackHoleCannonButtonCenterX.toDouble(),
+        cameraManager.clientHeight - blackHoleCannonButtonCenterY.toDouble());
     for (final touch in event.targetTouches) {
       final touchOffset = touch.page;
-      if (boosterOffset.distanceTo(touchOffset) <= boosterButtonRadius) {
+      if (boosterOffset.distanceTo(touchOffset) <= actionButtonRadius) {
         useBooster = true;
         boosterFinger = touch.identifier;
+      } else if (blackHoleCannonOffset.distanceTo(touchOffset) <=
+          actionButtonRadius) {
+        fireBlackHole = true;
+        blackHoleFinger = touch.identifier;
       } else {
         _calculateVelocityValues(touchOffset);
         if (boosterFinger == touch.identifier) {
           useBooster = false;
           boosterFinger = null;
+        }
+        if (blackHoleFinger == touch.identifier) {
+          fireBlackHole = false;
+          blackHoleFinger = null;
         }
       }
     }
@@ -126,6 +223,7 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
 }
 
 class GamepadControllerSystem extends ControllerSystem {
+  bool fireBlackHolesButtonReleased = true;
   GamepadControllerSystem(WebSocketHandler webSocketHandler)
       : super(webSocketHandler);
 
@@ -138,10 +236,17 @@ class GamepadControllerSystem extends ControllerSystem {
     } else {
       final x = (gamepad.axes[0] * 100).round() / 100;
       final y = -(gamepad.axes[1] * 100).round() / 100;
-      if (gamepad.buttons[0].pressed) {
+      if (gamepad.buttons[1].pressed) {
         useBooster = true;
       } else {
         useBooster = false;
+      }
+      if (gamepad.buttons[0].pressed && fireBlackHolesButtonReleased) {
+        fireBlackHole = true;
+        fireBlackHolesButtonReleased = false;
+      } else if (!gamepad.buttons[0].pressed) {
+        fireBlackHole = false;
+        fireBlackHolesButtonReleased = true;
       }
       velocityStrength = sqrt(x * x + y * y);
       if (velocityAngle == null || y != 0 || x != 0) {

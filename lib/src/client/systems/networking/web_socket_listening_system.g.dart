@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'events.dart';
+part of 'web_socket_listening_system.dart';
 
 // **************************************************************************
 // SystemGenerator

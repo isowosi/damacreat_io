@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 import 'dart:js';
 
@@ -11,6 +12,7 @@ class SettingsManager extends Manager {
   bool _showDebug = false;
   bool _showNicknames = true;
   bool _showMinimap = true;
+  bool _showLeaderboard = true;
   bool doNotTrack = '1' == window.navigator.doNotTrack;
   bool _allowAnalytics = '1' != window.navigator.doNotTrack;
 
@@ -22,6 +24,7 @@ class SettingsManager extends Manager {
     _showFps = await _getValue(showFpsKey, _showFps);
     _showNicknames = await _getValue(showNicknamesKey, _showNicknames);
     _showMinimap = await _getValue(showMinimapKey, _showMinimap);
+    _showLeaderboard = await _getValue(showLeaderboardKey, _showLeaderboard);
     if (doNotTrack) {
       _allowAnalytics = false;
     } else {
@@ -59,6 +62,13 @@ class SettingsManager extends Manager {
     _showMinimap = value;
   }
 
+  bool get showLeaderboard => _showLeaderboard;
+
+  set showLeaderboard(bool value) {
+    _store.save(value.toString(), showLeaderboardKey);
+    _showLeaderboard = value;
+  }
+
   bool get allowAnalytics => !doNotTrack && _allowAnalytics;
 
   set allowAnalytics(bool value) {
@@ -70,8 +80,13 @@ class SettingsManager extends Manager {
   void _handleAnalytics() {
     if (_allowAnalytics) {
       final gtag = ScriptElement()
-        ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-2'
+        ..src = 'https://www.googletagmanager.com/gtag/js?id=UA-99122887-1'
         ..defer = true;
+      final config = {
+        'anonymize_ip': true,
+        'transport_type': 'beacon',
+        'custom_map': {'metric1': 'fps', 'metric2': 'fpscount'}
+      };
       final gtagConfig = ScriptElement()
         ..text = '''
     window.dataLayer = window.dataLayer || [];
@@ -79,8 +94,7 @@ class SettingsManager extends Manager {
       dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'UA-99122887-2', {'anonymize_ip': true});
-    ga('create', 'UA-XXXXX-Y', {'storage': 'none'});
+    gtag('config', 'UA-99122887-1', ${jsonEncode(config)});
       ''';
       document.head.append(gtag);
       document.head.append(gtagConfig);

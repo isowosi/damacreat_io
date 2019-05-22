@@ -8,33 +8,41 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
-import 'package:damacreat_io/src/client/systems/rendering/boost_button_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/black_hole_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/action_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
+import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
+import 'package:damacreat_io/src/shared/systems/black_hole_interaction_system.dart';
 import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
+import 'package:damacreat_io/src/shared/systems/player_interaction_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
-import 'src/client/systems/events.dart';
+import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
 import 'src/client/systems/rendering.dart';
 
 class Game extends GameBase {
   CanvasElement hudCanvas;
   CanvasRenderingContext2D hudCtx;
   DivElement container;
+  double timeSinceStart = 0;
+  bool fpsLogged = false;
   final WebSocketHandler webSocketHandler;
   final SettingsManager settingsManager;
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
-
+  final AnalyticsManager analyticsManager;
+  final List<Element> inputs;
   Game(this.webSocketHandler, this.settingsManager, this.gameStateManager,
-      this.controllerManager)
+      this.controllerManager, this.analyticsManager, this.inputs)
       : super('damacreat_io', '#game',
             webgl: true,
             depthTest: false,
@@ -56,6 +64,7 @@ class Game extends GameBase {
       ..addManager(settingsManager)
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
+      ..addManager(analyticsManager)
       ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
@@ -71,8 +80,10 @@ class Game extends GameBase {
           WebSocketListeningSystem(webSocketHandler),
           MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
           GamepadControllerSystem(webSocketHandler),
+          KeyboardControllerSystem(ignoreInputFromElements: inputs),
           // logic
-          FoodGrowingSystem(),
+          GrowingSystem(),
+          FoodSizeLossSystem(),
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
@@ -81,6 +92,7 @@ class Game extends GameBase {
           QuadTreeUpdateChangedPositionSystem(),
           AttractionAccelerationSystem(),
           AccelerationSystem(),
+          BlackHoleCannonHandlingSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
@@ -89,7 +101,8 @@ class Game extends GameBase {
           CellWallSystem(),
           CellWallDigestedBySystem(),
           ThrusterCellWallWeakeningSystem(),
-          EntityInteractionSystem(),
+          PlayerInteractionSystem(),
+          BlackHoleInteractionSystem(),
           ThrusterParticleEmissionSystem(),
           ThrusterParticleColorModificationSystem(),
           FoodColoringSystem(),
@@ -100,13 +113,14 @@ class Game extends GameBase {
           SpriteRenderingSystem(gl, spriteSheet),
           ParticleRenderingSystem(gl),
           PlayerRenderingSystem(gl),
+          BlackHoleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
           RankingRenderingSystem(hudCtx),
           DamacreatFpsRenderingSystem(hudCtx, 'grey'),
           DebugSystem(hudCtx, webSocketHandler),
           MinimapRenderingSystem(hudCtx),
-          BoostButtonRenderingSystem(hudCtx),
+          ActionButtonRenderingSystem(hudCtx),
           // cleanup
           BoosterHandlingSystem(),
           ExpirationSystem(),
@@ -143,5 +157,17 @@ class Game extends GameBase {
         additionalDynamicLength: 1 + utf8nickname.length)
       ..writeUint8(color)
       ..writeUint8List(utf8nickname));
+  }
+
+  @override
+  void update({double time}) {
+    super.update(time: time);
+    if (!fpsLogged) {
+      timeSinceStart += world.delta;
+      if (timeSinceStart > 15) {
+        analyticsManager.logFps(world.frame(0) ~/ timeSinceStart);
+        fpsLogged = true;
+      }
+    }
   }
 }

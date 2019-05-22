@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
@@ -25,7 +26,11 @@ class GameService {
   final SettingsManager settings;
   final GameStateManager gameStateManager;
   final ControllerManager controllerManager;
-  GameService(this.settings, this.gameStateManager, this.controllerManager);
+  final AnalyticsManager analyticsManager;
+
+  final List<Element> inputs = [];
+  GameService(this.settings, this.gameStateManager, this.controllerManager,
+      this.analyticsManager);
 
   Future<void> init() async {
     hue = random.nextInt(256);
@@ -40,8 +45,8 @@ class GameService {
       webSocket.onOpen.listen((openEvent) {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
-        _game = Game(
-            webSocketHandler, settings, gameStateManager, controllerManager)
+        _game = Game(webSocketHandler, settings, gameStateManager,
+            controllerManager, analyticsManager, inputs)
           ..start();
         window.onBeforeUnload.listen((_) {
           webSocket.close();
@@ -49,6 +54,12 @@ class GameService {
       });
       webSocket.onError.listen((errorEvent) {
         connectionState = ServerConnectionState.error;
+        analyticsManager.serverDown();
+      });
+      webSocket.onClose.listen((data) {
+        if (data.code == 1006) {
+          analyticsManager.connectionLost();
+        }
       });
 
       if (window.navigator.getGamepads != null) {
@@ -71,6 +82,7 @@ class GameService {
       this.errorMessage = errorMessage;
       // ignore: avoid_as
       this.stackTrace = stackTrace as StackTrace;
+      analyticsManager.clientError(errorMessage.toString());
     });
   }
 
@@ -101,6 +113,7 @@ class GameService {
       }
       _game.joinGame(hue ?? random.nextInt(256), nickname);
       gameStateManager.state = GameState.playing;
+      analyticsManager.joinGame(defaultNickname: nickname.isEmpty);
     }
   }
 

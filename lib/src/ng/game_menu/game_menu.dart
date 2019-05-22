@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:angular/angular.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/src/ng/color_picker/color_picker.dart';
@@ -15,8 +17,10 @@ import 'package:damacreat_io/src/version.dart';
     ColorPickerComponent,
   ],
 )
-class GameMenuComponent {
+class GameMenuComponent implements AfterViewInit {
   GameService service;
+  @ViewChildren('nicknameinput, ')
+  List<Element> inputs;
   GameMenuComponent(this.service);
 
   void joinGame() {
@@ -43,4 +47,9 @@ class GameMenuComponent {
   String get version => packageVersion;
   String get nickname => service.nickname;
   set nickname(String value) => service.nickname = value;
+
+  @override
+  void ngAfterViewInit() {
+    service.inputs.addAll(inputs);
+  }
 }

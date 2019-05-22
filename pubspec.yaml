@@ -1,9 +1,9 @@
 name: damacreat_io
-version: 0.9.0
+version: 0.10.0-dev
 description: Client for damacreat
 publish_to: none
 environment:
-  sdk: '>=2.2.0 <3.0.0'
+  sdk: '>=2.3.0 <3.0.0'
 dependencies:
   dartemis:
     git:

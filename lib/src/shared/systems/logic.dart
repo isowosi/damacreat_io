@@ -52,34 +52,6 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
 
 @Generate(
   EntityProcessingSystem,
-  allOf: [
-    Food,
-    Size,
-    Growing,
-  ],
-  exclude: [
-    DigestedBy,
-  ],
-)
-class FoodGrowingSystem extends _$FoodGrowingSystem {
-  @override
-  void processEntity(Entity entity) {
-    final s = sizeMapper[entity];
-    final g = growingMapper[entity];
-
-    s.radius += g.speed * world.delta;
-
-    if (s.radius >= g.targetRadius) {
-      s.radius = g.targetRadius;
-      entity
-        ..removeComponent<Growing>()
-        ..changedInWorld();
-    }
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
   oneOf: [
     ChangedPosition,
     OnScreen,
@@ -159,142 +131,6 @@ class ExpirationSystem extends _$ExpirationSystem {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
     if (l.timeLeft <= 0) {
       entity.deleteFromWorld();
-    }
-  }
-}
-
-@Generate(
-  BaseEntityInteractionSystem,
-  allOf: [
-    Wobble,
-    CellWall,
-    Orientation,
-    OnScreen,
-  ],
-  manager: [
-    TagManager,
-  ],
-)
-class EntityInteractionSystem extends _$EntityInteractionSystem {
-  double angleToSegmentFactor = playerCircleFragments / (2 * pi);
-
-  @override
-  void startDigestion(Entity player, Entity food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
-    final colliderOrientation = orientationMapper[player];
-    final angle = atan2(distY, distX) - colliderOrientation.angle;
-    final fragment = (angle * angleToSegmentFactor).round();
-    final sizeRelation = foodRadius / playerRadius;
-    final fragmentRange = getFragmentRange(sizeRelation);
-    final colliderWobble = wobbleMapper[player];
-    final additionalDistRelation =
-        (dist + foodRadius - playerRadius) / playerRadius;
-    for (var i = -fragmentRange + 1; i <= fragmentRange; i++) {
-      final fragmentIndex = (fragment + i) % playerCircleFragments;
-      final old = colliderWobble.wobbleFactor[fragmentIndex];
-      colliderWobble.wobbleFactor[fragmentIndex] = max(
-          old,
-          1 +
-              additionalDistRelation *
-                  (1 - i * i / (fragmentRange * fragmentRange)));
-    }
-  }
-
-  int getFragmentRange(double sizeRelation) =>
-      (sizeRelation * playerCircleFragments ~/ 4).round();
-
-  @override
-  void touch(Entity player, Entity food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
-    final colliderOrientation = orientationMapper[player];
-    final angle = atan2(distY, distX) - colliderOrientation.angle;
-    final fragment = (angle * angleToSegmentFactor).round();
-    final sizeRelation = foodRadius / playerRadius;
-    final fragmentRange = getFragmentRange(sizeRelation);
-    final colliderWobble = wobbleMapper[player];
-    final distRelation = (playerRadius + foodRadius - dist) / foodRadius;
-    final colliderCellWall = cellWallMapper[player];
-    final fragmentRangePow3 = fragmentRange * fragmentRange * fragmentRange;
-    final fragmentRangePow4 = fragmentRangePow3 * fragmentRange;
-    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
-      final fragmentIndex = (fragment + index) % playerCircleFragments;
-      final old = colliderWobble.wobbleFactor[fragmentIndex];
-      final indexSq = index * index;
-      colliderWobble.wobbleFactor[fragmentIndex] = min(
-          old,
-          1 -
-              sizeRelation *
-                  distRelation *
-                  (1 - indexSq * indexSq / fragmentRangePow4));
-      colliderCellWall.strengthFactor[fragmentIndex] =
-          1 - distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
-    }
-  }
-
-  @override
-  void almostDigestion(Entity player, Entity food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
-    final colliderOrientation = orientationMapper[player];
-    final angle = atan2(distY, distX) - colliderOrientation.angle;
-    final fragment = (angle * angleToSegmentFactor).round();
-    final sizeRelation = foodRadius / playerRadius;
-    final fragmentRange = getFragmentRange(sizeRelation);
-    final colliderWobble = wobbleMapper[player];
-    final distRelation = (playerRadius + foodRadius - dist) / foodRadius;
-    final colliderCellWall = cellWallMapper[player];
-    final additionalDistRelation =
-        (dist + foodRadius - playerRadius) / playerRadius;
-    final fragmentRangePow2 = fragmentRange * fragmentRange;
-    final fragmentRangePow3 = fragmentRangePow2 * fragmentRange;
-    final fragmentRangePow4 = fragmentRangePow3 * fragmentRange;
-    var pressingEnvelopedRatio =
-        (playerRadius + foodRadius - dist - foodRadius / 2) / (foodRadius / 2);
-    pressingEnvelopedRatio *= pressingEnvelopedRatio;
-    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
-      final fragmentIndex = (fragment + index) % playerCircleFragments;
-      final old = colliderWobble.wobbleFactor[fragmentIndex];
-      final indexSq = index * index;
-      final enveloped = max(
-          old, 1 + additionalDistRelation * (1 - indexSq / fragmentRangePow2));
-      final pressing = min(
-          old,
-          1 -
-              sizeRelation *
-                  distRelation *
-                  (1 - indexSq * indexSq / fragmentRangePow4));
-
-      colliderWobble.wobbleFactor[fragmentIndex] =
-          pressingEnvelopedRatio * enveloped +
-              (1 - pressingEnvelopedRatio) * pressing;
-      colliderCellWall.strengthFactor[fragmentIndex] =
-          1 - distRelation * (1 - (indexSq * index).abs() / fragmentRangePow3);
-    }
-  }
-
-  @override
-  void onFleeingAttempt(Entity player, Entity food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
-    final colliderOrientation = orientationMapper[player];
-    final angle = atan2(distY, distX) - colliderOrientation.angle;
-    final fragment = (angle * angleToSegmentFactor).round();
-    final sizeRelation = foodRadius / playerRadius;
-    final fragmentRange = getFragmentRange(sizeRelation);
-    final colliderWobble = wobbleMapper[player];
-    final colliderCellWall = cellWallMapper[player];
-    final additionalDistRelation =
-        (dist + foodRadius - playerRadius) / playerRadius;
-    final fragmentRangePow3 = fragmentRange * fragmentRange * fragmentRange;
-    for (var index = -fragmentRange + 1; index <= fragmentRange; index++) {
-      final fragmentIndex = (fragment + index) % playerCircleFragments;
-      final old = colliderWobble.wobbleFactor[fragmentIndex];
-      final indexPow3 = index * index * index;
-      colliderWobble.wobbleFactor[fragmentIndex] = max(
-          old,
-          1 +
-              additionalDistRelation *
-                  (1 - indexPow3.abs() / fragmentRangePow3));
-      colliderCellWall.strengthFactor[fragmentIndex] = 1 -
-          additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
     }
   }
 }
@@ -666,5 +502,39 @@ class AccelerationSystem extends _$AccelerationSystem {
       ..angle = angle
       ..value = sqrt(velXTotal * velXTotal + velYTotal * velYTotal);
     orientationMapper[entity].angle = angle;
+  }
+}
+
+@Generate(
+  BaseFoodSizeLossSystem,
+  allOf: [
+    Color,
+    Position,
+    Renderable,
+    Velocity,
+  ],
+)
+class FoodSizeLossSystem extends _$FoodSizeLossSystem {
+  @override
+  void onFoodSizeBelowMinimum(Entity entity) {}
+
+  @override
+  void onFoodSizeLoss(Entity entity, double foodRadius) {
+    final position = positionMapper[entity];
+    final velocity = velocityMapper[entity];
+    final foodColor = colorMapper[entity];
+    final angle = velocity.angle - pi - pi / 4 + random.nextDouble() * pi / 2;
+    world.createAndAddEntity([
+      Renderable('digestion'),
+      Position(position.x + foodRadius * cos(angle),
+          position.y + foodRadius * sin(angle)),
+      Velocity(foodRadius, angle, 0),
+      Orientation(angle),
+      Size(max(0.2, min(1, foodRadius / 10))),
+      Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
+      ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
+          foodColor.r, foodColor.g, foodColor.b, 0.1),
+      Lifetime(0.5)
+    ]);
   }
 }

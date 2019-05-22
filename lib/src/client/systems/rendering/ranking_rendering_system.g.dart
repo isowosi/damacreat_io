@@ -12,6 +12,7 @@ abstract class _$RankingRenderingSystem extends EntityProcessingSystem {
   Mapper<Color> colorMapper;
   Mapper<Controller> controllerMapper;
   CameraManager cameraManager;
+  SettingsManager settingsManager;
   _$RankingRenderingSystem()
       : super(Aspect.empty()..allOf([Player, Size, Color]));
   @override
@@ -22,5 +23,6 @@ abstract class _$RankingRenderingSystem extends EntityProcessingSystem {
     colorMapper = Mapper<Color>(world);
     controllerMapper = Mapper<Controller>(world);
     cameraManager = world.getManager<CameraManager>();
+    settingsManager = world.getManager<SettingsManager>();
   }
 }

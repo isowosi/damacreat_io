@@ -11,7 +11,9 @@ const int fontSize = 16;
 const int playerCircleFragments = 64;
 const int foodSpriteRadius = 50;
 
-const int boosterButtonCenterX = 75;
+const int boosterButtonCenterX = 150;
 const int boosterButtonCenterY = 75;
-const int boosterButtonRadius = 50;
-const int boosterButtonSize = boosterButtonRadius * 2;
+const int blackHoleCannonButtonCenterX = 75;
+const int blackHoleCannonButtonCenterY = 150;
+const int actionButtonRadius = 50;
+const int actionButtonSize = actionButtonRadius * 2;
