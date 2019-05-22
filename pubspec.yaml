@@ -1,5 +1,5 @@
 name: damacreat_io
-version: 0.10.0-dev
+version: 0.10.0
 description: Client for damacreat
 publish_to: none
 environment:
@@ -15,7 +15,7 @@ dependencies:
   damacreat:
     git:
       url: git@bitbucket.org:isowosi/damacreat.git
-      ref: tags/0.9.0
+      ref: tags/0.10.0
   angular: ^5.2.0
   isowosi_angular_components:
     git: git@bitbucket.org:dennis_kaselow/isowosi_angular_components
