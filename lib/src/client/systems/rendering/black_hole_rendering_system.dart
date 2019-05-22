@@ -68,19 +68,21 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   void render(int length) {
-    final uBackground = gl.getUniformLocation(program, 'uBackground');
-
     bufferElements(attributes, values, indices);
-
+    final uBackground = gl.getUniformLocation(program, 'uBackground');
     gl
-      ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
-          WebGL.UNSIGNED_BYTE, gl.canvas)
       ..uniform1i(uBackground, 1)
       ..uniform2f(gl.getUniformLocation(program, 'uSize'), gl.canvas.width,
           gl.canvas.height)
       ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
-          false, create2dViewProjectionMatrix().storage)
-      ..drawElements(WebGL.POINTS, length, WebGL.UNSIGNED_SHORT, 0);
+          false, create2dViewProjectionMatrix().storage);
+
+    for (var i = 0; i < length; i++) {
+      gl
+        ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
+            WebGL.UNSIGNED_BYTE, gl.canvas)
+        ..drawElements(WebGL.POINTS, 1, WebGL.UNSIGNED_SHORT, i * 2);
+    }
   }
 
   Matrix4 create2dViewProjectionMatrix() => viewProjectionMatrixManager
