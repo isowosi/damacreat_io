@@ -201,6 +201,7 @@ class MouseAndTouchControllerSystem extends ControllerSystem {
 }
 
 class GamepadControllerSystem extends ControllerSystem {
+  bool fireBlackHolesButtonReleased = true;
   GamepadControllerSystem(WebSocketHandler webSocketHandler)
       : super(webSocketHandler);
 
@@ -213,10 +214,17 @@ class GamepadControllerSystem extends ControllerSystem {
     } else {
       final x = (gamepad.axes[0] * 100).round() / 100;
       final y = -(gamepad.axes[1] * 100).round() / 100;
-      if (gamepad.buttons[0].pressed) {
+      if (gamepad.buttons[1].pressed) {
         useBooster = true;
       } else {
         useBooster = false;
+      }
+      if (gamepad.buttons[0].pressed && fireBlackHolesButtonReleased) {
+        fireBlackHole = true;
+        fireBlackHolesButtonReleased = false;
+      } else if (!gamepad.buttons[0].pressed) {
+        fireBlackHole = false;
+        fireBlackHolesButtonReleased = true;
       }
       velocityStrength = sqrt(x * x + y * y);
       if (velocityAngle == null || y != 0 || x != 0) {
