@@ -1,4 +1,4 @@
-# 0.10.0 (2019-05-??)
+# 0.10.0 (2019-05-22)
 
 ## Gameplay
 * increased loss of size over time for bigger damacreats and reduced for smaller damacreats
