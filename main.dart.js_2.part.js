@@ -1,12 +1,12 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
 $__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,S,M,Q,D,L,O,V={
-Ae:function(d,e){var y,x=new V.pz(d,S.aq(3,C.q,e)),w=$.x2
-if(w==null)w=$.x2=O.cP($.CB,null)
+AT:function(d,e){var y,x=new V.q0(d,S.at(3,C.r,e)),w=$.xD
+if(w==null)w=$.xD=O.d_($.Dj,null)
 x.c=w
 y=document.createElement("game-changelog")
 x.a=y
 return x},
-pz:function pz(d,e){var _=this
+q0:function q0(d,e){var _=this
 _.c=_.b=_.a=_.r=_.f=null
 _.d=d
 _.e=e}},R,A,E,U,T,N,Z,X,B,F
@@ -36,33 +36,33 @@ Z=c[21]
 X=c[22]
 B=c[23]
 F=c[24]
-V.pz.prototype={
-P:function(){var y,x,w,v,u,t=this,s=t.b,r=t.bf(t.a),q=document,p=T.aA(q,r)
-t.aa(p,"exit")
-t.u(p)
-y=T.G(q,p,"button")
-t.u(y)
+V.q0.prototype={
+S:function(){var y,x,w,v,u,t=this,s=t.b,r=t.bn(t.a),q=document,p=T.aI(q,r)
+t.ae(p,"exit")
+t.v(p)
+y=T.H(q,p,"button")
+t.v(y)
 T.E(y,"Close")
-x=T.aA(q,r)
+x=T.aI(q,r)
 t.r=x
-t.u(x)
-w=T.aA(q,r)
-t.aa(w,"exit")
-t.u(w)
-v=T.G(q,w,"button")
-t.u(v)
+t.v(x)
+w=T.aI(q,r)
+t.ae(w,"exit")
+t.v(w)
+v=T.H(q,w,"button")
+t.v(v)
 T.E(v,"Close")
-x=s.geQ()
+x=s.gfc()
 u=W.r
-J.e0(y,"click",t.aP(x,u))
-J.e0(v,"click",t.aP(x,u))
-t.be()},
-a4:function(){var y=this,x=y.b.a,w=y.f
-if(w!=x){y.r.innerHTML=$.dV.c.iX(x)
+J.ee(y,"click",t.aV(x,u))
+J.ee(v,"click",t.aV(x,u))
+t.bm()},
+a7:function(){var y=this,x=y.b.a,w=y.f
+if(w!=x){y.r.innerHTML=$.e5.c.jq(x)
 y.f=x}},
-$aM:function(){return[B.el]}}
+$aO:function(){return[B.ey]}}
 var z=a.updateTypes([]);(function inheritance(){var y=a.inherit
-y(V.pz,S.M)})();(function staticFields(){$.x2=null
-$.CB=[$.y9]})()}
-$__dart_deferred_initializers__["gyjTq6QC3E5H1glNXG92v6j9MC4="] = $__dart_deferred_initializers__.current
+y(V.q0,S.O)})();(function staticFields(){$.xD=null
+$.Dj=[$.yK]})()}
+$__dart_deferred_initializers__["qryl8r48Qv+fRJw5OSYwcyvdscA="] = $__dart_deferred_initializers__.current
 //# sourceMappingURL=main.dart.js_2.part.js.map
