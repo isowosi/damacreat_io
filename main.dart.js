@@ -13850,13 +13850,14 @@ C.E.ghW(window).W(new L.mE(s),-1)},
 l1:function(a){this.fr=!this.fr
 this.eh()},
 eh:function(){var u,t,s,r,q,p=this
-if(null!=p.b){u=window.innerWidth
-t=window.innerHeight
+if(null!=p.b){u=document.body
+t=u.clientWidth
+u=u.clientHeight
 s=F.Y
 r=H.u(p.Q.z.h(0,new H.d(s)),"$iY")
-r.b=u
+r.b=t
 r.dQ()
-r.c=t
+r.c=u
 r.dQ()
 q=H.u(p.Q.z.h(0,new H.d(s)),"$iY")
 s=p.k2.style
