@@ -202,10 +202,12 @@ packages:
   damacreat:
     dependency: "direct main"
     description:
-      path: "..\\damacreat"
-      relative: true
-    source: path
-    version: "0.10.0-dev"
+      path: "."
+      ref: "tags/0.10.0"
+      resolved-ref: "1755fb01e84cbfd1235d0932fa1b13f67f51f5d3"
+      url: "git@bitbucket.org:isowosi/damacreat.git"
+    source: git
+    version: "0.10.0"
   dart_style:
     dependency: transitive
     description:
@@ -257,7 +259,7 @@ packages:
     description:
       path: "."
       ref: "games/damacreat/0.9.0"
-      resolved-ref: bceb98b13b0373f2b16c76f86021a9bafa27ddd4
+      resolved-ref: "43beeb9c094a3ee13732a1a32a666711e7cc9471"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
