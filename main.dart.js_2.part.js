@@ -1,12 +1,12 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
 $__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,S,M,Q,D,L,O,V={
-AT:function(d,e){var y,x=new V.q0(d,S.at(3,C.r,e)),w=$.xD
-if(w==null)w=$.xD=O.d_($.Dj,null)
+AS:function(d,e){var y,x=new V.q_(d,S.at(3,C.r,e)),w=$.xC
+if(w==null)w=$.xC=O.d_($.Di,null)
 x.c=w
 y=document.createElement("game-changelog")
 x.a=y
 return x},
-q0:function q0(d,e){var _=this
+q_:function q_(d,e){var _=this
 _.c=_.b=_.a=_.r=_.f=null
 _.d=d
 _.e=e}},R,A,E,U,T,N,Z,X,B,F
@@ -36,7 +36,7 @@ Z=c[21]
 X=c[22]
 B=c[23]
 F=c[24]
-V.q0.prototype={
+V.q_.prototype={
 S:function(){var y,x,w,v,u,t=this,s=t.b,r=t.bn(t.a),q=document,p=T.aI(q,r)
 t.ae(p,"exit")
 t.v(p)
@@ -58,11 +58,11 @@ J.ee(y,"click",t.aV(x,u))
 J.ee(v,"click",t.aV(x,u))
 t.bm()},
 a7:function(){var y=this,x=y.b.a,w=y.f
-if(w!=x){y.r.innerHTML=$.e5.c.jq(x)
+if(w!=x){y.r.innerHTML=$.e5.c.jp(x)
 y.f=x}},
 $aO:function(){return[B.ey]}}
 var z=a.updateTypes([]);(function inheritance(){var y=a.inherit
-y(V.q0,S.O)})();(function staticFields(){$.xD=null
-$.Dj=[$.yK]})()}
-$__dart_deferred_initializers__["qryl8r48Qv+fRJw5OSYwcyvdscA="] = $__dart_deferred_initializers__.current
+y(V.q_,S.O)})();(function staticFields(){$.xC=null
+$.Di=[$.yJ]})()}
+$__dart_deferred_initializers__["oFVOtwP99MvogIc3dBA3kpRaJU4="] = $__dart_deferred_initializers__.current
 //# sourceMappingURL=main.dart.js_2.part.js.map
