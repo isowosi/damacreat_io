@@ -79,8 +79,8 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
     for (var i = 0; i < length; i++) {
       gl
-        ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
-            WebGL.UNSIGNED_BYTE, gl.canvas)
+        ..copyTexImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, 0, 0, gl.canvas.width,
+            gl.canvas.height, 0)
         ..drawElements(WebGL.POINTS, 1, WebGL.UNSIGNED_SHORT, i * 2);
     }
   }

@@ -7,8 +7,9 @@ varying vec2 vBlackHoleCenter;
 varying float vBlackHoleSize;
 
 void main() {
-    gl_Position = uViewProjection * vec4(aPosition, 0.0, 1.0);
+    vec4 position = uViewProjection * vec4(aPosition, 0.0, 1.0);
+    gl_Position = position;
     gl_PointSize = aSize;
-    vBlackHoleCenter = (uViewProjection * vec4(aPosition, 0.0, 1.0)).xy;
+    vBlackHoleCenter = (vec2(1.0, 1.0) + position.xy) / 2.0;
     vBlackHoleSize = aSize;
 }

@@ -54,7 +54,6 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
       settingsManager.showDebug = !settingsManager.showDebug;
       unpress[KeyCode.I] = true;
     }
-    print(mouseAndTouchControllerSystem);
     if (mouseAndTouchControllerSystem != null &&
         controllerMapper.has(tagManager.getEntity(cameraTag))) {
       if (isPressed(KeyCode.SPACE)) {

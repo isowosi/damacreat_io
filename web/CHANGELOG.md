@@ -1,3 +1,8 @@
+# 0.10.1 (2019-05-23)
+
+## Bugfixes
+* fixed extreme drop in performance on firefox when rendering a black hole
+
 # 0.10.0 (2019-05-22)
 
 ## Gameplay
