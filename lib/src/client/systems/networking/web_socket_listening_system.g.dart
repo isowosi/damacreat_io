@@ -21,6 +21,7 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   QuadTreeManager quadTreeManager;
   DigestionManager digestionManager;
   GameStateManager gameStateManager;
+  AnalyticsManager analyticsManager;
   @override
   void initialize() {
     super.initialize();
@@ -38,5 +39,6 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     quadTreeManager = world.getManager<QuadTreeManager>();
     digestionManager = world.getManager<DigestionManager>();
     gameStateManager = world.getManager<GameStateManager>();
+    analyticsManager = world.getManager<AnalyticsManager>();
   }
 }

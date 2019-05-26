@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
@@ -28,6 +29,7 @@ part 'web_socket_listening_system.g.dart';
     QuadTreeManager,
     DigestionManager,
     GameStateManager,
+    AnalyticsManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
@@ -121,6 +123,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         tagManager
           ..unregister(cameraTag)
           ..register(camera, cameraTag);
+        analyticsManager.deathCount++;
       }
     }
   }
