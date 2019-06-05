@@ -14,7 +14,7 @@ packages:
       name: angular
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.3.0"
+    version: "5.3.1"
   angular_ast:
     dependency: transitive
     description:
@@ -49,7 +49,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.1"
+    version: "1.5.2"
   async:
     dependency: transitive
     description:
@@ -86,21 +86,21 @@ packages:
       name: build_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.4.0"
   build_daemon:
     dependency: transitive
     description:
       name: build_daemon
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0"
+    version: "1.0.0"
   build_modules:
     dependency: transitive
     description:
       name: build_modules
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.3.0"
   build_resolvers:
     dependency: transitive
     description:
@@ -114,14 +114,14 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.3"
+    version: "1.5.1"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.3"
+    version: "3.0.5"
   build_version:
     dependency: "direct dev"
     description:
@@ -135,7 +135,7 @@ packages:
       name: build_web_compilers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   built_collection:
     dependency: transitive
     description:
@@ -149,7 +149,7 @@ packages:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.5.0"
+    version: "6.6.0"
   charcode:
     dependency: transitive
     description:
@@ -256,8 +256,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "games/damacreat/0.9.0"
-      resolved-ref: "17cb3b55398c774663bb49c6e4b39bae54b13f8f"
+      ref: "games/damacreat/0.11.0"
+      resolved-ref: "06403ddf082ad9422a8251751c9adfeb9478fa8c"
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -295,7 +295,7 @@ packages:
       name: http_multi_server
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.6"
+    version: "2.1.0"
   http_parser:
     dependency: transitive
     description:
@@ -390,7 +390,7 @@ packages:
       name: mime
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.6+2"
+    version: "0.9.6+3"
   package_config:
     dependency: transitive
     description:
@@ -432,7 +432,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.11"
+    version: "0.13.12"
   pub_semver:
     dependency: transitive
     description:
@@ -460,7 +460,7 @@ packages:
       name: sass
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.20.1"
+    version: "1.20.3"
   sass_builder:
     dependency: "direct dev"
     description:

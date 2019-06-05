@@ -30,23 +30,33 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   Float32List values;
   Uint16List indices;
 
-  BlackHoleRenderingSystem(RenderingContext gl) : super(gl);
+  final Texture texture;
+
+  UniformLocation uViewProjectionLocation;
+  UniformLocation uSizeLocation;
+  UniformLocation uBackgroundLocation;
+
+  BlackHoleRenderingSystem(RenderingContext gl)
+      : texture = gl.createTexture(),
+        super(gl);
 
   @override
   void initialize() {
     super.initialize();
 
-    final texture = gl.createTexture();
-
+    const textureUnit = 1;
     gl
-      ..activeTexture(WebGL.TEXTURE1)
       ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 1)
+      ..activeTexture(WebGL.TEXTURE0 + textureUnit)
       ..bindTexture(WebGL.TEXTURE_2D, texture)
       ..texParameteri(
           WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_S, WebGL.CLAMP_TO_EDGE)
       ..texParameteri(
           WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_T, WebGL.CLAMP_TO_EDGE)
-      ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.LINEAR);
+      ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.NEAREST)
+      ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MAG_FILTER, WebGL.NEAREST)
+      ..useProgram(program)
+      ..uniform1i(uBackgroundLocation, textureUnit);
   }
 
   @override
@@ -69,13 +79,12 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   @override
   void render(int length) {
     bufferElements(attributes, values, indices);
-    final uBackground = gl.getUniformLocation(program, 'uBackground');
     gl
-      ..uniform1i(uBackground, 1)
-      ..uniform2f(gl.getUniformLocation(program, 'uSize'), gl.canvas.width,
-          gl.canvas.height)
-      ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
-          false, create2dViewProjectionMatrix().storage);
+      ..activeTexture(WebGL.TEXTURE0 + 1)
+      ..bindTexture(WebGL.TEXTURE_2D, texture)
+      ..uniform2f(uSizeLocation, gl.canvas.width, gl.canvas.height)
+      ..uniformMatrix4fv(uViewProjectionLocation, false,
+          create2dViewProjectionMatrix().storage);
 
     for (var i = 0; i < length; i++) {
       gl
@@ -99,4 +108,11 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   String get fShaderFile => 'BlackHoleRenderingSystem';
+
+  @override
+  void initUniformLocations() {
+    uViewProjectionLocation = getUniformLocation('uViewProjection');
+    uSizeLocation = getUniformLocation('uSize');
+    uBackgroundLocation = getUniformLocation('uBackground');
+  }
 }

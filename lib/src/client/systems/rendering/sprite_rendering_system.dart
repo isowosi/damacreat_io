@@ -33,6 +33,10 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   Float32List values;
   Uint16List indices;
 
+  UniformLocation uViewProjectionLocation;
+  UniformLocation uSizeLocation;
+  UniformLocation uSheetLocation;
+
   SpriteRenderingSystem(RenderingContext gl, this.sheet) : super(gl);
 
   @override
@@ -40,21 +44,20 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     super.initialize();
 
     final texture = gl.createTexture();
-    final uTexture = gl.getUniformLocation(program, 'uTexture');
+    const textureUnit = 0;
 
     gl
-      ..useProgram(program)
-      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 0)
-      ..activeTexture(WebGL.TEXTURE0)
+      ..activeTexture(WebGL.TEXTURE0 + textureUnit)
       ..bindTexture(WebGL.TEXTURE_2D, texture)
+      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 0)
       ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.LINEAR)
       ..texParameteri(
           WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_S, WebGL.CLAMP_TO_EDGE)
       ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
           WebGL.UNSIGNED_BYTE, sheet.image)
-      ..uniform1i(uTexture, 0)
-      ..uniform2f(gl.getUniformLocation(program, 'uSize'), sheet.image.width,
-          sheet.image.height);
+      ..useProgram(program)
+      ..uniform1i(uSheetLocation, textureUnit)
+      ..uniform2f(uSizeLocation, sheet.image.width, sheet.image.height);
   }
 
   @override
@@ -149,8 +152,8 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     bufferElements(attributes, values, indices);
 
     gl
-      ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
-          false, create2dViewProjectionMatrix().storage)
+      ..uniformMatrix4fv(uViewProjectionLocation, false,
+          create2dViewProjectionMatrix().storage)
       ..drawElements(WebGL.TRIANGLES, length * 6, WebGL.UNSIGNED_SHORT, 0);
   }
 
@@ -168,4 +171,11 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
 
   @override
   String get fShaderFile => 'SpriteRenderingSystem';
+
+  @override
+  void initUniformLocations() {
+    uViewProjectionLocation = getUniformLocation('uViewProjection');
+    uSizeLocation = getUniformLocation('uSize');
+    uSheetLocation = getUniformLocation('uSheet');
+  }
 }

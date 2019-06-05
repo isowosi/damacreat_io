@@ -1,8 +1,6 @@
 #version 100
 precision highp float;
 
-uniform vec4 uDimension;
-uniform float uTime;
 uniform vec3 uRgb;
 varying vec4 vPos;
 
