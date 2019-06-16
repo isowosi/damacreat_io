@@ -69,20 +69,20 @@ class GameService {
             gamepadIndices.add(i);
           }
         }
+        window.on['gamepadconnected']
+            .where((event) => event is GamepadEvent)
+            .cast<GamepadEvent>()
+            .listen((event) {
+          gamepadIndices.add(event.gamepad.index);
+        });
+        window.on['gamepaddisconnected']
+            .where((event) => event is GamepadEvent)
+            .cast<GamepadEvent>()
+            .listen((event) {
+          gamepadIndices.remove(event.gamepad.index);
+        });
+        _handleGamepads();
       }
-      window.on['gamepadconnected']
-          .where((event) => event is GamepadEvent)
-          .cast<GamepadEvent>()
-          .listen((event) {
-        gamepadIndices.add(event.gamepad.index);
-      });
-      window.on['gamepaddisconnected']
-          .where((event) => event is GamepadEvent)
-          .cast<GamepadEvent>()
-          .listen((event) {
-        gamepadIndices.remove(event.gamepad.index);
-      });
-      _handleGamepads();
     }, onError: (errorMessage, stackTrace) {
       error = true;
       this.errorMessage = errorMessage;
