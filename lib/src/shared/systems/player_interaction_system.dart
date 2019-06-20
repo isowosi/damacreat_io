@@ -11,14 +11,21 @@ part 'player_interaction_system.g.dart';
     Wobble,
     CellWall,
     Orientation,
-    OnScreen,
   ],
   manager: [
     TagManager,
+    GroupManager,
   ],
 )
 class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   double angleToSegmentFactor = playerCircleFragments / (2 * pi);
+
+  @override
+  void processEntity(Entity entity) {
+    if (groupManager.isInGroup(entity, groupOnScreen)) {
+      super.processEntity(entity);
+    }
+  }
 
   @override
   void startDigestion(Entity player, Entity food, double dist, double distX,

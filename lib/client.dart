@@ -65,6 +65,7 @@ class Game extends GameBase {
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
       ..addManager(analyticsManager)
+      ..addManager(GroupManager())
       ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
@@ -83,7 +84,6 @@ class Game extends GameBase {
           KeyboardControllerSystem(ignoreInputFromElements: inputs),
           // logic
           GrowingSystem(),
-          FoodSizeLossSystem(),
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
@@ -96,6 +96,7 @@ class Game extends GameBase {
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
+          FoodSizeLossSystem(),
           DigestiveSystem(),
           WobbleSystem(),
           CellWallSystem(),
@@ -124,7 +125,7 @@ class Game extends GameBase {
           // cleanup
           BoosterHandlingSystem(),
           ExpirationSystem(),
-          RemoveTemporaryComponentsSystem(),
+          RemoveTemporaryGroupSystem(),
         ],
         GameBase.physics: [
           // add at least one
@@ -167,7 +168,29 @@ class Game extends GameBase {
       if (timeSinceStart > 15) {
         analyticsManager.logFps(world.frame(0) ~/ timeSinceStart);
         fpsLogged = true;
+
+        if (world is PerformanceMeasureWorld) {
+          final stats = (world as PerformanceMeasureWorld)
+              .getPerformanceStats()
+              .map((stats) => '''
+${stats.system}; ${stats.averageTime}; ${stats.meanTime}; ${stats.minTime}; ${stats.maxTime}''')
+              .toList();
+          final systems = stats.sublist(0, stats.length ~/ 2 + 1);
+          final process = stats.sublist(stats.length ~/ 2 + 1);
+
+          print('===============');
+          print('=== systems ===');
+          print('===============');
+          print(systems.join('\n'));
+          print('===============');
+          print('=== process ===');
+          print('===============');
+          print(process.join('\n'));
+        }
       }
     }
   }
+
+//  @override
+//  World createWorld() => PerformanceMeasureWorld(600);
 }

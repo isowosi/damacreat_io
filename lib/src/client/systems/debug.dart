@@ -5,7 +5,7 @@ import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:dartemis/dartemis.dart';
-import 'package:gamedev_helpers/gamedev_helpers.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 
 part 'debug.g.dart';
 
@@ -21,6 +21,7 @@ part 'debug.g.dart';
     CameraManager,
     SettingsManager,
     TagManager,
+    GroupManager,
   ],
 )
 class DebugSystem extends _$DebugSystem {
@@ -45,21 +46,12 @@ class DebugSystem extends _$DebugSystem {
 
   @override
   void processSystem() {
-    final renderedCircles = world.componentManager
-        .getComponentsByType<OnScreen>(
-            ComponentTypeManager.getTypeFor(OnScreen))
+    final renderedCircles = groupManager.getEntities(groupOnScreen).length;
+    final movingThings = world.componentManager
+        .getComponentsByType<Velocity>(
+            ComponentTypeManager.getTypeFor(Velocity))
         .where((component) => component != null)
         .length;
-    final movingThings = world.componentManager
-            .getComponentsByType<ChangedPosition>(
-                ComponentTypeManager.getTypeFor(ChangedPosition))
-            .where((component) => component != null)
-            .length +
-        world.componentManager
-            .getComponentsByType<ConstantVelocity>(
-                ComponentTypeManager.getTypeFor(ConstantVelocity))
-            .where((component) => component != null)
-            .length;
     final totalDeltaBefore = totalDelta;
     totalDelta += world.delta;
     if (totalDeltaBefore.toInt() % 5 == 4 && totalDelta.toInt() % 5 == 0) {

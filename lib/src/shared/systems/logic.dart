@@ -18,7 +18,7 @@ part 'logic.g.dart';
     QuadTreeManager,
     ViewProjectionMatrixManager,
     TagManager,
-    ComponentManager,
+    GroupManager,
   ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
@@ -41,9 +41,7 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
   }
 
   void _tag(Entity entity) {
-    entity
-      ..addComponent(OnScreen())
-      ..changedInWorld();
+    groupManager.add(entity, groupOnScreen);
   }
 
   @override
@@ -51,20 +49,17 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
 }
 
 @Generate(
-  EntityProcessingSystem,
-  oneOf: [
-    ChangedPosition,
-    OnScreen,
+  VoidEntitySystem,
+  manager: [
+    GroupManager,
   ],
 )
-class RemoveTemporaryComponentsSystem
-    extends _$RemoveTemporaryComponentsSystem {
+class RemoveTemporaryGroupSystem extends _$RemoveTemporaryGroupSystem {
   @override
-  void processEntity(Entity entity) {
-    entity
-      ..removeComponent<ChangedPosition>()
-      ..removeComponent<OnScreen>()
-      ..changedInWorld();
+  void processSystem() {
+    for (final entity in groupManager.getEntities(groupOnScreen)) {
+      groupManager.remove(entity, groupOnScreen);
+    }
   }
 }
 
@@ -72,10 +67,10 @@ class RemoveTemporaryComponentsSystem
   BaseDigestiveSystem,
   manager: [
     AttractedByManager,
+    GroupManager,
   ],
   allOf: [
     Position,
-    OnScreen,
   ],
   mapper: [
     Color,
@@ -85,6 +80,13 @@ class RemoveTemporaryComponentsSystem
   ],
 )
 class DigestiveSystem extends _$DigestiveSystem {
+  @override
+  void processEntity(Entity entity) {
+    if (groupManager.isInGroup(entity, groupOnScreen)) {
+      super.processEntity(entity);
+    }
+  }
+
   @override
   void onDigestionComplete(Entity digester, Entity food) {
     food
@@ -199,22 +201,25 @@ class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
   EntityProcessingSystem,
   allOf: [
     Position,
-    ChangedPosition,
     Orientation,
     Thruster,
     Velocity,
     Size,
     Color,
     Wobble,
-    OnScreen,
     Booster,
+  ],
+  manager: [
+    GroupManager,
   ],
 )
 class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
   @override
   void processEntity(Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final p = positionMapper[entity];
-    final op = changedPositionMapper[entity];
     final o = orientationMapper[entity];
     final v = velocityMapper[entity];
     final s = sizeMapper[entity];
@@ -228,15 +233,14 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
     final oldLeftThrusterAngle = oldAngle + 3 / 4 * pi;
     final oldRightThrusterAngle = oldAngle - 3 / 4 * pi;
 
-    spawnThrusterParticles(p, op, s, v, c, leftThrusterAngle,
-        oldLeftThrusterAngle, o, w, 1, boosterFactor);
-    spawnThrusterParticles(p, op, s, v, c, rightThrusterAngle,
+    spawnThrusterParticles(p, s, v, c, leftThrusterAngle, oldLeftThrusterAngle,
+        o, w, 1, boosterFactor);
+    spawnThrusterParticles(p, s, v, c, rightThrusterAngle,
         oldRightThrusterAngle, o, w, -1, boosterFactor);
   }
 
   void spawnThrusterParticles(
       Position position,
-      ChangedPosition oldPosition,
       Size size,
       Velocity velocity,
       Color color,
@@ -256,13 +260,15 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
       w1 = wobble.wobbleFactor[rightThrusterIndex];
       w2 = wobble.wobbleFactor[rightThrusterIndex - 1];
     }
+    final oldX =
+        position.x - velocity.value * cos(velocity.angle) * world.delta;
+    final oldY =
+        position.y - velocity.value * sin(velocity.angle) * world.delta;
 
     final x1 = position.x + size.radius * 1.1 * cos(thrusterAngle) * w1;
     final y1 = position.y + size.radius * 1.1 * sin(thrusterAngle) * w1;
-    final oldX1 =
-        oldPosition.oldX + size.radius * 1.1 * cos(oldThrusterAngle) * w1;
-    final oldY1 =
-        oldPosition.oldY + size.radius * 1.1 * sin(oldThrusterAngle) * w1;
+    final oldX1 = oldX + size.radius * 1.1 * cos(oldThrusterAngle) * w1;
+    final oldY1 = oldY + size.radius * 1.1 * sin(oldThrusterAngle) * w1;
     final x2 = position.x +
         size.radius *
             cos(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
@@ -271,12 +277,12 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
         size.radius *
             sin(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
             w2;
-    final oldX2 = oldPosition.oldX +
+    final oldX2 = oldX +
         size.radius *
             cos(oldThrusterAngle +
                 direction / (playerCircleFragments ~/ 2) * pi) *
             w2;
-    final oldY2 = oldPosition.oldY +
+    final oldY2 = oldY +
         size.radius *
             sin(oldThrusterAngle +
                 direction / (playerCircleFragments ~/ 2) * pi) *
@@ -367,13 +373,18 @@ class CameraPositionSystem extends _$CameraPositionSystem {
   allOf: [
     CellWall,
     Thruster,
-    OnScreen,
+  ],
+  manager: [
+    GroupManager,
   ],
 )
 class ThrusterCellWallWeakeningSystem
     extends _$ThrusterCellWallWeakeningSystem {
   @override
   void processEntity(Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
     final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
     cellWallMapper[entity]
@@ -389,12 +400,17 @@ class ThrusterCellWallWeakeningSystem
   allOf: [
     Food,
     Color,
-    OnScreen,
+  ],
+  manager: [
+    GroupManager,
   ],
 )
 class FoodColoringSystem extends _$FoodColoringSystem {
   @override
   void processEntity(Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final food = foodMapper[entity];
     colorMapper[entity]
       ..r = 0.4 + 0.4 * sin(time + food.r)
@@ -510,11 +526,21 @@ class AccelerationSystem extends _$AccelerationSystem {
   allOf: [
     Color,
     Position,
-    Renderable,
     Velocity,
+    ConstantVelocity,
+  ],
+  manager: [
+    GroupManager,
   ],
 )
 class FoodSizeLossSystem extends _$FoodSizeLossSystem {
+  @override
+  void processEntity(Entity entity) {
+    if (groupManager.isInGroup(entity, groupOnScreen)) {
+      super.processEntity(entity);
+    }
+  }
+
   @override
   void onFoodSizeBelowMinimum(Entity entity) {}
 

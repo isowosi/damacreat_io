@@ -21,8 +21,6 @@ class CellWall extends Component {
   }
 }
 
-class OnScreen extends Component {}
-
 class DigestionComplete extends Component {}
 
 class Thruster extends Component {}

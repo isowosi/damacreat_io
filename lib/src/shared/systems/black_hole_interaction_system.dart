@@ -7,17 +7,22 @@ part 'black_hole_interaction_system.g.dart';
 
 @Generate(
   BaseBlackHoleInteractionSystem,
-  allOf: [
-    OnScreen,
-  ],
   mapper: [
     Color,
   ],
   manager: [
     AttractedByManager,
+    GroupManager,
   ],
 )
 class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
+  @override
+  void processEntity(Entity entity) {
+    if (groupManager.isInGroup(entity, groupOnScreen)) {
+      super.processEntity(entity);
+    }
+  }
+
   @override
   void onBodyInsideBlackHole(Entity blackHole, Entity victim) {
     final foodRadius = sizeMapper[victim].radius;

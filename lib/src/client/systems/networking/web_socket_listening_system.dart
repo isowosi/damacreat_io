@@ -20,8 +20,8 @@ part 'web_socket_listening_system.g.dart';
     DigestedBy,
     Velocity,
     Food,
-    ChangedPosition,
     Booster,
+    QuadTreeCandidate,
   ],
   manager: [
     TagManager,
@@ -146,7 +146,12 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           // moving food that was caught by a player
           entity
             ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>();
+            ..removeComponent<ConstantVelocity>()
+            ..changedInWorld();
+          final radius = sizeMapper[entity].radius;
+          final diameter = radius * 2;
+          quadTreeManager.update(
+              entity, x - radius, y - radius, diameter, diameter);
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
@@ -156,11 +161,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = velocity
             ..rotational = 0;
           _updateBooster(entity, velocity);
-        }
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
         }
       }
     }
@@ -186,7 +186,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           // moving food that was caught by a player
           entity
             ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>();
+            ..removeComponent<ConstantVelocity>()
+            ..changedInWorld();
+          final diameter = radius * 2;
+          quadTreeManager.update(
+              entity, x - radius, y - radius, diameter, diameter);
         } else if (velocityMapper.has(entity)) {
           // the player
           final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
@@ -196,11 +200,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
             ..value = velocity
             ..rotational = 0;
           _updateBooster(entity, velocity);
-        }
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
         }
       }
     }
@@ -231,11 +230,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
         _updateBooster(entity, velocity);
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
       }
     }
   }
@@ -267,11 +261,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..value = velocity
           ..rotational = (orientation.angle - oldOrientation) / world.delta;
         _updateBooster(entity, velocity);
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
       }
     }
   }
@@ -342,7 +331,6 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final playerComponents = [
         Id(id),
         Position(x, y),
-        ChangedPosition(x, y),
         Size(playerRadius),
         Color.fromHsl(hue, 0.9, 0.6, 0.4),
         Orientation(orientationAngle),

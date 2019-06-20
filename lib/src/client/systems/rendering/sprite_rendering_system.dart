@@ -17,9 +17,13 @@ part 'sprite_rendering_system.g.dart';
     Size,
     Renderable,
   ],
+  mapper: [
+    QuadTreeCandidate,
+  ],
   manager: [
     TagManager,
     ViewProjectionMatrixManager,
+    GroupManager,
   ],
 )
 class SpriteRenderingSystem extends _$SpriteRenderingSystem {
@@ -60,8 +64,19 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
       ..uniform2f(uSizeLocation, sheet.image.width, sheet.image.height);
   }
 
+  int itemCount;
+
+  @override
+  void begin() {
+    itemCount = 0;
+  }
+
   @override
   void processEntity(int index, Entity entity) {
+    if (quadTreeCandidateMapper.has(entity) &&
+        !groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final position = positionMapper[entity];
     final orientation = orientationMapper[entity];
     final renderable = renderableMapper[entity];
@@ -82,7 +97,7 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     final top = src.top.toDouble();
 
     final bottomLeftAngle = atan2(dstBottom, dstLeft);
-    var valueOffset = index * 32;
+    var valueOffset = itemCount * 32;
     values[valueOffset++] = position.x +
         dstLeft *
             cos(orientation.angle + bottomLeftAngle) /
@@ -138,13 +153,14 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     values[valueOffset++] = color.b;
     values[valueOffset++] = color.a;
 
-    var indicesOffset = index * 6;
-    indices[indicesOffset++] = index * 4;
-    indices[indicesOffset++] = index * 4 + 2;
-    indices[indicesOffset++] = index * 4 + 3;
-    indices[indicesOffset++] = index * 4;
-    indices[indicesOffset++] = index * 4 + 3;
-    indices[indicesOffset++] = index * 4 + 1;
+    var indicesOffset = itemCount * 6;
+    indices[indicesOffset++] = itemCount * 4;
+    indices[indicesOffset++] = itemCount * 4 + 2;
+    indices[indicesOffset++] = itemCount * 4 + 3;
+    indices[indicesOffset++] = itemCount * 4;
+    indices[indicesOffset++] = itemCount * 4 + 3;
+    indices[indicesOffset++] = itemCount * 4 + 1;
+    itemCount++;
   }
 
   @override
@@ -154,7 +170,7 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     gl
       ..uniformMatrix4fv(uViewProjectionLocation, false,
           create2dViewProjectionMatrix().storage)
-      ..drawElements(WebGL.TRIANGLES, length * 6, WebGL.UNSIGNED_SHORT, 0);
+      ..drawElements(WebGL.TRIANGLES, itemCount * 6, WebGL.UNSIGNED_SHORT, 0);
   }
 
   Matrix4 create2dViewProjectionMatrix() => viewProjectionMatrixManager

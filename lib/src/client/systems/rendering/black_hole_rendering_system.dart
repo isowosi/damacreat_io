@@ -14,12 +14,12 @@ part 'black_hole_rendering_system.g.dart';
     Position,
     Size,
     BlackHole,
-    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
     TagManager,
     CameraManager,
+    GroupManager,
   ],
 )
 class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
@@ -59,13 +59,23 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
       ..uniform1i(uBackgroundLocation, textureUnit);
   }
 
+  int itemCount;
+
+  @override
+  void begin() {
+    itemCount = 0;
+  }
+
   @override
   void processEntity(int index, Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final position = positionMapper[entity];
     final size = sizeMapper[entity];
     final radius = size.radius;
 
-    var offset = index * 3;
+    var offset = itemCount * 3;
     values[offset++] = position.x;
     values[offset++] = position.y;
     values[offset++] = 2 *
@@ -73,7 +83,8 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
         radius /
         cameraManager.scalingFactor;
 
-    indices[index] = index;
+    indices[itemCount] = itemCount;
+    itemCount++;
   }
 
   @override
@@ -86,7 +97,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
       ..uniformMatrix4fv(uViewProjectionLocation, false,
           create2dViewProjectionMatrix().storage);
 
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < itemCount; i++) {
       gl
         ..copyTexImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, 0, 0, gl.canvas.width,
             gl.canvas.height, 0)

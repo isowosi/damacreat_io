@@ -14,6 +14,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
   CameraManager cameraManager;
   SettingsManager settingsManager;
   TagManager tagManager;
+  GroupManager groupManager;
   @override
   void initialize() {
     super.initialize();
@@ -25,6 +26,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
     cameraManager = world.getManager<CameraManager>();
     settingsManager = world.getManager<SettingsManager>();
     tagManager = world.getManager<TagManager>();
+    groupManager = world.getManager<GroupManager>();
   }
 }
 

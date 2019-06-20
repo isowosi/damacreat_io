@@ -12,8 +12,10 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
   Mapper<Color> colorMapper;
   Mapper<Size> sizeMapper;
   Mapper<Renderable> renderableMapper;
+  Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
   TagManager tagManager;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
+  GroupManager groupManager;
   _$SpriteRenderingSystem(RenderingContext gl)
       : super(
             gl,
@@ -27,8 +29,10 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
     colorMapper = Mapper<Color>(world);
     sizeMapper = Mapper<Size>(world);
     renderableMapper = Mapper<Renderable>(world);
+    quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
     tagManager = world.getManager<TagManager>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
+    groupManager = world.getManager<GroupManager>();
   }
 }

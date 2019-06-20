@@ -26,6 +26,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
 
   @override
   void processEntity(int index, Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
     final c = colorMapper[entity];
@@ -33,9 +36,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     final w = wobbleMapper[entity];
     final cw = cellWallMapper[entity];
 
-    final itemOffset = index * (verticeCount + 1);
-    final offset = index * (verticeCount + 1) * valuesPerItem;
-    final indicesOffset = index * indicesPerItem;
+    final itemOffset = itemCount * (verticeCount + 1);
+    final offset = itemCount * (verticeCount + 1) * valuesPerItem;
+    final indicesOffset = itemCount * indicesPerItem;
 
     items[offset] = p.x;
     items[offset + 1] = p.y;
@@ -83,6 +86,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     indices[indicesOffset + circleFragments * 9 - 4] =
         itemOffset + circleFragments + 1;
     indices[indicesOffset + circleFragments * 9 - 7] = itemOffset + 1;
+    itemCount++;
   }
 
   void createThrusters(
@@ -132,11 +136,11 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     Color,
     Orientation,
     Wobble,
-    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
     TagManager,
+    GroupManager,
   ],
 )
 abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
@@ -157,17 +161,27 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     verticeCount = circleFragments;
   }
 
+  int itemCount;
+
+  @override
+  void begin() {
+    itemCount = 0;
+  }
+
   @override
   void processEntity(int index, Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
     final c = colorMapper[entity];
     final o = orientationMapper[entity];
     final w = wobbleMapper[entity];
 
-    final itemOffset = index * (verticeCount + 1);
-    final offset = index * (verticeCount + 1) * valuesPerItem;
-    final indicesOffset = index * verticeCount * 3;
+    final itemOffset = itemCount * (verticeCount + 1);
+    final offset = itemCount * (verticeCount + 1) * valuesPerItem;
+    final indicesOffset = itemCount * verticeCount * 3;
 
     items[offset] = p.x;
     items[offset + 1] = p.y;
@@ -188,6 +202,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     }
 
     indices[indicesOffset + verticeCount * 3 - 1] = itemOffset + 1;
+    itemCount++;
   }
 
   void createCircleVertex(int baseOffset, Position p, double radius,
@@ -213,7 +228,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 
     bufferElements(attributes, items, indices);
     gl.drawElements(
-        WebGL.TRIANGLES, length * indicesPerItem, WebGL.UNSIGNED_SHORT, 0);
+        WebGL.TRIANGLES, itemCount * indicesPerItem, WebGL.UNSIGNED_SHORT, 0);
   }
 
   @override
@@ -322,13 +337,13 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     Player,
     Size,
     Position,
-    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
     CameraManager,
     SettingsManager,
     TagManager,
+    GroupManager,
   ],
 )
 class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
@@ -337,6 +352,9 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
 
   @override
   void processEntity(Entity entity) {
+    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+      return;
+    }
     final cameraEntity = tagManager.getEntity(cameraTag);
     final nickname = playerMapper[entity].nickname;
     final radius = sizeMapper[entity].radius;

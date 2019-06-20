@@ -8,15 +8,15 @@ part of 'black_hole_interaction_system.dart';
 
 abstract class _$BlackHoleInteractionSystem
     extends BaseBlackHoleInteractionSystem {
-  Mapper<OnScreen> onScreenMapper;
   Mapper<Color> colorMapper;
   AttractedByManager attractedByManager;
-  _$BlackHoleInteractionSystem() : super(Aspect.empty()..allOf([OnScreen]));
+  GroupManager groupManager;
+  _$BlackHoleInteractionSystem() : super(Aspect.empty());
   @override
   void initialize() {
     super.initialize();
-    onScreenMapper = Mapper<OnScreen>(world);
     colorMapper = Mapper<Color>(world);
     attractedByManager = world.getManager<AttractedByManager>();
+    groupManager = world.getManager<GroupManager>();
   }
 }
