@@ -25,9 +25,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   int get verticeCount => circleFragments * 2;
 
   @override
-  void processEntity(int index, Entity entity) {
+  bool processEntity(int index, Entity entity) {
     if (!groupManager.isInGroup(entity, groupOnScreen)) {
-      return;
+      return false;
     }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
@@ -36,9 +36,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     final w = wobbleMapper[entity];
     final cw = cellWallMapper[entity];
 
-    final itemOffset = itemCount * (verticeCount + 1);
-    final offset = itemCount * (verticeCount + 1) * valuesPerItem;
-    final indicesOffset = itemCount * indicesPerItem;
+    final itemOffset = index * (verticeCount + 1);
+    final offset = index * (verticeCount + 1) * valuesPerItem;
+    final indicesOffset = index * indicesPerItem;
 
     items[offset] = p.x;
     items[offset + 1] = p.y;
@@ -86,7 +86,8 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     indices[indicesOffset + circleFragments * 9 - 4] =
         itemOffset + circleFragments + 1;
     indices[indicesOffset + circleFragments * 9 - 7] = itemOffset + 1;
-    itemCount++;
+
+    return true;
   }
 
   void createThrusters(
@@ -161,17 +162,10 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     verticeCount = circleFragments;
   }
 
-  int itemCount;
-
   @override
-  void begin() {
-    itemCount = 0;
-  }
-
-  @override
-  void processEntity(int index, Entity entity) {
+  bool processEntity(int index, Entity entity) {
     if (!groupManager.isInGroup(entity, groupOnScreen)) {
-      return;
+      return false;
     }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
@@ -179,9 +173,9 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     final o = orientationMapper[entity];
     final w = wobbleMapper[entity];
 
-    final itemOffset = itemCount * (verticeCount + 1);
-    final offset = itemCount * (verticeCount + 1) * valuesPerItem;
-    final indicesOffset = itemCount * verticeCount * 3;
+    final itemOffset = index * (verticeCount + 1);
+    final offset = index * (verticeCount + 1) * valuesPerItem;
+    final indicesOffset = index * verticeCount * 3;
 
     items[offset] = p.x;
     items[offset + 1] = p.y;
@@ -202,7 +196,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     }
 
     indices[indicesOffset + verticeCount * 3 - 1] = itemOffset + 1;
-    itemCount++;
+    return true;
   }
 
   void createCircleVertex(int baseOffset, Position p, double radius,
@@ -228,7 +222,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 
     bufferElements(attributes, items, indices);
     gl.drawElements(
-        WebGL.TRIANGLES, itemCount * indicesPerItem, WebGL.UNSIGNED_SHORT, 0);
+        WebGL.TRIANGLES, length * indicesPerItem, WebGL.UNSIGNED_SHORT, 0);
   }
 
   @override

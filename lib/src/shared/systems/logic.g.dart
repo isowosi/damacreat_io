@@ -270,18 +270,15 @@ abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
   Mapper<Color> colorMapper;
   Mapper<Position> positionMapper;
   Mapper<Velocity> velocityMapper;
-  Mapper<ConstantVelocity> constantVelocityMapper;
   GroupManager groupManager;
   _$FoodSizeLossSystem()
-      : super(Aspect.empty()
-          ..allOf([Color, Position, Velocity, ConstantVelocity]));
+      : super(Aspect.empty()..allOf([Color, Position, Velocity]));
   @override
   void initialize() {
     super.initialize();
     colorMapper = Mapper<Color>(world);
     positionMapper = Mapper<Position>(world);
     velocityMapper = Mapper<Velocity>(world);
-    constantVelocityMapper = Mapper<ConstantVelocity>(world);
     groupManager = world.getManager<GroupManager>();
   }
 }

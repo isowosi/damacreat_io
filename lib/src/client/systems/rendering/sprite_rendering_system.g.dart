@@ -12,15 +12,11 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
   Mapper<Color> colorMapper;
   Mapper<Size> sizeMapper;
   Mapper<Renderable> renderableMapper;
-  Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
   TagManager tagManager;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
-  GroupManager groupManager;
-  _$SpriteRenderingSystem(RenderingContext gl)
-      : super(
-            gl,
-            Aspect.empty()
-              ..allOf([Position, Orientation, Color, Size, Renderable]));
+  _$SpriteRenderingSystem(RenderingContext gl, Aspect aspect)
+      : super(gl,
+            aspect..allOf([Position, Orientation, Color, Size, Renderable]));
   @override
   void initialize() {
     super.initialize();
@@ -29,10 +25,28 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
     colorMapper = Mapper<Color>(world);
     sizeMapper = Mapper<Size>(world);
     renderableMapper = Mapper<Renderable>(world);
-    quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
     tagManager = world.getManager<TagManager>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
+  }
+}
+
+abstract class _$QuadTreeCandidateSpriteRenderingSystem
+    extends SpriteRenderingSystem {
+  Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
+  GroupManager groupManager;
+  _$QuadTreeCandidateSpriteRenderingSystem(
+      RenderingContext gl, SpriteSheet sheet)
+      : super(gl, sheet, Aspect.empty()..allOf([QuadTreeCandidate]));
+  @override
+  void initialize() {
+    super.initialize();
+    quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
     groupManager = world.getManager<GroupManager>();
   }
+}
+
+abstract class _$ParticleSpriteRenderingSystem extends SpriteRenderingSystem {
+  _$ParticleSpriteRenderingSystem(RenderingContext gl, SpriteSheet sheet)
+      : super(gl, sheet, Aspect.empty()..exclude([QuadTreeCandidate]));
 }

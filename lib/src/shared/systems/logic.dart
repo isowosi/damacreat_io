@@ -527,7 +527,6 @@ class AccelerationSystem extends _$AccelerationSystem {
     Color,
     Position,
     Velocity,
-    ConstantVelocity,
   ],
   manager: [
     GroupManager,

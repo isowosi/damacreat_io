@@ -111,8 +111,8 @@ class Game extends GameBase {
           // rendering
           WebGlCanvasCleaningSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
-          SpriteRenderingSystem(gl, spriteSheet),
-          ParticleRenderingSystem(gl),
+          QuadTreeCandidateSpriteRenderingSystem(gl, spriteSheet),
+          ParticleSpriteRenderingSystem(gl, spriteSheet),
           PlayerRenderingSystem(gl),
           BlackHoleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
