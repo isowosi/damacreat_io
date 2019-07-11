@@ -18,8 +18,8 @@ part 'thruster_particle_emission_system.g.dart';
     Wobble,
     Booster,
   ],
-  manager: [
-    GroupManager,
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
@@ -29,7 +29,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return;
     }
     final p = positionMapper[entity];

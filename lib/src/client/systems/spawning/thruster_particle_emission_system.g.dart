@@ -15,7 +15,7 @@ abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
   Mapper<Color> colorMapper;
   Mapper<Wobble> wobbleMapper;
   Mapper<Booster> boosterMapper;
-  GroupManager groupManager;
+  OnScreenTagSystem onScreenTagSystem;
   _$ThrusterParticleEmissionSystem()
       : super(Aspect.empty()
           ..allOf([
@@ -39,7 +39,7 @@ abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
     colorMapper = Mapper<Color>(world);
     wobbleMapper = Mapper<Wobble>(world);
     boosterMapper = Mapper<Booster>(world);
-    groupManager = world.getManager<GroupManager>();
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
   }
 }
 

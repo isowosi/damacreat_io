@@ -21,7 +21,9 @@ part 'debug.g.dart';
     CameraManager,
     SettingsManager,
     TagManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class DebugSystem extends _$DebugSystem {
@@ -46,7 +48,7 @@ class DebugSystem extends _$DebugSystem {
 
   @override
   void processSystem() {
-    final renderedCircles = groupManager.getEntities(groupOnScreen).length;
+    final renderedCircles = onScreenTagSystem.onScreenCount;
     final movingThings = world.componentManager
         .getComponentsByType<Velocity>(
             ComponentTypeManager.getTypeFor(Velocity))

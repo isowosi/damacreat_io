@@ -9,24 +9,24 @@ part of 'debug.dart';
 abstract class _$DebugSystem extends VoidEntitySystem {
   Mapper<Food> foodMapper;
   Mapper<Position> positionMapper;
+  OnScreenTagSystem onScreenTagSystem;
   QuadTreeManager quadTreeManager;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   CameraManager cameraManager;
   SettingsManager settingsManager;
   TagManager tagManager;
-  GroupManager groupManager;
   @override
   void initialize() {
     super.initialize();
     foodMapper = Mapper<Food>(world);
     positionMapper = Mapper<Position>(world);
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     quadTreeManager = world.getManager<QuadTreeManager>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();
     settingsManager = world.getManager<SettingsManager>();
     tagManager = world.getManager<TagManager>();
-    groupManager = world.getManager<GroupManager>();
   }
 }
 

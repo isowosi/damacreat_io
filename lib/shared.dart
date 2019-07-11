@@ -17,5 +17,3 @@ const int blackHoleCannonButtonCenterX = 75;
 const int blackHoleCannonButtonCenterY = 150;
 const int actionButtonRadius = 50;
 const int actionButtonSize = actionButtonRadius * 2;
-
-const String groupOnScreen = 'onscreen';

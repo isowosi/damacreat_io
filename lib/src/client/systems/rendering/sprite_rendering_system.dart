@@ -188,8 +188,8 @@ abstract class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   allOf: [
     QuadTreeCandidate,
   ],
-  manager: [
-    GroupManager,
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class QuadTreeCandidateSpriteRenderingSystem
@@ -199,7 +199,7 @@ class QuadTreeCandidateSpriteRenderingSystem
 
   @override
   bool processEntity(int index, Entity entity) {
-    if (groupManager.isInGroup(entity, groupOnScreen)) {
+    if (onScreenTagSystem[entity]) {
       return super.processEntity(index, entity);
     }
     return false;

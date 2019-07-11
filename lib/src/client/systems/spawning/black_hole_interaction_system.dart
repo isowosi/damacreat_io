@@ -14,7 +14,9 @@ part 'black_hole_interaction_system.g.dart';
   ],
   manager: [
     AttractedByManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
@@ -24,7 +26,7 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (groupManager.isInGroup(entity, groupOnScreen)) {
+    if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }

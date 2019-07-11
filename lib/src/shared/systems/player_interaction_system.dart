@@ -14,7 +14,9 @@ part 'player_interaction_system.g.dart';
   ],
   manager: [
     TagManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class PlayerInteractionSystem extends _$PlayerInteractionSystem {
@@ -22,7 +24,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (groupManager.isInGroup(entity, groupOnScreen)) {
+    if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }

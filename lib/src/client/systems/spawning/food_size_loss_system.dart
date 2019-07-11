@@ -12,8 +12,8 @@ part 'food_size_loss_system.g.dart';
     Position,
     Velocity,
   ],
-  manager: [
-    GroupManager,
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class FoodSizeLossSystem extends _$FoodSizeLossSystem {
@@ -23,7 +23,7 @@ class FoodSizeLossSystem extends _$FoodSizeLossSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (groupManager.isInGroup(entity, groupOnScreen)) {
+    if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }

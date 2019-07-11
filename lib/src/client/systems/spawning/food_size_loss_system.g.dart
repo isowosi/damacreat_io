@@ -10,7 +10,7 @@ abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
   Mapper<Color> colorMapper;
   Mapper<Position> positionMapper;
   Mapper<Velocity> velocityMapper;
-  GroupManager groupManager;
+  OnScreenTagSystem onScreenTagSystem;
   _$FoodSizeLossSystem()
       : super(Aspect.empty()..allOf([Color, Position, Velocity]));
   @override
@@ -19,6 +19,6 @@ abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
     colorMapper = Mapper<Color>(world);
     positionMapper = Mapper<Position>(world);
     velocityMapper = Mapper<Velocity>(world);
-    groupManager = world.getManager<GroupManager>();
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
   }
 }

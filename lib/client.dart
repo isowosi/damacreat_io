@@ -68,7 +68,6 @@ class Game extends GameBase {
       ..addManager(gameStateManager)
       ..addManager(controllerManager)
       ..addManager(analyticsManager)
-      ..addManager(GroupManager())
       ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
@@ -128,7 +127,6 @@ class Game extends GameBase {
           // cleanup
           BoosterHandlingSystem(spriteSheet),
           ExpirationSystem(),
-          RemoveTemporaryGroupSystem(),
         ],
         GameBase.physics: [
           // add at least one

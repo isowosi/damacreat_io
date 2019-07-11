@@ -11,7 +11,9 @@ part 'digestive_system.g.dart';
   BaseDigestiveSystem,
   manager: [
     AttractedByManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
   allOf: [
     Position,
@@ -30,7 +32,7 @@ class DigestiveSystem extends _$DigestiveSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (groupManager.isInGroup(entity, groupOnScreen)) {
+    if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }

@@ -19,7 +19,9 @@ part 'black_hole_rendering_system.g.dart';
     ViewProjectionMatrixManager,
     TagManager,
     CameraManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
@@ -61,7 +63,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
 
   @override
   bool processEntity(int index, Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return false;
     }
     final position = positionMapper[entity];

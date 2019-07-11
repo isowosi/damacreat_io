@@ -13,7 +13,6 @@ abstract class _$OnScreenTagSystem extends EntitySystem {
   QuadTreeManager quadTreeManager;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   TagManager tagManager;
-  GroupManager groupManager;
   _$OnScreenTagSystem() : super(Aspect.empty()..allOf([Camera, Position]));
   @override
   void initialize() {
@@ -25,16 +24,6 @@ abstract class _$OnScreenTagSystem extends EntitySystem {
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
-    groupManager = world.getManager<GroupManager>();
-  }
-}
-
-abstract class _$RemoveTemporaryGroupSystem extends VoidEntitySystem {
-  GroupManager groupManager;
-  @override
-  void initialize() {
-    super.initialize();
-    groupManager = world.getManager<GroupManager>();
   }
 }
 
@@ -103,7 +92,7 @@ abstract class _$ThrusterCellWallWeakeningSystem
     extends EntityProcessingSystem {
   Mapper<CellWall> cellWallMapper;
   Mapper<Thruster> thrusterMapper;
-  GroupManager groupManager;
+  OnScreenTagSystem onScreenTagSystem;
   _$ThrusterCellWallWeakeningSystem()
       : super(Aspect.empty()..allOf([CellWall, Thruster]));
   @override
@@ -111,21 +100,21 @@ abstract class _$ThrusterCellWallWeakeningSystem
     super.initialize();
     cellWallMapper = Mapper<CellWall>(world);
     thrusterMapper = Mapper<Thruster>(world);
-    groupManager = world.getManager<GroupManager>();
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
   }
 }
 
 abstract class _$FoodColoringSystem extends EntityProcessingSystem {
   Mapper<Food> foodMapper;
   Mapper<Color> colorMapper;
-  GroupManager groupManager;
+  OnScreenTagSystem onScreenTagSystem;
   _$FoodColoringSystem() : super(Aspect.empty()..allOf([Food, Color]));
   @override
   void initialize() {
     super.initialize();
     foodMapper = Mapper<Food>(world);
     colorMapper = Mapper<Color>(world);
-    groupManager = world.getManager<GroupManager>();
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
   }
 }
 

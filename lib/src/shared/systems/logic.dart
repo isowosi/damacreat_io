@@ -1,3 +1,4 @@
+import 'package:bit_array/bit_array.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
@@ -18,10 +19,20 @@ part 'logic.g.dart';
     QuadTreeManager,
     ViewProjectionMatrixManager,
     TagManager,
-    GroupManager,
   ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
+  BitArray _onScreenEntityIds = BitArray(4096);
+
+  @override
+  void begin() {
+    if (world.entityManager.activeEntityCount > _onScreenEntityIds.length) {
+      _onScreenEntityIds = BitArray(world.entityManager.activeEntityCount);
+    } else {
+      _onScreenEntityIds.clearAll();
+    }
+  }
+
   @override
   void processEntities(Iterable<Entity> entities) {
     if (entities.isNotEmpty) {
@@ -41,26 +52,15 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
   }
 
   void _tag(Entity entity) {
-    groupManager.add(entity, groupOnScreen);
+    _onScreenEntityIds[entity.id] = true;
   }
+
+  int get onScreenCount => _onScreenEntityIds.cardinality;
 
   @override
   bool checkProcessing() => true;
-}
 
-@Generate(
-  VoidEntitySystem,
-  manager: [
-    GroupManager,
-  ],
-)
-class RemoveTemporaryGroupSystem extends _$RemoveTemporaryGroupSystem {
-  @override
-  void processSystem() {
-    for (final entity in groupManager.getEntities(groupOnScreen)) {
-      groupManager.remove(entity, groupOnScreen);
-    }
-  }
+  bool operator [](Entity value) => _onScreenEntityIds[value.id];
 }
 
 @Generate(
@@ -139,7 +139,6 @@ class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
   }
 }
 
-
 @Generate(
   EntityProcessingSystem,
   allOf: [
@@ -166,15 +165,15 @@ class CameraPositionSystem extends _$CameraPositionSystem {
     CellWall,
     Thruster,
   ],
-  manager: [
-    GroupManager,
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class ThrusterCellWallWeakeningSystem
     extends _$ThrusterCellWallWeakeningSystem {
   @override
   void processEntity(Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return;
     }
     final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
@@ -193,14 +192,14 @@ class ThrusterCellWallWeakeningSystem
     Food,
     Color,
   ],
-  manager: [
-    GroupManager,
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class FoodColoringSystem extends _$FoodColoringSystem {
   @override
   void processEntity(Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return;
     }
     final food = foodMapper[entity];

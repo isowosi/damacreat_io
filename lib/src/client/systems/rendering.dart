@@ -26,7 +26,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
 
   @override
   bool processEntity(int index, Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return false;
     }
     final p = positionMapper[entity];
@@ -141,7 +141,9 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   manager: [
     ViewProjectionMatrixManager,
     TagManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
@@ -164,7 +166,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 
   @override
   bool processEntity(int index, Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return false;
     }
     final p = positionMapper[entity];
@@ -337,7 +339,9 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     CameraManager,
     SettingsManager,
     TagManager,
-    GroupManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
@@ -346,7 +350,7 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
 
   @override
   void processEntity(Entity entity) {
-    if (!groupManager.isInGroup(entity, groupOnScreen)) {
+    if (!onScreenTagSystem[entity]) {
       return;
     }
     final cameraEntity = tagManager.getEntity(cameraTag);

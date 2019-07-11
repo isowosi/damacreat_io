@@ -34,7 +34,7 @@ abstract class _$SpriteRenderingSystem extends WebGlRenderingSystem {
 abstract class _$QuadTreeCandidateSpriteRenderingSystem
     extends SpriteRenderingSystem {
   Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
-  GroupManager groupManager;
+  OnScreenTagSystem onScreenTagSystem;
   _$QuadTreeCandidateSpriteRenderingSystem(
       RenderingContext gl, SpriteSheet sheet)
       : super(gl, sheet, Aspect.empty()..allOf([QuadTreeCandidate]));
@@ -42,7 +42,7 @@ abstract class _$QuadTreeCandidateSpriteRenderingSystem
   void initialize() {
     super.initialize();
     quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
-    groupManager = world.getManager<GroupManager>();
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
   }
 }
 
