@@ -36,8 +36,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   final _messages = <Message>[];
   final WebSocketHandler _webSocketHandler;
   int playerId;
+  SpriteSheet sheet;
 
-  WebSocketListeningSystem(this._webSocketHandler);
+  WebSocketListeningSystem(this._webSocketHandler, this.sheet);
 
   @override
   void initialize() {
@@ -281,7 +282,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         Color.fromHsl(0.35, 0.4, 0.4, 1),
         Food(random.nextDouble() * tau, random.nextDouble() * tau,
             random.nextDouble() * tau),
-        Renderable('food', scale: 1 / foodSpriteRadius),
+        Renderable(sheet, 'food', scale: 1 / foodSpriteRadius),
         Orientation(0),
         QuadTreeCandidate(),
       ]);

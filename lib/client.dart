@@ -13,6 +13,11 @@ import 'package:damacreat_io/src/client/systems/rendering/action_button_renderin
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/black_hole_interaction_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/booster_handling_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/digestive_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/food_size_loss_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/thruster_particle_emission_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
@@ -21,8 +26,6 @@ import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
-import 'package:damacreat_io/src/shared/systems/black_hole_interaction_system.dart';
-import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
 import 'package:damacreat_io/src/shared/systems/player_interaction_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -78,7 +81,7 @@ class Game extends GameBase {
   Map<int, List<EntitySystem>> getSystems() => {
         GameBase.rendering: [
           // input
-          WebSocketListeningSystem(webSocketHandler),
+          WebSocketListeningSystem(webSocketHandler, spriteSheet),
           MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
           GamepadControllerSystem(webSocketHandler),
           KeyboardControllerSystem(ignoreInputFromElements: inputs),
@@ -96,15 +99,15 @@ class Game extends GameBase {
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
-          FoodSizeLossSystem(),
-          DigestiveSystem(),
+          FoodSizeLossSystem(spriteSheet),
+          DigestiveSystem(spriteSheet),
           WobbleSystem(),
           CellWallSystem(),
           CellWallDigestedBySystem(),
           ThrusterCellWallWeakeningSystem(),
           PlayerInteractionSystem(),
-          BlackHoleInteractionSystem(),
-          ThrusterParticleEmissionSystem(),
+          BlackHoleInteractionSystem(spriteSheet),
+          ThrusterParticleEmissionSystem(spriteSheet),
           ThrusterParticleColorModificationSystem(),
           FoodColoringSystem(),
           ColorChangeOverLifetimeSystem(),
@@ -123,7 +126,7 @@ class Game extends GameBase {
           MinimapRenderingSystem(hudCtx),
           ActionButtonRenderingSystem(hudCtx),
           // cleanup
-          BoosterHandlingSystem(),
+          BoosterHandlingSystem(spriteSheet),
           ExpirationSystem(),
           RemoveTemporaryGroupSystem(),
         ],
@@ -191,6 +194,6 @@ ${stats.system}; ${stats.averageTime}; ${stats.meanTime}; ${stats.minTime}; ${st
     }
   }
 
-//  @override
-//  World createWorld() => PerformanceMeasureWorld(600);
+  @override
+  World createWorld() => PerformanceMeasureWorld(600);
 }

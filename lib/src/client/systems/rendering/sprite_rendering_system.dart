@@ -68,7 +68,7 @@ abstract class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     final renderable = renderableMapper[entity];
     final size = sizeMapper[entity];
     final color = colorMapper[entity];
-    final sprite = sheet.sprites[renderable.spriteName];
+    final sprite = renderable.sprite;
     final dst = sprite.dst;
     final src = sprite.src;
     final left = src.left.toDouble() + 1;

@@ -1,7 +1,7 @@
 import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:damacreat/damacreat.dart';
-import 'package:gamedev_helpers/gamedev_helpers_shared.dart' hide Velocity;
+import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 
 part 'booster_handling_system.g.dart';
 
@@ -17,6 +17,10 @@ part 'booster_handling_system.g.dart';
   ],
 )
 class BoosterHandlingSystem extends _$BoosterHandlingSystem {
+  SpriteSheet sheet;
+
+  BoosterHandlingSystem(this.sheet);
+
   @override
   void onBoost(Entity entity, double powerusage) {
     final booster = boosterMapper[entity];
@@ -35,7 +39,7 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
                 sin(velocity.angle) * 500 +
                 sin(velocity.angle + pi / 2) * distance),
         Size(1),
-        Renderable('boost'),
+        Renderable(sheet, 'boost'),
         Lifetime(booster.maxPower),
         Color(1, 1, 1, booster.power / booster.maxPower),
         Orientation(orientation.angle),
@@ -51,7 +55,7 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
                 sin(velocity.angle) * 500 +
                 sin(velocity.angle - pi / 2) * distance),
         Size(1),
-        Renderable('boost'),
+        Renderable(sheet, 'boost'),
         Lifetime(booster.maxPower),
         Color(1, 1, 1, booster.power / booster.maxPower),
         Orientation(orientation.angle),

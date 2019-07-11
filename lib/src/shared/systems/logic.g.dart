@@ -38,25 +38,6 @@ abstract class _$RemoveTemporaryGroupSystem extends VoidEntitySystem {
   }
 }
 
-abstract class _$DigestiveSystem extends BaseDigestiveSystem {
-  Mapper<Position> positionMapper;
-  Mapper<Color> colorMapper;
-  AttractedByManager attractedByManager;
-  GroupManager groupManager;
-  _$DigestiveSystem()
-      : super(Aspect.empty()
-          ..allOf([Position])
-          ..exclude([DigestionComplete]));
-  @override
-  void initialize() {
-    super.initialize();
-    positionMapper = Mapper<Position>(world);
-    colorMapper = Mapper<Color>(world);
-    attractedByManager = world.getManager<AttractedByManager>();
-    groupManager = world.getManager<GroupManager>();
-  }
-}
-
 abstract class _$ExpirationSystem extends EntityProcessingSystem {
   Mapper<Lifetime> lifetimeMapper;
   _$ExpirationSystem() : super(Aspect.empty()..allOf([Lifetime]));
@@ -100,62 +81,6 @@ abstract class _$CellWallDigestedBySystem extends EntityProcessingSystem {
     super.initialize();
     cellWallMapper = Mapper<CellWall>(world);
     digestedByMapper = Mapper<DigestedBy>(world);
-  }
-}
-
-abstract class _$ThrusterParticleEmissionSystem extends EntityProcessingSystem {
-  Mapper<Position> positionMapper;
-  Mapper<Orientation> orientationMapper;
-  Mapper<Thruster> thrusterMapper;
-  Mapper<Velocity> velocityMapper;
-  Mapper<Size> sizeMapper;
-  Mapper<Color> colorMapper;
-  Mapper<Wobble> wobbleMapper;
-  Mapper<Booster> boosterMapper;
-  GroupManager groupManager;
-  _$ThrusterParticleEmissionSystem()
-      : super(Aspect.empty()
-          ..allOf([
-            Position,
-            Orientation,
-            Thruster,
-            Velocity,
-            Size,
-            Color,
-            Wobble,
-            Booster
-          ]));
-  @override
-  void initialize() {
-    super.initialize();
-    positionMapper = Mapper<Position>(world);
-    orientationMapper = Mapper<Orientation>(world);
-    thrusterMapper = Mapper<Thruster>(world);
-    velocityMapper = Mapper<Velocity>(world);
-    sizeMapper = Mapper<Size>(world);
-    colorMapper = Mapper<Color>(world);
-    wobbleMapper = Mapper<Wobble>(world);
-    boosterMapper = Mapper<Booster>(world);
-    groupManager = world.getManager<GroupManager>();
-  }
-}
-
-abstract class _$ThrusterParticleColorModificationSystem
-    extends EntityProcessingSystem {
-  Mapper<ThrusterParticle> thrusterParticleMapper;
-  Mapper<Color> colorMapper;
-  Mapper<Lifetime> lifetimeMapper;
-  Mapper<Renderable> renderableMapper;
-  _$ThrusterParticleColorModificationSystem()
-      : super(Aspect.empty()
-          ..allOf([ThrusterParticle, Color, Lifetime, Renderable]));
-  @override
-  void initialize() {
-    super.initialize();
-    thrusterParticleMapper = Mapper<ThrusterParticle>(world);
-    colorMapper = Mapper<Color>(world);
-    lifetimeMapper = Mapper<Lifetime>(world);
-    renderableMapper = Mapper<Renderable>(world);
   }
 }
 
@@ -263,22 +188,5 @@ abstract class _$AccelerationSystem extends EntityProcessingSystem {
     accelerationMapper = Mapper<Acceleration>(world);
     velocityMapper = Mapper<Velocity>(world);
     orientationMapper = Mapper<Orientation>(world);
-  }
-}
-
-abstract class _$FoodSizeLossSystem extends BaseFoodSizeLossSystem {
-  Mapper<Color> colorMapper;
-  Mapper<Position> positionMapper;
-  Mapper<Velocity> velocityMapper;
-  GroupManager groupManager;
-  _$FoodSizeLossSystem()
-      : super(Aspect.empty()..allOf([Color, Position, Velocity]));
-  @override
-  void initialize() {
-    super.initialize();
-    colorMapper = Mapper<Color>(world);
-    positionMapper = Mapper<Position>(world);
-    velocityMapper = Mapper<Velocity>(world);
-    groupManager = world.getManager<GroupManager>();
   }
 }

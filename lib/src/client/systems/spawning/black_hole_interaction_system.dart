@@ -2,6 +2,8 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:dartemis/dartemis.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart'
+    hide Velocity, Acceleration;
 
 part 'black_hole_interaction_system.g.dart';
 
@@ -16,6 +18,10 @@ part 'black_hole_interaction_system.g.dart';
   ],
 )
 class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
+  SpriteSheet sheet;
+
+  BlackHoleInteractionSystem(this.sheet);
+
   @override
   void processEntity(Entity entity) {
     if (groupManager.isInGroup(entity, groupOnScreen)) {
@@ -45,7 +51,7 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
       Position foodPosition, double angle, Color foodColor, Entity blackHole) {
     for (var i = 0; i <= particleMultiplier * foodRadius ~/ 10; i++) {
       final entity = world.createAndAddEntity([
-        Renderable('digestion'),
+        Renderable(sheet, 'digestion'),
         Position(foodPosition.x + foodRadius * cos(angle),
             foodPosition.y + foodRadius * sin(angle)),
         Velocity(foodRadius, angle, 0),
