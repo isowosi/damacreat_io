@@ -37,6 +37,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
     final fragment = (angle * angleToSegmentFactor).round();
     final sizeRelation = foodRadius / playerRadius;
     final fragmentRange = getFragmentRange(sizeRelation);
+    final fragmentRangePow2 = fragmentRange * fragmentRange;
     final colliderWobble = wobbleMapper[player];
     final additionalDistRelation =
         (dist + foodRadius - playerRadius) / playerRadius;
@@ -44,15 +45,12 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
       final fragmentIndex = (fragment + i) % playerCircleFragments;
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       colliderWobble.wobbleFactor[fragmentIndex] = max(
-          old,
-          1 +
-              additionalDistRelation *
-                  (1 - i * i / (fragmentRange * fragmentRange)));
+          old, 1 + additionalDistRelation * (1 - i * i / fragmentRangePow2));
     }
   }
 
   int getFragmentRange(double sizeRelation) =>
-      (sizeRelation * playerCircleFragments ~/ 4).round();
+      (sizeRelation * playerCircleFragments / 4).truncate();
 
   @override
   void touch(Entity player, Entity food, double dist, double distX,
