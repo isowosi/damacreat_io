@@ -83,61 +83,60 @@ abstract class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     final top = src.top.toDouble();
 
     final bottomLeftAngle = atan2(dstBottom, dstLeft);
+    final red = color.r;
+    final green = color.g;
+    final blue = color.b;
+    final alpha = color.a;
+    final x = position.x;
+    final y = position.y;
+    final angle = orientation.angle;
     var valueOffset = index * 32;
-    values[valueOffset++] = position.x +
-        dstLeft *
-            cos(orientation.angle + bottomLeftAngle) /
-            cos(bottomLeftAngle);
-    values[valueOffset++] = position.y +
-        dstBottom *
-            sin(orientation.angle + bottomLeftAngle) /
-            sin(bottomLeftAngle);
+    values[valueOffset++] =
+        x + dstLeft * cos(angle + bottomLeftAngle) / cos(bottomLeftAngle);
+    values[valueOffset++] =
+        y + dstBottom * sin(angle + bottomLeftAngle) / sin(bottomLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = bottom;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final bottomRightAngle = atan2(dstBottom, dstRight);
-    values[valueOffset++] = position.x +
-        dstRight *
-            cos(orientation.angle + bottomRightAngle) /
-            cos(bottomRightAngle);
-    values[valueOffset++] = position.y +
-        dstBottom *
-            sin(orientation.angle + bottomRightAngle) /
-            sin(bottomRightAngle);
+    values[valueOffset++] =
+        x + dstRight * cos(angle + bottomRightAngle) / cos(bottomRightAngle);
+    values[valueOffset++] =
+        y + dstBottom * sin(angle + bottomRightAngle) / sin(bottomRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = bottom;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final topLeftAngle = atan2(dstTop, dstLeft);
-    values[valueOffset++] = position.x +
-        dstLeft * cos(orientation.angle + topLeftAngle) / cos(topLeftAngle);
-    values[valueOffset++] = position.y +
-        dstTop * sin(orientation.angle + topLeftAngle) / sin(topLeftAngle);
+    values[valueOffset++] =
+        x + dstLeft * cos(angle + topLeftAngle) / cos(topLeftAngle);
+    values[valueOffset++] =
+        y + dstTop * sin(angle + topLeftAngle) / sin(topLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = top;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final topRightAngle = atan2(dstTop, dstRight);
-    values[valueOffset++] = position.x +
-        dstRight * cos(orientation.angle + topRightAngle) / cos(topRightAngle);
-    values[valueOffset++] = position.y +
-        dstTop * sin(orientation.angle + topRightAngle) / sin(topRightAngle);
+    values[valueOffset++] =
+        x + dstRight * cos(angle + topRightAngle) / cos(topRightAngle);
+    values[valueOffset++] =
+        y + dstTop * sin(angle + topRightAngle) / sin(topRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = top;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     var indicesOffset = index * 6;
     indices[indicesOffset++] = index * 4;
