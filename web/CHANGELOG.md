@@ -1,3 +1,9 @@
+# 0.11.0 (2019-07-??)
+
+## Misc
+* improved performance
+* animated and more colorful background
+
 # 0.10.1 (2019-05-23)
 
 ## Bugfixes
