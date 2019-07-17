@@ -269,6 +269,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 
   UniformLocation uViewProjectionLocation;
   UniformLocation uRgbLocation;
+  UniformLocation uTimeLocation;
 
   BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
@@ -298,7 +299,8 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
     gl
       ..uniformMatrix4fv(
           uViewProjectionLocation, false, viewProjectionMatrix.storage)
-      ..uniform3fv(uRgbLocation, rgb);
+      ..uniform3fv(uRgbLocation, rgb)
+      ..uniform1f(uTimeLocation, time);
     buffer('aPosition', background, 2);
     gl.drawArrays(WebGL.TRIANGLE_FAN, 0, 4);
   }
@@ -315,6 +317,7 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   void initUniformLocations() {
     uViewProjectionLocation = getUniformLocation('uViewProjection');
     uRgbLocation = getUniformLocation('uRgb');
+    uTimeLocation = getUniformLocation('uTime');
   }
 }
 
