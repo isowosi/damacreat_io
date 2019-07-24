@@ -4,6 +4,9 @@
 * improved performance
 * animated and more colorful background
 
+## Bugfixes
+* size of moving dark energy off screen was not updated correctly
+
 # 0.10.1 (2019-05-23)
 
 ## Bugfixes
