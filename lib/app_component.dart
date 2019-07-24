@@ -5,7 +5,7 @@ import 'package:damacreat_io/src/ng/game_menu/game_menu.dart';
 import 'package:damacreat_io/src/ng/game_service.dart';
 import 'package:damacreat_io/src/ng/page_footer/page_footer.dart';
 import 'package:damacreat_io/src/ng/privacy_policy/privacy_policy.dart';
-import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';

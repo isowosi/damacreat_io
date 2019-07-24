@@ -20,7 +20,7 @@ import 'package:damacreat_io/src/client/systems/spawning/food_size_loss_system.d
 import 'package:damacreat_io/src/client/systems/spawning/thruster_particle_emission_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
-import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
@@ -51,9 +51,17 @@ class Game extends GameBase {
             depthTest: false,
             useMaxDelta: false,
             bodyDefsName: null) {
-    // ignore: avoid_as
+    if (gl == null) {
+      analyticsManager.logCapabilities('webgl', supported: false);
+    } else {
+      analyticsManager.logCapabilities('webgl');
+    }
+    if (CanvasElement().getContext('webgl2') == null) {
+      analyticsManager.logCapabilities('webgl2', supported: false);
+    } else {
+      analyticsManager.logCapabilities('webgl2');
+    }
     container = querySelector('#gamecontainer') as DivElement;
-    // ignore: avoid_as
     hudCanvas = querySelector('#hud') as CanvasElement;
     hudCtx = hudCanvas.context2D;
     _configureHud();

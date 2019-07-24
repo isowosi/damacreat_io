@@ -1,6 +1,6 @@
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat/damacreat.dart';
-import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart'

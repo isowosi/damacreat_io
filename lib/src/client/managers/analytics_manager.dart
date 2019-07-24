@@ -85,4 +85,9 @@ class AnalyticsManager extends Manager {
       ]);
     }
   }
+
+  void logCapabilities(String capability, {bool supported = true}) {
+    _log(capability, 'capabilities',
+        eventLabel: supported ? 'supported' : 'unsupported');
+  }
 }
