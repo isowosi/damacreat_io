@@ -11,6 +11,7 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
   Mapper<Color> colorMapper;
   OnScreenTagSystem onScreenTagSystem;
   AttractedByManager attractedByManager;
+  AnalyticsManager analyticsManager;
   _$DigestiveSystem()
       : super(Aspect.empty()
           ..allOf([Position])
@@ -22,5 +23,6 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
     colorMapper = Mapper<Color>(world);
     onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     attractedByManager = world.getManager<AttractedByManager>();
+    analyticsManager = world.getManager<AnalyticsManager>();
   }
 }

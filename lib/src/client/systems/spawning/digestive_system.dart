@@ -1,5 +1,6 @@
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat/damacreat.dart';
+import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart'
@@ -11,6 +12,7 @@ part 'digestive_system.g.dart';
   BaseDigestiveSystem,
   manager: [
     AttractedByManager,
+    AnalyticsManager,
   ],
   systems: [
     OnScreenTagSystem,
@@ -68,5 +70,16 @@ class DigestiveSystem extends _$DigestiveSystem {
       ]);
       attractedByManager.setReference(entity, digester);
     }
+  }
+
+  @override
+  void onNaN(
+      double foodRadiusBefore,
+      double foodRadiusAfter,
+      double digesterRadiusBefore,
+      double digesterRadiusAfter,
+      double consumedArea) {
+    analyticsManager.clientError('''
+calculated NaN in DigestiveSystem: $foodRadiusBefore, $foodRadiusAfter, $digesterRadiusBefore, $digesterRadiusAfter, $consumedArea''');
   }
 }
