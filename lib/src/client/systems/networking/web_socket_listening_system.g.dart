@@ -16,12 +16,14 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Food> foodMapper;
   Mapper<Booster> boosterMapper;
   Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
+  Mapper<Color> colorMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
   DigestionManager digestionManager;
   GameStateManager gameStateManager;
   AnalyticsManager analyticsManager;
+  BlackHoleOwnerManager blackHoleOwnerManager;
   @override
   void initialize() {
     super.initialize();
@@ -34,11 +36,13 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     foodMapper = Mapper<Food>(world);
     boosterMapper = Mapper<Booster>(world);
     quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
+    colorMapper = Mapper<Color>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
     digestionManager = world.getManager<DigestionManager>();
     gameStateManager = world.getManager<GameStateManager>();
     analyticsManager = world.getManager<AnalyticsManager>();
+    blackHoleOwnerManager = world.getManager<BlackHoleOwnerManager>();
   }
 }

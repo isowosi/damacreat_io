@@ -4,6 +4,7 @@ import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/shared/managers/black_hole_owner_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
@@ -22,6 +23,7 @@ part 'web_socket_listening_system.g.dart';
     Food,
     Booster,
     QuadTreeCandidate,
+    Color,
   ],
   manager: [
     TagManager,
@@ -30,6 +32,7 @@ part 'web_socket_listening_system.g.dart';
     DigestionManager,
     GameStateManager,
     AnalyticsManager,
+    BlackHoleOwnerManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
@@ -68,8 +71,14 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       case MessageToClient.initBlackHole:
         _initBlackHole(reader);
         break;
+      case MessageToClient.initOwnedBlackHole:
+        _initBlackHole(reader, owned: true);
+        break;
       case MessageToClient.initGrowingBlackHole:
         _initBlackHole(reader, growing: true);
+        break;
+      case MessageToClient.initOwnedGrowingBlackHole:
+        _initBlackHole(reader, owned: true, growing: true);
         break;
       case MessageToClient.initPlayers:
         _initPlayers(reader);
@@ -290,16 +299,28 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
-  void _initBlackHole(Uint8ListReader reader, {bool growing = false}) {
+  void _initBlackHole(Uint8ListReader reader,
+      {bool owned = false, bool growing = false}) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
+      var ownerId = -1;
+      Entity owner;
+      Color color;
+      if (owned) {
+        ownerId = reader.readUint16();
+        owner = idManager.getEntity(ownerId);
+        final ownerColor = colorMapper[owner];
+        color = Color(ownerColor.r, ownerColor.g, ownerColor.b, 1);
+      } else {
+        color = Color.fromHsl(0.35, 0.4, 0.4, 1);
+      }
       final velocity =
           ByteUtils.byteToSpeed(reader.readUint16()) * blackHoleSpeedMultiplier;
       final angle = ByteUtils.byteToAngle(reader.readUint16());
       final radius = reader.readUint8() / blackHoleSizeFactor;
-      final entity = world.createAndAddEntity([
+      final blackHole = world.createAndAddEntity([
         Id(id),
         Position(x, y),
         Velocity(velocity, angle, 0),
@@ -311,11 +332,18 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
               minBlackHoleGrowthSpeed *
                   reader.readUint8() /
                   blackHoleGrowthSpeedFactor),
-        Color.fromHsl(0.35, 0.4, 0.4, 1),
+        if (owned) BlackHoleOwner(),
+        color,
         BlackHole(),
         QuadTreeCandidate(),
       ]);
-      idManager.add(entity);
+      idManager.add(blackHole);
+      if (owned) {
+        owner
+          ..addComponent(WhiteHole(radius))
+          ..changedInWorld();
+        blackHoleOwnerManager.blackHoleFired(owner, blackHole);
+      }
     }
   }
 

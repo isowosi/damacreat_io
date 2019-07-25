@@ -40,3 +40,8 @@ class Acceleration extends Component {
   double value, angle;
   Acceleration(this.value, this.angle);
 }
+
+class WhiteHole extends Component {
+  double radius;
+  WhiteHole(this.radius);
+}

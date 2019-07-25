@@ -13,6 +13,7 @@ import 'package:damacreat_io/src/client/systems/rendering/action_button_renderin
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/white_hole_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/spawning/black_hole_interaction_system.dart';
 import 'package:damacreat_io/src/client/systems/spawning/booster_handling_system.dart';
 import 'package:damacreat_io/src/client/systems/spawning/digestive_system.dart';
@@ -22,11 +23,13 @@ import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
 import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
+import 'package:damacreat_io/src/shared/managers/black_hole_owner_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
 import 'package:damacreat_io/src/shared/systems/player_interaction_system.dart';
+import 'package:damacreat_io/src/shared/systems/white_hole_size_system.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
@@ -79,6 +82,7 @@ class Game extends GameBase {
       ..addManager(ViewProjectionMatrixManager())
       ..addManager(DigestionManager(RuntimeEnvironment.client))
       ..addManager(AttractedByManager())
+      ..addManager(BlackHoleOwnerManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
@@ -103,6 +107,7 @@ class Game extends GameBase {
           AttractionAccelerationSystem(),
           AccelerationSystem(),
           BlackHoleCannonHandlingSystem(),
+          WhiteHoleSizeSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
@@ -124,6 +129,7 @@ class Game extends GameBase {
           QuadTreeCandidateSpriteRenderingSystem(gl, spriteSheet),
           ParticleSpriteRenderingSystem(gl, spriteSheet),
           PlayerRenderingSystem(gl),
+          WhiteHoleRenderingSystem(gl),
           BlackHoleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
