@@ -85,7 +85,7 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
   ],
 )
 abstract class ControllerSystem extends _$ControllerSystem {
-  WebSocketHandler _webSocketHandler;
+  final WebSocketHandler _webSocketHandler;
   bool useBooster = false;
   bool fireBlackHole = false;
   double velocityStrength;

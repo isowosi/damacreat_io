@@ -9,7 +9,7 @@ class AnalyticsManager extends Manager {
   final String categoryGameplay = 'gameplay';
   int deathCount = 0;
 
-  SettingsManager _settings;
+  final SettingsManager _settings;
   AnalyticsManager(this._settings) {
     window.onUnload.first.then((_) {
       _endSession();
