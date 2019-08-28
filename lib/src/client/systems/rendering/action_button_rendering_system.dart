@@ -32,7 +32,7 @@ class ActionButtonRenderingSystem extends _$ActionButtonRenderingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final booster = boosterMapper[entity];
     final blackHole = blackHoleCannonMapper[entity];
     _renderButton('Boost', booster.power / booster.maxPower,

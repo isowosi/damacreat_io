@@ -15,7 +15,7 @@ class AttractedByManager extends _$AttractedByManager<AttractedBy> {
   Mapper<AttractedBy> get mapper => attractedByMapper;
 
   @override
-  void onRemoveReference(Entity entity) {}
+  void onRemoveReference(int entity) {}
 
   @override
   AttractedBy get entityReferenceComponent => AttractedBy();

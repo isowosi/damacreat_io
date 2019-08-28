@@ -25,7 +25,7 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   int get verticeCount => circleFragments * 2;
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     if (!onScreenTagSystem[entity]) {
       return false;
     }
@@ -165,7 +165,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   }
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     if (!onScreenTagSystem[entity]) {
       return false;
     }
@@ -352,7 +352,7 @@ class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
   PlayerNameRenderingSystem(this.ctx);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (!onScreenTagSystem[entity]) {
       return;
     }

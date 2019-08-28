@@ -34,7 +34,7 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
   }
 
   @override
-  void processEntities(Iterable<Entity> entities) {
+  void processEntities(Iterable<int> entities) {
     if (entities.isNotEmpty) {
       final cameraEntity = entities.first;
       final inverse = viewProjectionMatrixManager
@@ -51,8 +51,8 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
     }
   }
 
-  void _tag(Entity entity) {
-    _onScreenEntityIds[entity.id] = true;
+  void _tag(int entity) {
+    _onScreenEntityIds[entity] = true;
   }
 
   int get onScreenCount => _onScreenEntityIds.cardinality;
@@ -60,7 +60,7 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
   @override
   bool checkProcessing() => true;
 
-  bool operator [](Entity value) => _onScreenEntityIds[value.id];
+  bool operator [](int entity) => _onScreenEntityIds[entity];
 }
 
 @Generate(
@@ -71,10 +71,10 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
 )
 class ExpirationSystem extends _$ExpirationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
     if (l.timeLeft <= 0) {
-      entity.deleteFromWorld();
+      deleteFromWorld(entity);
     }
   }
 }
@@ -87,7 +87,7 @@ class ExpirationSystem extends _$ExpirationSystem {
 )
 class WobbleSystem extends _$WobbleSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final w = wobbleMapper[entity];
 
     final wobbleFactor = w.wobbleFactor;
@@ -108,7 +108,7 @@ class WobbleSystem extends _$WobbleSystem {
 )
 class CellWallSystem extends _$CellWallSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final cw = cellWallMapper[entity];
 
     final strengthFactor = cw.strengthFactor;
@@ -128,7 +128,7 @@ class CellWallSystem extends _$CellWallSystem {
 )
 class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final cw = cellWallMapper[entity];
 
     final strengthFactor = cw.strengthFactor;
@@ -151,7 +151,7 @@ class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
 )
 class CameraPositionSystem extends _$CameraPositionSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final position = positionMapper[entity];
     positionMapper[tagManager.getEntity(cameraTag)]
       ..x = position.x
@@ -172,7 +172,7 @@ class CameraPositionSystem extends _$CameraPositionSystem {
 class ThrusterCellWallWeakeningSystem
     extends _$ThrusterCellWallWeakeningSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (!onScreenTagSystem[entity]) {
       return;
     }
@@ -198,7 +198,7 @@ class ThrusterCellWallWeakeningSystem
 )
 class FoodColoringSystem extends _$FoodColoringSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (!onScreenTagSystem[entity]) {
       return;
     }
@@ -222,7 +222,7 @@ class FoodColoringSystem extends _$FoodColoringSystem {
 )
 class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final position = positionMapper[entity];
     final velocity = velocityMapper[entity];
 
@@ -243,7 +243,7 @@ class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
 )
 class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final color = colorMapper[entity];
     final colorChanger = colorChangerMapper[entity];
     final lifeTime = lifetimeMapper[entity];
@@ -270,7 +270,7 @@ class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
 )
 class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final attractor = attractedByManager.refersTo(entity);
     final attractorPosition = positionMapper[attractor];
     final position = positionMapper[entity];
@@ -292,7 +292,7 @@ class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
 )
 class AccelerationSystem extends _$AccelerationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final acceleration = accelerationMapper[entity];
     final velocity = velocityMapper[entity];
 

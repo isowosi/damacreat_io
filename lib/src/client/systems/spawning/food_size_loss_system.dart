@@ -22,16 +22,16 @@ class FoodSizeLossSystem extends _$FoodSizeLossSystem {
   FoodSizeLossSystem(this.sheet);
 
   @override
-  void onFoodSizeBelowMinimum(Entity entity) {}
+  void onFoodSizeBelowMinimum(int entity) {}
 
   @override
-  void onFoodSizeLoss(Entity entity, double foodRadius) {
+  void onFoodSizeLoss(int entity, double foodRadius) {
     if (onScreenTagSystem[entity]) {
       final position = positionMapper[entity];
       final velocity = velocityMapper[entity];
       final foodColor = colorMapper[entity];
       final angle = velocity.angle - pi - pi / 4 + random.nextDouble() * pi / 2;
-      world.createAndAddEntity([
+      world.createEntity([
         Renderable(sheet, 'digestion'),
         Position(position.x + foodRadius * cos(angle),
             position.y + foodRadius * sin(angle)),

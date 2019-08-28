@@ -28,7 +28,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
   ThrusterParticleEmissionSystem(this.sheet);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (!onScreenTagSystem[entity]) {
       return;
     }
@@ -112,7 +112,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
       final y = y1 + posFactor * (y2 - y1);
       final oldX = oldX1 + posFactor * (oldX2 - oldX1);
       final oldY = oldY1 + posFactor * (oldY2 - oldY1);
-      world.createAndAddEntity([
+      world.createEntity([
         Position(
             x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
         ThrusterParticle(),
@@ -140,7 +140,7 @@ class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
 class ThrusterParticleColorModificationSystem
     extends _$ThrusterParticleColorModificationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final color = colorMapper[entity];
     final lifetime = lifetimeMapper[entity];
     final renderable = renderableMapper[entity];

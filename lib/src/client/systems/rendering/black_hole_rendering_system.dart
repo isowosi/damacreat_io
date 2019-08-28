@@ -62,7 +62,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   }
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     if (!onScreenTagSystem[entity]) {
       return false;
     }

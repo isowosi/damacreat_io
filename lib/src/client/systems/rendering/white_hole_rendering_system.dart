@@ -61,7 +61,7 @@ class WhiteHoleRenderingSystem extends _$WhiteHoleRenderingSystem {
   }
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     if (!onScreenTagSystem[entity]) {
       return false;
     }

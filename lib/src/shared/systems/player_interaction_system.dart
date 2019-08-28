@@ -23,14 +23,14 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   double angleToSegmentFactor = playerCircleFragments / (2 * pi);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }
 
   @override
-  void startDigestion(Entity player, Entity food, double dist, double distX,
+  void startDigestion(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
@@ -53,7 +53,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
       (sizeRelation * playerCircleFragments / 4).truncate();
 
   @override
-  void touch(Entity player, Entity food, double dist, double distX,
+  void touch(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
@@ -81,7 +81,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   }
 
   @override
-  void almostDigestion(Entity player, Entity food, double dist, double distX,
+  void almostDigestion(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
@@ -121,7 +121,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   }
 
   @override
-  void onFleeingAttempt(Entity player, Entity food, double dist, double distX,
+  void onFleeingAttempt(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;

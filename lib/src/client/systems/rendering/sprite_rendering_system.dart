@@ -62,7 +62,7 @@ abstract class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   }
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     final position = positionMapper[entity];
     final orientation = orientationMapper[entity];
     final renderable = renderableMapper[entity];
@@ -197,7 +197,7 @@ class QuadTreeCandidateSpriteRenderingSystem
       : super(gl, sheet);
 
   @override
-  bool processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     if (onScreenTagSystem[entity]) {
       return super.processEntity(index, entity);
     }

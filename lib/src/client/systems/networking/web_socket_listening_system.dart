@@ -118,15 +118,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final entity = idManager.getEntity(id);
-      if (!idManager.deleteEntity(id)) {
-        // entities that have been added and deleted in the same frame
-        // should no longer be a problem
-        // print('tried to delete $id but failed');
-      }
       if (id == playerId) {
         gameStateManager.state = GameState.menu;
         final position = positionMapper[entity];
-        final camera = world.createAndAddEntity([
+        final camera = world.createEntity([
           Position(position.x, position.y),
           Camera(zoom: initialGameZoom),
         ]);
@@ -134,6 +129,11 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ..unregister(cameraTag)
           ..register(camera, cameraTag);
         analyticsManager.deathCount++;
+      }
+      if (!idManager.deleteEntity(id)) {
+        // entities that have been added and deleted in the same frame
+        // should no longer be a problem
+        // print('tried to delete $id but failed');
       }
     }
   }
@@ -154,10 +154,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
         if (constantVelocityMapper.has(entity)) {
           // moving food that was caught by a player
-          entity
-            ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>()
-            ..changedInWorld();
+          world
+            ..removeComponent<Velocity>(entity)
+            ..removeComponent<ConstantVelocity>(entity);
           final radius = sizeMapper[entity].radius;
           final diameter = radius * 2;
           quadTreeManager.update(
@@ -194,10 +193,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
 
         if (constantVelocityMapper.has(entity)) {
           // moving food that was caught by a player
-          entity
-            ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>()
-            ..changedInWorld();
+          world
+            ..removeComponent<Velocity>(entity)
+            ..removeComponent<ConstantVelocity>(entity);
           final diameter = radius * 2;
           quadTreeManager.update(
               entity, x - radius, y - radius, diameter, diameter);
@@ -281,7 +279,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
       final radius = reader.readUint8() / foodSizeFactor;
-      final entity = world.createAndAddEntity([
+      final entity = world.createEntity([
         Id(id),
         Position(x, y),
         Size(radius),
@@ -306,7 +304,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final x = ByteUtils.byteToPosition(reader.readUint16());
       final y = ByteUtils.byteToPosition(reader.readUint16());
       var ownerId = -1;
-      Entity owner;
+      int owner;
       Color color;
       if (owned) {
         ownerId = reader.readUint16();
@@ -320,7 +318,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
           ByteUtils.byteToSpeed(reader.readUint16()) * blackHoleSpeedMultiplier;
       final angle = ByteUtils.byteToAngle(reader.readUint16());
       final radius = reader.readUint8() / blackHoleSizeFactor;
-      final blackHole = world.createAndAddEntity([
+      final blackHole = world.createEntity([
         Id(id),
         Position(x, y),
         Velocity(velocity, angle, 0),
@@ -339,9 +337,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       ]);
       idManager.add(blackHole);
       if (owned) {
-        owner
-          ..addComponent(WhiteHole(radius))
-          ..changedInWorld();
+        world.addComponent(owner, WhiteHole(radius));
         blackHoleOwnerManager.blackHoleFired(owner, blackHole);
       }
     }
@@ -376,9 +372,9 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         playerComponents..add(Controller())..add(Camera());
         final camera = tagManager.getEntity(cameraTag);
         tagManager.unregister(cameraTag);
-        camera.deleteFromWorld();
+        world.deleteEntity(camera);
       }
-      final entity = world.createAndAddEntity(playerComponents);
+      final entity = world.createEntity(playerComponents);
       if (playerId == id) {
         tagManager.register(entity, cameraTag);
       }
@@ -390,7 +386,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     playerId = reader.readUint16();
     final posX = ByteUtils.byteToPosition(reader.readUint16());
     final posY = ByteUtils.byteToPosition(reader.readUint16());
-    final camera = world.createAndAddEntity([
+    final camera = world.createEntity([
       Position(posX, posY),
       Camera(zoom: initialGameZoom),
     ]);
@@ -411,10 +407,10 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         }
         // no constant velocity for players
         if (foodMapper.has(entity)) {
-          entity
-            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
-            ..addComponent(ConstantVelocity())
-            ..changedInWorld();
+          world
+            ..addComponent(
+                entity, Velocity(value * foodSpeedMultiplier, angle, 0))
+            ..addComponent(entity, ConstantVelocity());
         } else {
           _updateBooster(
               entity,
@@ -426,7 +422,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
     }
   }
 
-  void _updateBooster(Entity entity, double value) {
+  void _updateBooster(int entity, double value) {
     if (boosterMapper.has(entity)) {
       boosterMapper[entity].inUse = value >
           1.25 * playerSpeedMultiplier * getVelocityFactor(sizeMapper[entity]);
@@ -441,9 +437,7 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
       final digester = idManager.getEntity(digesterId);
       if (food != null && digester != null) {
         digestionManager.setReference(food, digester);
-        food
-          ..removeComponent<Growing>()
-          ..changedInWorld();
+        world.removeComponent<Growing>(food);
       }
     }
   }

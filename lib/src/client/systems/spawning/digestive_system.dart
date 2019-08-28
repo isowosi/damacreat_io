@@ -33,21 +33,19 @@ class DigestiveSystem extends _$DigestiveSystem {
   DigestiveSystem(this.sheet);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }
 
   @override
-  void onDigestionComplete(Entity digester, Entity food) {
-    food
-      ..addComponent(DigestionComplete())
-      ..changedInWorld();
+  void onDigestionComplete(int digester, int food) {
+    world.addComponent(food, DigestionComplete());
   }
 
   @override
-  void onDigestionInProgress(Entity digester, Entity food) {
+  void onDigestionInProgress(int digester, int food) {
     final foodPosition = positionMapper[food];
     final foodSize = sizeMapper[food];
     final digesterColor = colorMapper[digester];
@@ -55,7 +53,7 @@ class DigestiveSystem extends _$DigestiveSystem {
     final foodRadius = foodSize.radius;
     for (var i = 0; i < foodRadius / 2; i++) {
       final angle = random.nextDouble() * tau;
-      final entity = world.createAndAddEntity([
+      final entity = world.createEntity([
         Renderable(sheet, 'digestion'),
         Position(foodPosition.x + foodRadius * cos(angle),
             foodPosition.y + foodRadius * sin(angle)),

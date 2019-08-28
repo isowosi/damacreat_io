@@ -21,10 +21,9 @@ part 'white_hole_size_system.g.dart';
 )
 class WhiteHoleSizeSystem extends _$WhiteHoleSizeSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final size = sizeMapper[entity];
     final owner = blackHoleOwnerManager.refersTo(entity);
-    print('$entity $owner');
     final whiteHole = whiteHoleMapper[owner];
     whiteHole.radius = max(whiteHole.radius, size.radius);
   }

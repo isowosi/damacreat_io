@@ -25,14 +25,14 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   BlackHoleInteractionSystem(this.sheet);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (onScreenTagSystem[entity]) {
       super.processEntity(entity);
     }
   }
 
   @override
-  void onBodyInsideBlackHole(Entity blackHole, Entity victim) {
+  void onBodyInsideBlackHole(int blackHole, int victim) {
     final foodRadius = sizeMapper[victim].radius;
     final foodPosition = positionMapper[victim];
     final foodColor = colorMapper[victim];
@@ -41,7 +41,7 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   }
 
   @override
-  void onBodyInsideBlackHoleGravityWell(Entity blackHole, Entity victim) {
+  void onBodyInsideBlackHoleGravityWell(int blackHole, int victim) {
     final foodRadius = sizeMapper[victim].radius;
     final foodPosition = positionMapper[victim];
     final foodColor = colorMapper[victim];
@@ -50,9 +50,9 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   }
 
   void _spawnParticles(int particleMultiplier, double foodRadius,
-      Position foodPosition, double angle, Color foodColor, Entity blackHole) {
+      Position foodPosition, double angle, Color foodColor, int blackHole) {
     for (var i = 0; i <= particleMultiplier * foodRadius ~/ 10; i++) {
-      final entity = world.createAndAddEntity([
+      final entity = world.createEntity([
         Renderable(sheet, 'digestion'),
         Position(foodPosition.x + foodRadius * cos(angle),
             foodPosition.y + foodRadius * sin(angle)),
@@ -70,7 +70,7 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   }
 
   @override
-  void onCenterInsideBlackHole(Entity blackHole, Entity victim) {
+  void onCenterInsideBlackHole(int blackHole, int victim) {
     final foodRadius = sizeMapper[victim].radius;
     final foodPosition = positionMapper[victim];
     final foodColor = colorMapper[victim];
@@ -79,7 +79,7 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   }
 
   @override
-  void onCenterInsideBlackHoleGravityWell(Entity blackHole, Entity victim) {
+  void onCenterInsideBlackHoleGravityWell(int blackHole, int victim) {
     final foodRadius = sizeMapper[victim].radius;
     final foodPosition = positionMapper[victim];
     final foodColor = colorMapper[victim];

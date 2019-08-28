@@ -22,7 +22,7 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
   BoosterHandlingSystem(this.sheet);
 
   @override
-  void onBoost(Entity entity, double powerusage) {
+  void onBoost(int entity, double powerusage) {
     final booster = boosterMapper[entity];
     final position = positionMapper[entity];
     final orientation = orientationMapper[entity];
@@ -30,7 +30,7 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
     final distance =
         sizeMapper[entity].radius * 1.15 + random.nextDouble() * 200;
     world
-      ..createAndAddEntity([
+      ..createEntity([
         Position(
             position.x +
                 cos(velocity.angle) * 500 +
@@ -46,7 +46,7 @@ class BoosterHandlingSystem extends _$BoosterHandlingSystem {
         Velocity(velocity.value * distance / 3, velocity.angle - pi, 0),
         ConstantVelocity(),
       ])
-      ..createAndAddEntity([
+      ..createEntity([
         Position(
             position.x +
                 cos(velocity.angle) * 500 +
