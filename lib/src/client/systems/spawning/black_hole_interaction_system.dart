@@ -32,24 +32,20 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
   }
 
   @override
-  void onBodyInsideBlackHole(int blackHole, int victim) {
-    final foodRadius = sizeMapper[victim].radius;
-    final foodPosition = positionMapper[victim];
-    final foodColor = colorMapper[victim];
-    final angle = random.nextDouble() * tau;
-    _spawnParticles(3, foodRadius, foodPosition, angle, foodColor, blackHole);
+  void onVictimInReachOfBlackHole(
+      int blackHole, int victim, double percentPerSecond,
+      {bool aboveThreshold}) {
+    if (aboveThreshold) {
+      final foodRadius = sizeMapper[victim].radius;
+      final foodPosition = positionMapper[victim];
+      final foodColor = colorMapper[victim];
+      final angle = random.nextDouble() * tau;
+      _spawnParticles(10 * percentPerSecond, foodRadius, foodPosition, angle,
+          foodColor, blackHole);
+    }
   }
 
-  @override
-  void onBodyInsideBlackHoleGravityWell(int blackHole, int victim) {
-    final foodRadius = sizeMapper[victim].radius;
-    final foodPosition = positionMapper[victim];
-    final foodColor = colorMapper[victim];
-    final angle = random.nextDouble() * tau;
-    _spawnParticles(1, foodRadius, foodPosition, angle, foodColor, blackHole);
-  }
-
-  void _spawnParticles(int particleMultiplier, double foodRadius,
+  void _spawnParticles(double particleMultiplier, double foodRadius,
       Position foodPosition, double angle, Color foodColor, int blackHole) {
     for (var i = 0; i <= particleMultiplier * foodRadius ~/ 10; i++) {
       final entity = world.createEntity([
@@ -67,23 +63,5 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
       ]);
       attractedByManager.setReference(entity, blackHole);
     }
-  }
-
-  @override
-  void onCenterInsideBlackHole(int blackHole, int victim) {
-    final foodRadius = sizeMapper[victim].radius;
-    final foodPosition = positionMapper[victim];
-    final foodColor = colorMapper[victim];
-    final angle = random.nextDouble() * tau;
-    _spawnParticles(4, foodRadius, foodPosition, angle, foodColor, blackHole);
-  }
-
-  @override
-  void onCenterInsideBlackHoleGravityWell(int blackHole, int victim) {
-    final foodRadius = sizeMapper[victim].radius;
-    final foodPosition = positionMapper[victim];
-    final foodColor = colorMapper[victim];
-    final angle = random.nextDouble() * tau;
-    _spawnParticles(2, foodRadius, foodPosition, angle, foodColor, blackHole);
   }
 }
