@@ -12,7 +12,7 @@ void main() {
     float distToCenter = length(pointCoord);
     if (distToCenter > 0.5) {
         discard;
-    } else if (distToCenter < 0.1) {
+    } else if (distToCenter < 0.0625) {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     } else {
         vec2 blackHoleCenter = vHoleCenter * uSize;

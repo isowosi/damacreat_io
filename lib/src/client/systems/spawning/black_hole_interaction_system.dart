@@ -64,4 +64,9 @@ class BlackHoleInteractionSystem extends _$BlackHoleInteractionSystem {
       attractedByManager.setReference(entity, blackHole);
     }
   }
+
+  @override
+  void warpToOwner(int blackHole, int victim) {
+    // only server side
+  }
 }
