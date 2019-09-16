@@ -1,5 +1,6 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/managers/digestion_manager.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers_shared.dart';
 
@@ -14,6 +15,7 @@ part 'player_interaction_system.g.dart';
   ],
   manager: [
     TagManager,
+    ClientDigestionManager,
   ],
   systems: [
     OnScreenTagSystem,
@@ -53,8 +55,8 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
       (sizeRelation * playerCircleFragments / 4).truncate();
 
   @override
-  void touch(int player, int food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
+  void touch(int player, int food, double dist, double distX, double distY,
+      double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
     final fragment = (angle * angleToSegmentFactor).round();
@@ -146,4 +148,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
           additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
     }
   }
+
+  @override
+  BaseDigestionManager get digestionManager => clientDigestionManager;
 }

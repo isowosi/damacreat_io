@@ -6,8 +6,11 @@ import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/managers/digestion_manager.dart';
 import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
+import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering.dart';
 import 'package:damacreat_io/src/client/systems/rendering/black_hole_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/action_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
@@ -30,10 +33,8 @@ import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
 import 'package:damacreat_io/src/shared/systems/player_interaction_system.dart';
 import 'package:damacreat_io/src/shared/systems/white_hole_size_system.dart';
-import 'package:gamedev_helpers/gamedev_helpers.dart';
 
-import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
-import 'src/client/systems/rendering.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 class Game extends GameBase {
   CanvasElement hudCanvas;
@@ -80,7 +81,7 @@ class Game extends GameBase {
       ..addManager(controllerManager)
       ..addManager(analyticsManager)
       ..addManager(ViewProjectionMatrixManager())
-      ..addManager(DigestionManager(RuntimeEnvironment.client))
+      ..addManager(ClientDigestionManager())
       ..addManager(AttractedByManager())
       ..addManager(BlackHoleOwnerManager())
       ..addManager(QuadTreeManager(

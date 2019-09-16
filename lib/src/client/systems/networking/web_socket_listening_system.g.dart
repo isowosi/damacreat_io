@@ -17,10 +17,11 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<Booster> boosterMapper;
   Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
   Mapper<Color> colorMapper;
+  Mapper<BlackHole> blackHoleMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
-  DigestionManager digestionManager;
+  ClientDigestionManager clientDigestionManager;
   GameStateManager gameStateManager;
   AnalyticsManager analyticsManager;
   BlackHoleOwnerManager blackHoleOwnerManager;
@@ -37,10 +38,11 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     boosterMapper = Mapper<Booster>(world);
     quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
     colorMapper = Mapper<Color>(world);
+    blackHoleMapper = Mapper<BlackHole>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
-    digestionManager = world.getManager<DigestionManager>();
+    clientDigestionManager = world.getManager<ClientDigestionManager>();
     gameStateManager = world.getManager<GameStateManager>();
     analyticsManager = world.getManager<AnalyticsManager>();
     blackHoleOwnerManager = world.getManager<BlackHoleOwnerManager>();

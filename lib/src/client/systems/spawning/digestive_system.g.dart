@@ -12,6 +12,7 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
   OnScreenTagSystem onScreenTagSystem;
   AttractedByManager attractedByManager;
   AnalyticsManager analyticsManager;
+  ClientDigestionManager clientDigestionManager;
   _$DigestiveSystem()
       : super(Aspect.empty()
           ..allOf([Position])
@@ -24,5 +25,6 @@ abstract class _$DigestiveSystem extends BaseDigestiveSystem {
     onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     attractedByManager = world.getManager<AttractedByManager>();
     analyticsManager = world.getManager<AnalyticsManager>();
+    clientDigestionManager = world.getManager<ClientDigestionManager>();
   }
 }

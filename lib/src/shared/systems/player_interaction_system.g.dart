@@ -12,6 +12,7 @@ abstract class _$PlayerInteractionSystem extends BasePlayerInteractionSystem {
   Mapper<Orientation> orientationMapper;
   OnScreenTagSystem onScreenTagSystem;
   TagManager tagManager;
+  ClientDigestionManager clientDigestionManager;
   _$PlayerInteractionSystem()
       : super(Aspect.empty()..allOf([Wobble, CellWall, Orientation]));
   @override
@@ -22,5 +23,6 @@ abstract class _$PlayerInteractionSystem extends BasePlayerInteractionSystem {
     orientationMapper = Mapper<Orientation>(world);
     onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     tagManager = world.getManager<TagManager>();
+    clientDigestionManager = world.getManager<ClientDigestionManager>();
   }
 }

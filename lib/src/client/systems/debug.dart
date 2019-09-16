@@ -40,7 +40,7 @@ class DebugSystem extends _$DebugSystem {
   void _countBytes() {
     webSocketHandler.on.listen((message) {
       byteCount += message.reader.length;
-      if (message.type == MessageToClient.pong) {
+      if (message.type == messagePong) {
         ping = window.performance.now() - lastPingTime;
       }
     });

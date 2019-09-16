@@ -20,6 +20,7 @@ class GameService {
   StackTrace stackTrace;
   String nickname = '';
   int hue = 0;
+  WebSocket webSocket;
   final Set<int> gamepadIndices = <int>{};
   final Random random = Random();
 
@@ -41,7 +42,7 @@ class GameService {
 
   void startGame() {
     runZoned(() {
-      final webSocket = WebSocket('ws://localhost:8081');
+      webSocket = WebSocket('ws://localhost:8081');
       webSocket.onOpen.listen((openEvent) {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
@@ -89,6 +90,7 @@ class GameService {
       // ignore: avoid_as
       this.stackTrace = stackTrace as StackTrace;
       analyticsManager.clientError(errorMessage.toString());
+      webSocket.close();
     });
   }
 
