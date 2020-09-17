@@ -94,7 +94,10 @@ class GameService {
       this.errorMessage = errorMessage;
       // ignore: avoid_as
       this.stackTrace = stackTrace as StackTrace;
-      analyticsManager.clientError(errorMessage.toString());
+      final splitTrace = stackTrace.toString().split('\n');
+      final traceDesc = splitTrace.take(min(splitTrace.length, 3)).join(';');
+      final errorDesc = '$errorMessage at trace = $traceDesc)';
+      analyticsManager.clientError(errorDesc);
       webSocket.close();
     });
   }
