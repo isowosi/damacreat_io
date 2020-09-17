@@ -26,6 +26,7 @@ part 'web_socket_listening_system.g.dart';
     QuadTreeCandidate,
     Color,
     BlackHole,
+    Player,
   ],
   manager: [
     TagManager,
@@ -103,14 +104,25 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
         final speed = ByteUtils.byteToSpeed(reader.readUint16());
         final angle = ByteUtils.byteToAngle(reader.readUint16());
 
+        final isPlayer = playerMapper.has(entity);
         final speedMultiplier = foodMapper.has(entity)
             ? foodSpeedMultiplier
-            : blackHoleSpeedMultiplier;
+            : isPlayer
+                ? playerSpeedMultiplier
+                : blackHoleSpeedMultiplier;
 
         if (velocityMapper.has(entity)) {
           velocityMapper[entity]
             ..value = speed * speedMultiplier
             ..angle = angle;
+
+          if (isPlayer) {
+            if (isMessage(type, messageBoost)) {
+              boosterMapper[entity].inUse = true;
+            } else {
+              boosterMapper[entity].inUse = false;
+            }
+          }
         } else {
           addComponent(entity, Velocity(speed * speedMultiplier, angle, 0));
         }
