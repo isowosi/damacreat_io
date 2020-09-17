@@ -6,28 +6,35 @@ import 'dart:typed_data';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/managers/digestion_manager.dart';
 import 'package:damacreat_io/src/client/systems/controller_system.dart';
 import 'package:damacreat_io/src/client/systems/debug.dart';
+import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering.dart';
 import 'package:damacreat_io/src/client/systems/rendering/black_hole_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/action_button_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/minimap_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/ranking_rendering_system.dart';
 import 'package:damacreat_io/src/client/systems/rendering/sprite_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/rendering/white_hole_rendering_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/black_hole_interaction_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/booster_handling_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/digestive_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/food_size_loss_system.dart';
+import 'package:damacreat_io/src/client/systems/spawning/thruster_particle_emission_system.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/client_id_pool.dart';
-import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
+import 'package:damacreat_io/src/shared/managers/black_hole_owner_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:damacreat_io/src/shared/systems/black_hole_cannon_handling_system.dart';
-import 'package:damacreat_io/src/shared/systems/black_hole_interaction_system.dart';
-import 'package:damacreat_io/src/shared/systems/booster_handling_system.dart';
 import 'package:damacreat_io/src/shared/systems/player_interaction_system.dart';
-import 'package:gamedev_helpers/gamedev_helpers.dart';
+import 'package:damacreat_io/src/shared/systems/white_hole_size_system.dart';
 
-import 'package:damacreat_io/src/client/systems/networking/web_socket_listening_system.dart';
-import 'src/client/systems/rendering.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart';
 
 class Game extends GameBase {
   CanvasElement hudCanvas;
@@ -48,9 +55,17 @@ class Game extends GameBase {
             depthTest: false,
             useMaxDelta: false,
             bodyDefsName: null) {
-    // ignore: avoid_as
+    if (gl == null) {
+      analyticsManager.logCapabilities('webgl', supported: false);
+    } else {
+      analyticsManager.logCapabilities('webgl');
+    }
+    if (CanvasElement().getContext('webgl2') == null) {
+      analyticsManager.logCapabilities('webgl2', supported: false);
+    } else {
+      analyticsManager.logCapabilities('webgl2');
+    }
     container = querySelector('#gamecontainer') as DivElement;
-    // ignore: avoid_as
     hudCanvas = querySelector('#hud') as CanvasElement;
     hudCtx = hudCanvas.context2D;
     _configureHud();
@@ -66,8 +81,9 @@ class Game extends GameBase {
       ..addManager(controllerManager)
       ..addManager(analyticsManager)
       ..addManager(ViewProjectionMatrixManager())
-      ..addManager(DigestionManager(RuntimeEnvironment.client))
+      ..addManager(ClientDigestionManager())
       ..addManager(AttractedByManager())
+      ..addManager(BlackHoleOwnerManager())
       ..addManager(QuadTreeManager(
           const Rectangle<double>(0, 0, maxAreaSize, maxAreaSize), 16))
       ..addManager(IdManager(ClientIdPool()));
@@ -77,13 +93,12 @@ class Game extends GameBase {
   Map<int, List<EntitySystem>> getSystems() => {
         GameBase.rendering: [
           // input
-          WebSocketListeningSystem(webSocketHandler),
+          WebSocketListeningSystem(webSocketHandler, spriteSheet),
           MouseAndTouchControllerSystem(hudCanvas, webSocketHandler),
           GamepadControllerSystem(webSocketHandler),
           KeyboardControllerSystem(ignoreInputFromElements: inputs),
           // logic
           GrowingSystem(),
-          FoodSizeLossSystem(),
           ConstantMovementSystem(),
           MovementSystemWithoutQuadTree(),
           PlayerSizeLossSystem(),
@@ -93,26 +108,29 @@ class Game extends GameBase {
           AttractionAccelerationSystem(),
           AccelerationSystem(),
           BlackHoleCannonHandlingSystem(),
+          WhiteHoleSizeSystem(),
           // pre-rendering
           OnScreenTagSystem(),
           // logic that changes visuals/spawns particles
-          DigestiveSystem(),
+          FoodSizeLossSystem(spriteSheet),
+          DigestiveSystem(spriteSheet),
           WobbleSystem(),
           CellWallSystem(),
           CellWallDigestedBySystem(),
           ThrusterCellWallWeakeningSystem(),
           PlayerInteractionSystem(),
-          BlackHoleInteractionSystem(),
-          ThrusterParticleEmissionSystem(),
+          BlackHoleInteractionSystem(spriteSheet),
+          ThrusterParticleEmissionSystem(spriteSheet),
           ThrusterParticleColorModificationSystem(),
           FoodColoringSystem(),
           ColorChangeOverLifetimeSystem(),
           // rendering
           WebGlCanvasCleaningSystem(gl),
           BackgroundRenderingSystemLayer0(gl),
-          SpriteRenderingSystem(gl, spriteSheet),
-          ParticleRenderingSystem(gl),
+          QuadTreeCandidateSpriteRenderingSystem(gl, spriteSheet),
+          ParticleSpriteRenderingSystem(gl, spriteSheet),
           PlayerRenderingSystem(gl),
+          WhiteHoleRenderingSystem(gl),
           BlackHoleRenderingSystem(gl),
           CanvasCleaningSystem(hudCanvas),
           PlayerNameRenderingSystem(hudCtx),
@@ -122,9 +140,8 @@ class Game extends GameBase {
           MinimapRenderingSystem(hudCtx),
           ActionButtonRenderingSystem(hudCtx),
           // cleanup
-          BoosterHandlingSystem(),
+          BoosterHandlingSystem(spriteSheet),
           ExpirationSystem(),
-          RemoveTemporaryComponentsSystem(),
         ],
         GameBase.physics: [
           // add at least one
@@ -167,7 +184,29 @@ class Game extends GameBase {
       if (timeSinceStart > 15) {
         analyticsManager.logFps(world.frame(0) ~/ timeSinceStart);
         fpsLogged = true;
+
+        if (world is PerformanceMeasureWorld) {
+          final stats = (world as PerformanceMeasureWorld)
+              .getPerformanceStats()
+              .map((stats) => '''
+${stats.system}; ${stats.averageTime}; ${stats.meanTime}; ${stats.minTime}; ${stats.maxTime}''')
+              .toList();
+          final systems = stats.sublist(0, stats.length ~/ 2 + 1);
+          final process = stats.sublist(stats.length ~/ 2 + 1);
+
+          print('===============');
+          print('=== systems ===');
+          print('===============');
+          print(systems.join('\n'));
+          print('===============');
+          print('=== process ===');
+          print('===============');
+          print(process.join('\n'));
+        }
       }
     }
   }
+
+//  @override
+//  World createWorld() => PerformanceMeasureWorld(600);
 }

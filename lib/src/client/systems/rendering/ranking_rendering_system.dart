@@ -33,7 +33,7 @@ class RankingRenderingSystem extends _$RankingRenderingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final size = sizeMapper[entity];
     final name = playerMapper[entity].nickname;
     final color = colorMapper[entity];

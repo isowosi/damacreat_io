@@ -10,17 +10,19 @@ abstract class _$PlayerInteractionSystem extends BasePlayerInteractionSystem {
   Mapper<Wobble> wobbleMapper;
   Mapper<CellWall> cellWallMapper;
   Mapper<Orientation> orientationMapper;
-  Mapper<OnScreen> onScreenMapper;
+  OnScreenTagSystem onScreenTagSystem;
   TagManager tagManager;
+  ClientDigestionManager clientDigestionManager;
   _$PlayerInteractionSystem()
-      : super(Aspect.empty()..allOf([Wobble, CellWall, Orientation, OnScreen]));
+      : super(Aspect.empty()..allOf([Wobble, CellWall, Orientation]));
   @override
   void initialize() {
     super.initialize();
     wobbleMapper = Mapper<Wobble>(world);
     cellWallMapper = Mapper<CellWall>(world);
     orientationMapper = Mapper<Orientation>(world);
-    onScreenMapper = Mapper<OnScreen>(world);
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     tagManager = world.getManager<TagManager>();
+    clientDigestionManager = world.getManager<ClientDigestionManager>();
   }
 }

@@ -6,7 +6,7 @@ import 'package:damacreat_io/app_component.dart';
 import 'package:damacreat_io/client.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
-import 'package:damacreat_io/src/shared/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
 import 'package:damacreat_io/src/shared/managers/controller_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
@@ -21,6 +21,7 @@ class GameService {
   StackTrace stackTrace;
   String nickname = '';
   int hue = 0;
+  WebSocket webSocket;
   final Set<int> gamepadIndices = <int>{};
   final Random random = Random();
 
@@ -30,8 +31,11 @@ class GameService {
   final AnalyticsManager analyticsManager;
 
   final List<Element> inputs = [];
+
   GameService(this.settings, this.gameStateManager, this.controllerManager,
       this.analyticsManager);
+
+  bool get webGlInitialized => _game?.webGlInitialized ?? false;
 
   Future<void> init() async {
     hue = random.nextInt(256);
@@ -49,8 +53,10 @@ class GameService {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
         _game = Game(webSocketHandler, settings, gameStateManager,
-            controllerManager, analyticsManager, inputs)
-          ..start();
+            controllerManager, analyticsManager, inputs);
+        if (_game.webGlInitialized) {
+          _game.start();
+        }
         window.onBeforeUnload.listen((_) {
           webSocket.close();
         });
@@ -72,20 +78,30 @@ class GameService {
             gamepadIndices.add(i);
           }
         }
+        window.on['gamepadconnected']
+            .where((event) => event is GamepadEvent)
+            .cast<GamepadEvent>()
+            .listen((event) {
+          gamepadIndices.add(event.gamepad.index);
+        });
+        window.on['gamepaddisconnected']
+            .where((event) => event is GamepadEvent)
+            .cast<GamepadEvent>()
+            .listen((event) {
+          gamepadIndices.remove(event.gamepad.index);
+        });
+        _handleGamepads();
       }
-      window.on['gamepadconnected'].cast<GamepadEvent>().listen((event) {
-        gamepadIndices.add(event.gamepad.index);
-      });
-      window.on['gamepaddisconnected'].cast<GamepadEvent>().listen((event) {
-        gamepadIndices.remove(event.gamepad.index);
-      });
-      _handleGamepads();
     }, onError: (errorMessage, stackTrace) {
       error = true;
       this.errorMessage = errorMessage;
       // ignore: avoid_as
       this.stackTrace = stackTrace as StackTrace;
-      analyticsManager.clientError(errorMessage.toString());
+      final splitTrace = stackTrace.toString().split('\n');
+      final traceDesc = splitTrace.take(min(splitTrace.length, 3)).join(';');
+      final errorDesc = '$errorMessage at trace = $traceDesc)';
+      analyticsManager.clientError(errorDesc);
+      webSocket.close();
     });
   }
 

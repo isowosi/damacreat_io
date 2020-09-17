@@ -16,7 +16,7 @@ class SettingsManager extends Manager {
   bool doNotTrack = '1' == window.navigator.doNotTrack;
   bool _allowAnalytics = '1' != window.navigator.doNotTrack;
 
-  Store _store;
+  final Store _store;
   SettingsManager(@settingsStore this._store);
 
   Future<void> init() async {

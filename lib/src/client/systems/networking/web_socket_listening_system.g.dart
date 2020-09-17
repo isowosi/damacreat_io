@@ -14,13 +14,18 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
   Mapper<DigestedBy> digestedByMapper;
   Mapper<Velocity> velocityMapper;
   Mapper<Food> foodMapper;
-  Mapper<ChangedPosition> changedPositionMapper;
   Mapper<Booster> boosterMapper;
+  Mapper<QuadTreeCandidate> quadTreeCandidateMapper;
+  Mapper<Color> colorMapper;
+  Mapper<BlackHole> blackHoleMapper;
+  Mapper<Player> playerMapper;
   TagManager tagManager;
   IdManager idManager;
   QuadTreeManager quadTreeManager;
-  DigestionManager digestionManager;
+  ClientDigestionManager clientDigestionManager;
   GameStateManager gameStateManager;
+  AnalyticsManager analyticsManager;
+  BlackHoleOwnerManager blackHoleOwnerManager;
   @override
   void initialize() {
     super.initialize();
@@ -31,12 +36,17 @@ abstract class _$WebSocketListeningSystem extends VoidEntitySystem {
     digestedByMapper = Mapper<DigestedBy>(world);
     velocityMapper = Mapper<Velocity>(world);
     foodMapper = Mapper<Food>(world);
-    changedPositionMapper = Mapper<ChangedPosition>(world);
     boosterMapper = Mapper<Booster>(world);
+    quadTreeCandidateMapper = Mapper<QuadTreeCandidate>(world);
+    colorMapper = Mapper<Color>(world);
+    blackHoleMapper = Mapper<BlackHole>(world);
+    playerMapper = Mapper<Player>(world);
     tagManager = world.getManager<TagManager>();
     idManager = world.getManager<IdManager>();
     quadTreeManager = world.getManager<QuadTreeManager>();
-    digestionManager = world.getManager<DigestionManager>();
+    clientDigestionManager = world.getManager<ClientDigestionManager>();
     gameStateManager = world.getManager<GameStateManager>();
+    analyticsManager = world.getManager<AnalyticsManager>();
+    blackHoleOwnerManager = world.getManager<BlackHoleOwnerManager>();
   }
 }

@@ -25,7 +25,10 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
   int get verticeCount => circleFragments * 2;
 
   @override
-  void processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
+    if (!onScreenTagSystem[entity]) {
+      return false;
+    }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
     final c = colorMapper[entity];
@@ -83,6 +86,8 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     indices[indicesOffset + circleFragments * 9 - 4] =
         itemOffset + circleFragments + 1;
     indices[indicesOffset + circleFragments * 9 - 7] = itemOffset + 1;
+
+    return true;
   }
 
   void createThrusters(
@@ -132,11 +137,13 @@ class PlayerRenderingSystem extends _$PlayerRenderingSystem {
     Color,
     Orientation,
     Wobble,
-    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
     TagManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
@@ -150,13 +157,18 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   int verticeCount;
   final int valuesPerItem = 6;
 
+  UniformLocation uViewProjectionLocation;
+
   CircleRenderingSystem(RenderingContext gl, Aspect aspect)
       : super(gl, aspect) {
     verticeCount = circleFragments;
   }
 
   @override
-  void processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
+    if (!onScreenTagSystem[entity]) {
+      return false;
+    }
     final p = positionMapper[entity];
     final s = sizeMapper[entity];
     final c = colorMapper[entity];
@@ -186,6 +198,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
     }
 
     indices[indicesOffset + verticeCount * 3 - 1] = itemOffset + 1;
+    return true;
   }
 
   void createCircleVertex(int baseOffset, Position p, double radius,
@@ -203,7 +216,7 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   @override
   void render(int length) {
     gl.uniformMatrix4fv(
-        gl.getUniformLocation(program, 'uViewProjection'),
+        uViewProjectionLocation,
         false,
         viewProjectionMatrixManager
             .create2dViewProjectionMatrix(tagManager.getEntity(cameraTag))
@@ -229,6 +242,11 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   String get fShaderFile => 'PositionRenderingSystem';
 
   int get circleFragments;
+
+  @override
+  void initUniformLocations() {
+    uViewProjectionLocation = getUniformLocation('uViewProjection');
+  }
 }
 
 @Generate(
@@ -248,6 +266,10 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   double offsetY = -500000 + random.nextDouble() * 1000000;
   Float32List rgb = Float32List.fromList([0, 0, 0]);
   double parallaxFactor = 1;
+
+  UniformLocation uViewProjectionLocation;
+  UniformLocation uRgbLocation;
+  UniformLocation uTimeLocation;
 
   BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
 
@@ -275,12 +297,10 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
           ..translate(-offsetX, -offsetY);
 
     gl
-      ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
-          false, viewProjectionMatrix.storage)
-      ..uniform4f(gl.getUniformLocation(program, 'uDimension'),
-          cameraManager.width.toDouble(), cameraManager.height.toDouble(), 0, 0)
-      ..uniform3fv(gl.getUniformLocation(program, 'uRgb'), rgb)
-      ..uniform1f(gl.getUniformLocation(program, 'uTime'), time);
+      ..uniformMatrix4fv(
+          uViewProjectionLocation, false, viewProjectionMatrix.storage)
+      ..uniform3fv(uRgbLocation, rgb)
+      ..uniform1f(uTimeLocation, time);
     buffer('aPosition', background, 2);
     gl.drawArrays(WebGL.TRIANGLE_FAN, 0, 4);
   }
@@ -292,6 +312,13 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
 
   @override
   bool checkProcessing() => tagManager.isRegistered(cameraTag);
+
+  @override
+  void initUniformLocations() {
+    uViewProjectionLocation = getUniformLocation('uViewProjection');
+    uRgbLocation = getUniformLocation('uRgb');
+    uTimeLocation = getUniformLocation('uTime');
+  }
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
@@ -309,7 +336,6 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     Player,
     Size,
     Position,
-    OnScreen,
   ],
   manager: [
     ViewProjectionMatrixManager,
@@ -317,13 +343,19 @@ class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
     SettingsManager,
     TagManager,
   ],
+  systems: [
+    OnScreenTagSystem,
+  ],
 )
 class PlayerNameRenderingSystem extends _$PlayerNameRenderingSystem {
   CanvasRenderingContext2D ctx;
   PlayerNameRenderingSystem(this.ctx);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
+    if (!onScreenTagSystem[entity]) {
+      return;
+    }
     final cameraEntity = tagManager.getEntity(cameraTag);
     final nickname = playerMapper[entity].nickname;
     final radius = sizeMapper[entity].radius;

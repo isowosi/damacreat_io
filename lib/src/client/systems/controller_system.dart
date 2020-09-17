@@ -33,7 +33,7 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
       : super(ignoreInputFromElements);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     if (isPressed(KeyCode.M)) {
       settingsManager.showMinimap = !settingsManager.showMinimap;
       unpress[KeyCode.M] = true;
@@ -85,7 +85,7 @@ class KeyboardControllerSystem extends _$KeyboardControllerSystem {
   ],
 )
 abstract class ControllerSystem extends _$ControllerSystem {
-  WebSocketHandler _webSocketHandler;
+  final WebSocketHandler _webSocketHandler;
   bool useBooster = false;
   bool fireBlackHole = false;
   double velocityStrength;
@@ -94,7 +94,7 @@ abstract class ControllerSystem extends _$ControllerSystem {
   ControllerSystem(this._webSocketHandler);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     useBooster = useBooster && boosterMapper[entity].power > 0;
     fireBlackHole = !useBooster && fireBlackHole;
     boosterMapper[entity].inUse = useBooster;
@@ -227,7 +227,7 @@ class GamepadControllerSystem extends ControllerSystem {
       : super(webSocketHandler);
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final gamepad =
         window.navigator.getGamepads()[controllerManager.gamepadIndex];
     if (gamepad == null) {

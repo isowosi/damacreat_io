@@ -5,7 +5,7 @@ import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:dartemis/dartemis.dart';
-import 'package:gamedev_helpers/gamedev_helpers.dart';
+import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 
 part 'debug.g.dart';
 
@@ -22,6 +22,9 @@ part 'debug.g.dart';
     SettingsManager,
     TagManager,
   ],
+  systems: [
+    OnScreenTagSystem,
+  ],
 )
 class DebugSystem extends _$DebugSystem {
   final CanvasRenderingContext2D ctx;
@@ -37,7 +40,7 @@ class DebugSystem extends _$DebugSystem {
   void _countBytes() {
     webSocketHandler.on.listen((message) {
       byteCount += message.reader.length;
-      if (message.type == MessageToClient.pong) {
+      if (message.type == messagePong) {
         ping = window.performance.now() - lastPingTime;
       }
     });
@@ -45,21 +48,12 @@ class DebugSystem extends _$DebugSystem {
 
   @override
   void processSystem() {
-    final renderedCircles = world.componentManager
-        .getComponentsByType<OnScreen>(
-            ComponentTypeManager.getTypeFor(OnScreen))
+    final renderedCircles = onScreenTagSystem.onScreenCount;
+    final movingThings = world.componentManager
+        .getComponentsByType<Velocity>(
+            ComponentTypeManager.getTypeFor(Velocity))
         .where((component) => component != null)
         .length;
-    final movingThings = world.componentManager
-            .getComponentsByType<ChangedPosition>(
-                ComponentTypeManager.getTypeFor(ChangedPosition))
-            .where((component) => component != null)
-            .length +
-        world.componentManager
-            .getComponentsByType<ConstantVelocity>(
-                ComponentTypeManager.getTypeFor(ConstantVelocity))
-            .where((component) => component != null)
-            .length;
     final totalDeltaBefore = totalDelta;
     totalDelta += world.delta;
     if (totalDeltaBefore.toInt() % 5 == 4 && totalDelta.toInt() % 5 == 0) {

@@ -41,7 +41,7 @@ class MinimapRenderingSystem extends _$MinimapRenderingSystem {
   }
 
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final position = positionMapper[entity];
     final size = sizeMapper[entity];
     final color = controllerMapper.has(entity) ? 'green' : 'grey';

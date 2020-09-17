@@ -7,8 +7,10 @@ import 'package:dartemis/dartemis.dart';
 class AnalyticsManager extends Manager {
   final String categorySession = 'session';
   final String categoryGameplay = 'gameplay';
+  final String categoryCapabilities = 'capabilities';
+  int deathCount = 0;
 
-  SettingsManager _settings;
+  final SettingsManager _settings;
   AnalyticsManager(this._settings) {
     window.onUnload.first.then((_) {
       _endSession();
@@ -23,7 +25,7 @@ class AnalyticsManager extends Manager {
   }
 
   void _endSession() {
-    _log('endSession', categorySession);
+    _log('endSession', categorySession, eventLabel: 'deathCount$deathCount');
   }
 
   void _log(String event, String category, {String eventLabel, int value}) {
@@ -83,5 +85,10 @@ class AnalyticsManager extends Manager {
         })
       ]);
     }
+  }
+
+  void logCapabilities(String capability, {bool supported = true}) {
+    _log(capability, categoryCapabilities,
+        eventLabel: supported ? 'supported' : 'unsupported');
   }
 }

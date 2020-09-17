@@ -25,14 +25,11 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
   Mapper<Color> colorMapper;
   Mapper<Orientation> orientationMapper;
   Mapper<Wobble> wobbleMapper;
-  Mapper<OnScreen> onScreenMapper;
+  OnScreenTagSystem onScreenTagSystem;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   TagManager tagManager;
   _$CircleRenderingSystem(RenderingContext gl, Aspect aspect)
-      : super(
-            gl,
-            aspect
-              ..allOf([Position, Size, Color, Orientation, Wobble, OnScreen]));
+      : super(gl, aspect..allOf([Position, Size, Color, Orientation, Wobble]));
   @override
   void initialize() {
     super.initialize();
@@ -41,7 +38,7 @@ abstract class _$CircleRenderingSystem extends WebGlRenderingSystem {
     colorMapper = Mapper<Color>(world);
     orientationMapper = Mapper<Orientation>(world);
     wobbleMapper = Mapper<Wobble>(world);
-    onScreenMapper = Mapper<OnScreen>(world);
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
     tagManager = world.getManager<TagManager>();
@@ -72,20 +69,20 @@ abstract class _$PlayerNameRenderingSystem extends EntityProcessingSystem {
   Mapper<Player> playerMapper;
   Mapper<Size> sizeMapper;
   Mapper<Position> positionMapper;
-  Mapper<OnScreen> onScreenMapper;
+  OnScreenTagSystem onScreenTagSystem;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   CameraManager cameraManager;
   SettingsManager settingsManager;
   TagManager tagManager;
   _$PlayerNameRenderingSystem()
-      : super(Aspect.empty()..allOf([Player, Size, Position, OnScreen]));
+      : super(Aspect.empty()..allOf([Player, Size, Position]));
   @override
   void initialize() {
     super.initialize();
     playerMapper = Mapper<Player>(world);
     sizeMapper = Mapper<Size>(world);
     positionMapper = Mapper<Position>(world);
-    onScreenMapper = Mapper<OnScreen>(world);
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();
     cameraManager = world.getManager<CameraManager>();

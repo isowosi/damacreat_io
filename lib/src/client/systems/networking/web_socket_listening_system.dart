@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/managers/digestion_manager.dart';
 import 'package:damacreat_io/src/client/web_socket_handler.dart';
+import 'package:damacreat_io/src/client/managers/analytics_manager.dart';
+import 'package:damacreat_io/src/shared/managers/black_hole_owner_manager.dart';
 import 'package:damacreat_io/src/shared/managers/game_state_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart' hide Velocity;
 import 'package:damacreat_io/src/shared/components.dart';
@@ -19,23 +22,29 @@ part 'web_socket_listening_system.g.dart';
     DigestedBy,
     Velocity,
     Food,
-    ChangedPosition,
     Booster,
+    QuadTreeCandidate,
+    Color,
+    BlackHole,
+    Player,
   ],
   manager: [
     TagManager,
     IdManager,
     QuadTreeManager,
-    DigestionManager,
+    ClientDigestionManager,
     GameStateManager,
+    AnalyticsManager,
+    BlackHoleOwnerManager,
   ],
 )
 class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   final _messages = <Message>[];
   final WebSocketHandler _webSocketHandler;
   int playerId;
+  SpriteSheet sheet;
 
-  WebSocketListeningSystem(this._webSocketHandler);
+  WebSocketListeningSystem(this._webSocketHandler, this.sheet);
 
   @override
   void initialize() {
@@ -55,377 +64,263 @@ class WebSocketListeningSystem extends _$WebSocketListeningSystem {
   void _handleMessage(Message message) {
     final type = message.type;
     final reader = message.reader;
-    switch (type) {
-      case MessageToClient.initFood:
-        _initFood(reader);
-        break;
-      case MessageToClient.initGrowingFood:
-        _initFood(reader, growing: true);
-        break;
-      case MessageToClient.initBlackHole:
-        _initBlackHole(reader);
-        break;
-      case MessageToClient.initGrowingBlackHole:
-        _initBlackHole(reader, growing: true);
-        break;
-      case MessageToClient.initPlayers:
-        _initPlayers(reader);
-        break;
-      case MessageToClient.updatePosition:
-        _updatePosition(reader);
-        break;
-      case MessageToClient.updatePositionAndOrientation:
-        _updatePositionAndOrientation(reader);
-        break;
-      case MessageToClient.updatePositionAndSize:
-        _updatePositionAndSize(reader);
-        break;
-      case MessageToClient.updatePositionAndOrientationAndSize:
-        _updatePositionAndOrientationAndSize(reader);
-        break;
-      case MessageToClient.initPlayerId:
-        _initPlayerId(reader);
-        break;
-      case MessageToClient.removePlayers:
-      case MessageToClient.deleteEntities:
-        _deleteEntity(reader);
-        break;
-      case MessageToClient.addConstantVelocity:
-      case MessageToClient.vomit:
-        _updateVelocity(reader);
-        break;
-      case MessageToClient.startDigestion:
-        _startDigestion(reader);
-        break;
-      case MessageToClient.pong:
-        break;
+
+    if (isMessage(type, messageInit)) {
+      _initEntities(type, reader);
+    } else if (isMessage(type, messageDelete)) {
+      _deleteEntities(reader);
+    } else {
+      _updateEntities(type, reader);
     }
   }
 
-  void _deleteEntity(Uint8ListReader reader) {
+  void _updateEntities(int type, Uint8ListReader reader) {
     while (reader.hasNext) {
       final id = reader.readUint16();
       final entity = idManager.getEntity(id);
-      if (!idManager.deleteEntity(id)) {
-        // entities that have been added and deleted in the same frame
-        // should no longer be a problem
-        // print('tried to delete $id but failed');
+
+      if (isMessage(type, messagePosition)) {
+        final x = ByteUtils.byteToPosition(reader.readUint16());
+        final y = ByteUtils.byteToPosition(reader.readUint16());
+
+        positionMapper[entity]
+          ..x = x
+          ..y = y;
       }
+
+      if (isMessage(type, messageSize)) {
+        final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
+
+        sizeMapper[entity].radius = radius;
+      }
+
+      if (isMessage(type, messageOrientation)) {
+        final angle = ByteUtils.byteToAngle(reader.readUint16());
+
+        orientationMapper[entity].angle = angle;
+      }
+
+      if (isMessage(type, messageVelocity)) {
+        final speed = ByteUtils.byteToSpeed(reader.readUint16());
+        final angle = ByteUtils.byteToAngle(reader.readUint16());
+
+        final isPlayer = playerMapper.has(entity);
+        final speedMultiplier = foodMapper.has(entity)
+            ? foodSpeedMultiplier
+            : isPlayer
+                ? playerSpeedMultiplier
+                : blackHoleSpeedMultiplier;
+
+        if (velocityMapper.has(entity)) {
+          velocityMapper[entity]
+            ..value = speed * speedMultiplier
+            ..angle = angle;
+
+          if (isPlayer) {
+            if (isMessage(type, messageBoost)) {
+              boosterMapper[entity].inUse = true;
+            } else {
+              boosterMapper[entity].inUse = false;
+            }
+          }
+        } else {
+          addComponent(entity, Velocity(speed * speedMultiplier, angle, 0));
+        }
+      }
+
+      if (isMessage(type, messageReference)) {
+        final referenceId = reader.readUint16();
+        if (referenceId == noReference) {
+          if (foodMapper.has(entity)) {
+            removeComponent<DigestedBy>(entity);
+            addComponent(entity, ConstantVelocity());
+            if (clientDigestionManager.refersTo(entity) != null) {
+              clientDigestionManager.removeReference(entity);
+            }
+          } else if (blackHoleMapper.has(entity)) {
+            removeComponent<BlackHoleOwner>(entity);
+            if (blackHoleOwnerManager.refersTo(entity) != null) {
+              blackHoleOwnerManager.removeReference(entity);
+            }
+          } else {
+            removeComponent<DigestedBy>(entity);
+            if (clientDigestionManager.refersTo(entity) != null) {
+              clientDigestionManager.removeReference(entity);
+            }
+          }
+        } else {
+          final reference = idManager.getEntity(referenceId);
+          if (foodMapper.has(entity)) {
+            addComponent(entity, DigestedBy());
+            removeComponent<ConstantVelocity>(entity);
+            removeComponent<Growing>(entity);
+            clientDigestionManager.setReference(entity, reference);
+          } else {
+            addComponent(entity, DigestedBy());
+            clientDigestionManager.setReference(entity, reference);
+          }
+        }
+      }
+    }
+  }
+
+  void _initEntities(int type, Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final x = ByteUtils.byteToPosition(reader.readUint16());
+      final y = ByteUtils.byteToPosition(reader.readUint16());
+      final initType = reader.readUint8();
+
+      if (initType == messageInitTypeSpectator) {
+        playerId = id;
+        _initSpectator(x, y);
+      } else {
+        final components = [Id(id), Position(x, y), QuadTreeCandidate()];
+        double radius;
+        if (initType == messageInitTypePlayer) {
+          components.addAll([
+            Wobble(),
+            CellWall(5),
+            Thruster(),
+            Velocity(0, 0, 0),
+            Booster(boosterMaxStartPower),
+            BlackHoleCannon(1),
+          ]);
+
+          final hue = ByteUtils.byteToHue(reader.readUint8());
+          components.add(Color.fromHsl(hue, 0.9, 0.6, 0.4));
+
+          final utf8nickname = reader.readUint8List();
+          final nickname = utf8.decode(utf8nickname);
+          components.add(Player(nickname));
+
+          final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
+          components.add(Orientation(orientationAngle));
+
+          radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
+          components.add(Size(radius));
+
+          if (playerId == id) {
+            components..add(Controller())..add(Camera());
+            final camera = tagManager.getEntity(cameraTag);
+            tagManager.unregister(cameraTag);
+            world.deleteEntity(camera);
+          }
+        } else if (initType == messageInitTypeFood) {
+          radius = reader.readUint8() / foodSizeFactor;
+
+          components.addAll([
+            Renderable(sheet, 'food', scale: 1 / foodSpriteRadius),
+            Orientation(0),
+            Color.fromHsl(0.35, 0.4, 0.4, 1),
+            Food(random.nextDouble() * tau, random.nextDouble() * tau,
+                random.nextDouble() * tau),
+            Size(radius),
+          ]);
+        } else if (initType == messageInitTypeBlackHole) {
+          radius = reader.readUint8() / blackHoleSizeFactor;
+          components.addAll([
+            BlackHole(),
+            Size(radius),
+          ]);
+        }
+
+        if (isMessage(type, messageVelocity)) {
+          final speedMultiplier = initType == messageInitTypeFood
+              ? foodSpeedMultiplier
+              : blackHoleSpeedMultiplier;
+          final velocity =
+              ByteUtils.byteToSpeed(reader.readUint16()) * speedMultiplier;
+          final angle = ByteUtils.byteToAngle(reader.readUint16());
+          components.addAll([
+            Velocity(velocity, angle, 0),
+            ConstantVelocity(),
+          ]);
+        }
+
+        int reference;
+        if (isMessage(type, messageReference)) {
+          final referenceId = reader.readUint16();
+          reference = idManager.getEntity(referenceId);
+          if (initType == messageInitTypeFood ||
+              initType == messageInitTypePlayer) {
+            components.add(DigestedBy());
+          } else if (initType == messageInitTypeBlackHole) {
+            final ownerColor = colorMapper[reference];
+            components.addAll([
+              Color(ownerColor.r, ownerColor.g, ownerColor.b, 1),
+              BlackHoleOwner(),
+            ]);
+          }
+        } else if (initType == messageInitTypeBlackHole) {
+          components.add(Color.fromHsl(0.35, 0.4, 0.4, 1));
+        }
+
+        if (isMessage(type, messageInitGrowspeed)) {
+          if (initType == messageInitTypeFood) {
+            components.add(Growing(
+                reader.readUint8() / foodSizeFactor,
+                minFoodGrowthSpeed *
+                    reader.readUint8() /
+                    foodGrowthSpeedFactor));
+          } else if (initType == messageInitTypeBlackHole) {
+            components.add(Growing(
+                reader.readUint8() / blackHoleSizeFactor,
+                minBlackHoleGrowthSpeed *
+                    reader.readUint8() /
+                    blackHoleGrowthSpeedFactor));
+          }
+        }
+
+        final entity = world.createEntity(components);
+
+        idManager.add(entity);
+
+        if (playerId == id) {
+          tagManager.register(entity, cameraTag);
+        }
+        if (isMessage(type, messageReference)) {
+          if (initType == messageInitTypeBlackHole) {
+            world.addComponent(reference, WhiteHole(radius));
+            blackHoleOwnerManager.blackHoleFired(reference, entity);
+          } else {
+            clientDigestionManager.setReference(entity, reference);
+          }
+        }
+      }
+    }
+  }
+
+  void _deleteEntities(Uint8ListReader reader) {
+    while (reader.hasNext) {
+      final id = reader.readUint16();
+      final entity = idManager.getEntity(id);
       if (id == playerId) {
         gameStateManager.state = GameState.menu;
         final position = positionMapper[entity];
-        final camera = world.createAndAddEntity([
+        final camera = world.createEntity([
           Position(position.x, position.y),
           Camera(zoom: initialGameZoom),
         ]);
         tagManager
           ..unregister(cameraTag)
           ..register(camera, cameraTag);
+        analyticsManager.deathCount++;
+      }
+      if (!idManager.deleteEntity(id)) {
+        // entities that have been added and deleted in the same frame
+        // should no longer be a problem
+        // print('tried to delete $id but failed');
       }
     }
   }
 
-  void _updatePosition(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
-        final position = positionMapper[entity];
-        final oldX = position.x;
-        final oldY = position.y;
-        position
-          ..x = x
-          ..y = y;
-
-        if (constantVelocityMapper.has(entity)) {
-          // moving food that was caught by a player
-          entity
-            ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>();
-        } else if (velocityMapper.has(entity)) {
-          // the player
-          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
-          final velocity = dist / world.delta;
-          velocityMapper[entity]
-            ..angle = atan2(y - oldY, x - oldX)
-            ..value = velocity
-            ..rotational = 0;
-          _updateBooster(entity, velocity);
-        }
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
-      }
-    }
-  }
-
-  void _updatePositionAndSize(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
-        sizeMapper[entity].radius = radius;
-        final position = positionMapper[entity];
-        final oldX = position.x;
-        final oldY = position.y;
-        position
-          ..x = x
-          ..y = y;
-
-        if (constantVelocityMapper.has(entity)) {
-          // moving food that was caught by a player
-          entity
-            ..removeComponent<Velocity>()
-            ..removeComponent<ConstantVelocity>();
-        } else if (velocityMapper.has(entity)) {
-          // the player
-          final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
-          final velocity = dist / world.delta;
-          velocityMapper[entity]
-            ..angle = atan2(y - oldY, x - oldX)
-            ..value = velocity
-            ..rotational = 0;
-          _updateBooster(entity, velocity);
-        }
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
-      }
-    }
-  }
-
-  void _updatePositionAndOrientation(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
-        final position = positionMapper[entity];
-        final orientation = orientationMapper[entity];
-        final oldX = position.x;
-        final oldY = position.y;
-        final oldOrientation = orientation.angle;
-        position
-          ..x = x
-          ..y = y;
-        orientation.angle = orientationAngle;
-
-        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
-        final velocity = dist / world.delta;
-        velocityMapper[entity]
-          ..angle = atan2(y - oldY, x - oldX)
-          ..value = velocity
-          ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        _updateBooster(entity, velocity);
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
-      }
-    }
-  }
-
-  void _updatePositionAndOrientationAndSize(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
-      final radius = ByteUtils.byteToPlayerRadius(reader.readUint16());
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
-        sizeMapper[entity].radius = radius;
-        final position = positionMapper[entity];
-        final orientation = orientationMapper[entity];
-        final oldX = position.x;
-        final oldY = position.y;
-        final oldOrientation = orientation.angle;
-        position
-          ..x = x
-          ..y = y;
-        orientation.angle = orientationAngle;
-
-        final dist = sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY));
-        final velocity = dist / world.delta;
-        velocityMapper[entity]
-          ..angle = atan2(y - oldY, x - oldX)
-          ..value = velocity
-          ..rotational = (orientation.angle - oldOrientation) / world.delta;
-        _updateBooster(entity, velocity);
-        if (!changedPositionMapper.has(entity)) {
-          entity
-            ..addComponent(ChangedPosition(x, y))
-            ..changedInWorld();
-        }
-      }
-    }
-  }
-
-  void _initFood(Uint8ListReader reader, {bool growing = false}) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final radius = reader.readUint8() / foodSizeFactor;
-      final entity = world.createAndAddEntity([
-        Id(id),
-        Position(x, y),
-        Size(radius),
-        if (growing)
-          Growing(reader.readUint8() / foodSizeFactor,
-              minFoodGrowthSpeed * reader.readUint8() / foodGrowthSpeedFactor),
-        Color.fromHsl(0.35, 0.4, 0.4, 1),
-        Food(random.nextDouble() * tau, random.nextDouble() * tau,
-            random.nextDouble() * tau),
-        Renderable('food', scale: 1 / foodSpriteRadius),
-        Orientation(0),
-        QuadTreeCandidate(),
-      ]);
-      idManager.add(entity);
-    }
-  }
-
-  void _initBlackHole(Uint8ListReader reader, {bool growing = false}) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final velocity =
-          ByteUtils.byteToSpeed(reader.readUint16()) * blackHoleSpeedMultiplier;
-      final angle = ByteUtils.byteToAngle(reader.readUint16());
-      final radius = reader.readUint8() / blackHoleSizeFactor;
-      final entity = world.createAndAddEntity([
-        Id(id),
-        Position(x, y),
-        Velocity(velocity, angle, 0),
-        ConstantVelocity(),
-        Size(radius),
-        if (growing)
-          Growing(
-              reader.readUint8() / blackHoleSizeFactor,
-              minBlackHoleGrowthSpeed *
-                  reader.readUint8() /
-                  blackHoleGrowthSpeedFactor),
-        Color.fromHsl(0.35, 0.4, 0.4, 1),
-        BlackHole(),
-        QuadTreeCandidate(),
-      ]);
-      idManager.add(entity);
-    }
-  }
-
-  void _initPlayers(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final x = ByteUtils.byteToPosition(reader.readUint16());
-      final y = ByteUtils.byteToPosition(reader.readUint16());
-      final orientationAngle = ByteUtils.byteToAngle(reader.readUint16());
-      final playerRadius = ByteUtils.byteToPlayerRadius(reader.readUint16());
-      final hue = ByteUtils.byteToHue(reader.readUint8());
-      final utf8nickname = reader.readUint8List();
-      final nickname = utf8.decode(utf8nickname);
-      final playerComponents = [
-        Id(id),
-        Position(x, y),
-        ChangedPosition(x, y),
-        Size(playerRadius),
-        Color.fromHsl(hue, 0.9, 0.6, 0.4),
-        Orientation(orientationAngle),
-        Wobble(),
-        CellWall(5),
-        Thruster(),
-        Velocity(0, 0, 0),
-        Booster(boosterMaxStartPower),
-        BlackHoleCannon(1),
-        Player(nickname),
-        QuadTreeCandidate(),
-      ];
-      if (playerId == id) {
-        playerComponents..add(Controller())..add(Camera());
-        final camera = tagManager.getEntity(cameraTag);
-        tagManager.unregister(cameraTag);
-        camera.deleteFromWorld();
-      }
-      final entity = world.createAndAddEntity(playerComponents);
-      if (playerId == id) {
-        tagManager.register(entity, cameraTag);
-      }
-      idManager.add(entity);
-    }
-  }
-
-  void _initPlayerId(Uint8ListReader reader) {
-    playerId = reader.readUint16();
-    final posX = ByteUtils.byteToPosition(reader.readUint16());
-    final posY = ByteUtils.byteToPosition(reader.readUint16());
-    final camera = world.createAndAddEntity([
+  void _initSpectator(double posX, double posY) {
+    final camera = world.createEntity([
       Position(posX, posY),
       Camera(zoom: initialGameZoom),
     ]);
     tagManager.register(camera, cameraTag);
-  }
-
-  void _updateVelocity(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final speedByte = reader.readUint16();
-      final angleByte = reader.readUint16();
-      final entity = idManager.getEntity(id);
-      if (entity != null) {
-        final value = ByteUtils.byteToSpeed(speedByte);
-        final angle = ByteUtils.byteToAngle(angleByte);
-        if (digestedByMapper.has(entity)) {
-          digestionManager.removeReference(entity);
-        }
-        // no constant velocity for players
-        if (foodMapper.has(entity)) {
-          entity
-            ..addComponent(Velocity(value * foodSpeedMultiplier, angle, 0))
-            ..addComponent(ConstantVelocity())
-            ..changedInWorld();
-        } else {
-          _updateBooster(
-              entity,
-              value *
-                  playerSpeedMultiplier *
-                  getVelocityFactor(sizeMapper[entity]));
-        }
-      }
-    }
-  }
-
-  void _updateBooster(Entity entity, double value) {
-    if (boosterMapper.has(entity)) {
-      boosterMapper[entity].inUse = value >
-          1.25 * playerSpeedMultiplier * getVelocityFactor(sizeMapper[entity]);
-    }
-  }
-
-  void _startDigestion(Uint8ListReader reader) {
-    while (reader.hasNext) {
-      final id = reader.readUint16();
-      final digesterId = reader.readUint16();
-      final food = idManager.getEntity(id);
-      final digester = idManager.getEntity(digesterId);
-      if (food != null && digester != null) {
-        digestionManager.setReference(food, digester);
-        food
-          ..removeComponent<Growing>()
-          ..changedInWorld();
-      }
-    }
   }
 
   @override

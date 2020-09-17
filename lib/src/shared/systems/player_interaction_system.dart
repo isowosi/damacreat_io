@@ -1,5 +1,6 @@
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/client/managers/digestion_manager.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers_shared.dart';
 
@@ -11,23 +12,34 @@ part 'player_interaction_system.g.dart';
     Wobble,
     CellWall,
     Orientation,
-    OnScreen,
   ],
   manager: [
     TagManager,
+    ClientDigestionManager,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   double angleToSegmentFactor = playerCircleFragments / (2 * pi);
 
   @override
-  void startDigestion(Entity player, Entity food, double dist, double distX,
+  void processEntity(int entity) {
+    if (onScreenTagSystem[entity]) {
+      super.processEntity(entity);
+    }
+  }
+
+  @override
+  void startDigestion(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
     final fragment = (angle * angleToSegmentFactor).round();
     final sizeRelation = foodRadius / playerRadius;
     final fragmentRange = getFragmentRange(sizeRelation);
+    final fragmentRangePow2 = fragmentRange * fragmentRange;
     final colliderWobble = wobbleMapper[player];
     final additionalDistRelation =
         (dist + foodRadius - playerRadius) / playerRadius;
@@ -35,19 +47,16 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
       final fragmentIndex = (fragment + i) % playerCircleFragments;
       final old = colliderWobble.wobbleFactor[fragmentIndex];
       colliderWobble.wobbleFactor[fragmentIndex] = max(
-          old,
-          1 +
-              additionalDistRelation *
-                  (1 - i * i / (fragmentRange * fragmentRange)));
+          old, 1 + additionalDistRelation * (1 - i * i / fragmentRangePow2));
     }
   }
 
   int getFragmentRange(double sizeRelation) =>
-      (sizeRelation * playerCircleFragments ~/ 4).round();
+      (sizeRelation * playerCircleFragments / 4).truncate();
 
   @override
-  void touch(Entity player, Entity food, double dist, double distX,
-      double distY, double playerRadius, double foodRadius) {
+  void touch(int player, int food, double dist, double distX, double distY,
+      double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
     final fragment = (angle * angleToSegmentFactor).round();
@@ -74,7 +83,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   }
 
   @override
-  void almostDigestion(Entity player, Entity food, double dist, double distX,
+  void almostDigestion(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
@@ -114,7 +123,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
   }
 
   @override
-  void onFleeingAttempt(Entity player, Entity food, double dist, double distX,
+  void onFleeingAttempt(int player, int food, double dist, double distX,
       double distY, double playerRadius, double foodRadius) {
     final colliderOrientation = orientationMapper[player];
     final angle = atan2(distY, distX) - colliderOrientation.angle;
@@ -139,4 +148,7 @@ class PlayerInteractionSystem extends _$PlayerInteractionSystem {
           additionalDistRelation * (1 - indexPow3.abs() / fragmentRangePow3);
     }
   }
+
+  @override
+  BaseDigestionManager get digestionManager => clientDigestionManager;
 }

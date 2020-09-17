@@ -6,14 +6,13 @@ import 'package:damacreat_io/shared.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
-part 'black_hole_rendering_system.g.dart';
+part 'white_hole_rendering_system.g.dart';
 
 @Generate(
   WebGlRenderingSystem,
   allOf: [
     Position,
-    Size,
-    BlackHole,
+    WhiteHole,
   ],
   manager: [
     ViewProjectionMatrixManager,
@@ -24,7 +23,7 @@ part 'black_hole_rendering_system.g.dart';
     OnScreenTagSystem,
   ],
 )
-class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
+class WhiteHoleRenderingSystem extends _$WhiteHoleRenderingSystem {
   static const List<Attrib> attributes = [
     Attrib('aPosition', 2),
     Attrib('aSize', 1),
@@ -38,7 +37,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   UniformLocation uSizeLocation;
   UniformLocation uBackgroundLocation;
 
-  BlackHoleRenderingSystem(RenderingContext gl)
+  WhiteHoleRenderingSystem(RenderingContext gl)
       : texture = gl.createTexture(),
         super(gl);
 
@@ -67,14 +66,14 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
       return false;
     }
     final position = positionMapper[entity];
-    final size = sizeMapper[entity];
-    final radius = size.radius;
+    final whiteHole = whiteHoleMapper[entity];
+    final radius = whiteHole.radius;
 
     var offset = index * 3;
     values[offset++] = position.x;
     values[offset++] = position.y;
-    values[offset++] = 1.2 *
-        blackHoleGravityWellRadiusFactor *
+    values[offset++] = 2 *
+        whiteHoleGravityWellRadiusFactor *
         radius /
         cameraManager.scalingFactor;
 
@@ -113,7 +112,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
   String get vShaderFile => 'BlackHoleRenderingSystem';
 
   @override
-  String get fShaderFile => 'BlackHoleRenderingSystem';
+  String get fShaderFile => 'WhiteHoleRenderingSystem';
 
   @override
   void initUniformLocations() {

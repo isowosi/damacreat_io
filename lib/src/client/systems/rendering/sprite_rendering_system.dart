@@ -22,7 +22,7 @@ part 'sprite_rendering_system.g.dart';
     ViewProjectionMatrixManager,
   ],
 )
-class SpriteRenderingSystem extends _$SpriteRenderingSystem {
+abstract class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   SpriteSheet sheet;
 
   static const List<Attrib> attributes = [
@@ -33,38 +33,42 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
   Float32List values;
   Uint16List indices;
 
-  SpriteRenderingSystem(RenderingContext gl, this.sheet) : super(gl);
+  UniformLocation uViewProjectionLocation;
+  UniformLocation uSizeLocation;
+  UniformLocation uSheetLocation;
+
+  SpriteRenderingSystem(RenderingContext gl, this.sheet, Aspect aspect)
+      : super(gl, aspect);
 
   @override
   void initialize() {
     super.initialize();
 
     final texture = gl.createTexture();
-    final uTexture = gl.getUniformLocation(program, 'uTexture');
+    const textureUnit = 0;
 
     gl
-      ..useProgram(program)
-      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 0)
-      ..activeTexture(WebGL.TEXTURE0)
+      ..activeTexture(WebGL.TEXTURE0 + textureUnit)
       ..bindTexture(WebGL.TEXTURE_2D, texture)
+      ..pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 0)
       ..texParameteri(WebGL.TEXTURE_2D, WebGL.TEXTURE_MIN_FILTER, WebGL.LINEAR)
       ..texParameteri(
           WebGL.TEXTURE_2D, WebGL.TEXTURE_WRAP_S, WebGL.CLAMP_TO_EDGE)
       ..texImage2D(WebGL.TEXTURE_2D, 0, WebGL.RGBA, WebGL.RGBA,
           WebGL.UNSIGNED_BYTE, sheet.image)
-      ..uniform1i(uTexture, 0)
-      ..uniform2f(gl.getUniformLocation(program, 'uSize'), sheet.image.width,
-          sheet.image.height);
+      ..useProgram(program)
+      ..uniform1i(uSheetLocation, textureUnit)
+      ..uniform2f(uSizeLocation, sheet.image.width, sheet.image.height);
   }
 
   @override
-  void processEntity(int index, Entity entity) {
+  bool processEntity(int index, int entity) {
     final position = positionMapper[entity];
     final orientation = orientationMapper[entity];
     final renderable = renderableMapper[entity];
     final size = sizeMapper[entity];
     final color = colorMapper[entity];
-    final sprite = sheet.sprites[renderable.spriteName];
+    final sprite = renderable.sprite;
     final dst = sprite.dst;
     final src = sprite.src;
     final left = src.left.toDouble() + 1;
@@ -79,61 +83,60 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     final top = src.top.toDouble();
 
     final bottomLeftAngle = atan2(dstBottom, dstLeft);
+    final red = color.r;
+    final green = color.g;
+    final blue = color.b;
+    final alpha = color.a;
+    final x = position.x;
+    final y = position.y;
+    final angle = orientation.angle;
     var valueOffset = index * 32;
-    values[valueOffset++] = position.x +
-        dstLeft *
-            cos(orientation.angle + bottomLeftAngle) /
-            cos(bottomLeftAngle);
-    values[valueOffset++] = position.y +
-        dstBottom *
-            sin(orientation.angle + bottomLeftAngle) /
-            sin(bottomLeftAngle);
+    values[valueOffset++] =
+        x + dstLeft * cos(angle + bottomLeftAngle) / cos(bottomLeftAngle);
+    values[valueOffset++] =
+        y + dstBottom * sin(angle + bottomLeftAngle) / sin(bottomLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = bottom;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final bottomRightAngle = atan2(dstBottom, dstRight);
-    values[valueOffset++] = position.x +
-        dstRight *
-            cos(orientation.angle + bottomRightAngle) /
-            cos(bottomRightAngle);
-    values[valueOffset++] = position.y +
-        dstBottom *
-            sin(orientation.angle + bottomRightAngle) /
-            sin(bottomRightAngle);
+    values[valueOffset++] =
+        x + dstRight * cos(angle + bottomRightAngle) / cos(bottomRightAngle);
+    values[valueOffset++] =
+        y + dstBottom * sin(angle + bottomRightAngle) / sin(bottomRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = bottom;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final topLeftAngle = atan2(dstTop, dstLeft);
-    values[valueOffset++] = position.x +
-        dstLeft * cos(orientation.angle + topLeftAngle) / cos(topLeftAngle);
-    values[valueOffset++] = position.y +
-        dstTop * sin(orientation.angle + topLeftAngle) / sin(topLeftAngle);
+    values[valueOffset++] =
+        x + dstLeft * cos(angle + topLeftAngle) / cos(topLeftAngle);
+    values[valueOffset++] =
+        y + dstTop * sin(angle + topLeftAngle) / sin(topLeftAngle);
     values[valueOffset++] = left;
     values[valueOffset++] = top;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     final topRightAngle = atan2(dstTop, dstRight);
-    values[valueOffset++] = position.x +
-        dstRight * cos(orientation.angle + topRightAngle) / cos(topRightAngle);
-    values[valueOffset++] = position.y +
-        dstTop * sin(orientation.angle + topRightAngle) / sin(topRightAngle);
+    values[valueOffset++] =
+        x + dstRight * cos(angle + topRightAngle) / cos(topRightAngle);
+    values[valueOffset++] =
+        y + dstTop * sin(angle + topRightAngle) / sin(topRightAngle);
     values[valueOffset++] = right;
     values[valueOffset++] = top;
-    values[valueOffset++] = color.r;
-    values[valueOffset++] = color.g;
-    values[valueOffset++] = color.b;
-    values[valueOffset++] = color.a;
+    values[valueOffset++] = red;
+    values[valueOffset++] = green;
+    values[valueOffset++] = blue;
+    values[valueOffset++] = alpha;
 
     var indicesOffset = index * 6;
     indices[indicesOffset++] = index * 4;
@@ -142,6 +145,8 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     indices[indicesOffset++] = index * 4;
     indices[indicesOffset++] = index * 4 + 3;
     indices[indicesOffset++] = index * 4 + 1;
+
+    return true;
   }
 
   @override
@@ -149,8 +154,8 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
     bufferElements(attributes, values, indices);
 
     gl
-      ..uniformMatrix4fv(gl.getUniformLocation(program, 'uViewProjection'),
-          false, create2dViewProjectionMatrix().storage)
+      ..uniformMatrix4fv(uViewProjectionLocation, false,
+          create2dViewProjectionMatrix().storage)
       ..drawElements(WebGL.TRIANGLES, length * 6, WebGL.UNSIGNED_SHORT, 0);
   }
 
@@ -168,4 +173,45 @@ class SpriteRenderingSystem extends _$SpriteRenderingSystem {
 
   @override
   String get fShaderFile => 'SpriteRenderingSystem';
+
+  @override
+  void initUniformLocations() {
+    uViewProjectionLocation = getUniformLocation('uViewProjection');
+    uSizeLocation = getUniformLocation('uSize');
+    uSheetLocation = getUniformLocation('uSheet');
+  }
+}
+
+@Generate(
+  SpriteRenderingSystem,
+  allOf: [
+    QuadTreeCandidate,
+  ],
+  systems: [
+    OnScreenTagSystem,
+  ],
+)
+class QuadTreeCandidateSpriteRenderingSystem
+    extends _$QuadTreeCandidateSpriteRenderingSystem {
+  QuadTreeCandidateSpriteRenderingSystem(RenderingContext gl, SpriteSheet sheet)
+      : super(gl, sheet);
+
+  @override
+  bool processEntity(int index, int entity) {
+    if (onScreenTagSystem[entity]) {
+      return super.processEntity(index, entity);
+    }
+    return false;
+  }
+}
+
+@Generate(
+  SpriteRenderingSystem,
+  exclude: [
+    QuadTreeCandidate,
+  ],
+)
+class ParticleSpriteRenderingSystem extends _$ParticleSpriteRenderingSystem {
+  ParticleSpriteRenderingSystem(RenderingContext gl, SpriteSheet sheet)
+      : super(gl, sheet);
 }

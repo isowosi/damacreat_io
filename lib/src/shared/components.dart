@@ -21,8 +21,6 @@ class CellWall extends Component {
   }
 }
 
-class OnScreen extends Component {}
-
 class DigestionComplete extends Component {}
 
 class Thruster extends Component {}
@@ -41,4 +39,9 @@ class AttractedBy extends EntityReferenceComponent {}
 class Acceleration extends Component {
   double value, angle;
   Acceleration(this.value, this.angle);
+}
+
+class WhiteHole extends Component {
+  double radius;
+  WhiteHole(this.radius);
 }

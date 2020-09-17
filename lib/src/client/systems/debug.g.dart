@@ -9,6 +9,7 @@ part of 'debug.dart';
 abstract class _$DebugSystem extends VoidEntitySystem {
   Mapper<Food> foodMapper;
   Mapper<Position> positionMapper;
+  OnScreenTagSystem onScreenTagSystem;
   QuadTreeManager quadTreeManager;
   ViewProjectionMatrixManager viewProjectionMatrixManager;
   CameraManager cameraManager;
@@ -19,6 +20,7 @@ abstract class _$DebugSystem extends VoidEntitySystem {
     super.initialize();
     foodMapper = Mapper<Food>(world);
     positionMapper = Mapper<Position>(world);
+    onScreenTagSystem = world.getSystem<OnScreenTagSystem>();
     quadTreeManager = world.getManager<QuadTreeManager>();
     viewProjectionMatrixManager =
         world.getManager<ViewProjectionMatrixManager>();

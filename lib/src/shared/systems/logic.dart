@@ -1,3 +1,4 @@
+import 'package:bit_array/bit_array.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
 import 'package:damacreat_io/src/shared/managers/attracted_by_manager.dart';
@@ -18,12 +19,22 @@ part 'logic.g.dart';
     QuadTreeManager,
     ViewProjectionMatrixManager,
     TagManager,
-    ComponentManager,
   ],
 )
 class OnScreenTagSystem extends _$OnScreenTagSystem {
+  BitArray _onScreenEntityIds = BitArray(4096);
+
   @override
-  void processEntities(Iterable<Entity> entities) {
+  void begin() {
+    if (world.entityManager.activeEntityCount > _onScreenEntityIds.length) {
+      _onScreenEntityIds = BitArray(world.entityManager.activeEntityCount);
+    } else {
+      _onScreenEntityIds.clearAll();
+    }
+  }
+
+  @override
+  void processEntities(Iterable<int> entities) {
     if (entities.isNotEmpty) {
       final cameraEntity = entities.first;
       final inverse = viewProjectionMatrixManager
@@ -40,83 +51,16 @@ class OnScreenTagSystem extends _$OnScreenTagSystem {
     }
   }
 
-  void _tag(Entity entity) {
-    entity
-      ..addComponent(OnScreen())
-      ..changedInWorld();
+  void _tag(int entity) {
+    _onScreenEntityIds[entity] = true;
   }
+
+  int get onScreenCount => _onScreenEntityIds.cardinality;
 
   @override
   bool checkProcessing() => true;
-}
 
-@Generate(
-  EntityProcessingSystem,
-  oneOf: [
-    ChangedPosition,
-    OnScreen,
-  ],
-)
-class RemoveTemporaryComponentsSystem
-    extends _$RemoveTemporaryComponentsSystem {
-  @override
-  void processEntity(Entity entity) {
-    entity
-      ..removeComponent<ChangedPosition>()
-      ..removeComponent<OnScreen>()
-      ..changedInWorld();
-  }
-}
-
-@Generate(
-  BaseDigestiveSystem,
-  manager: [
-    AttractedByManager,
-  ],
-  allOf: [
-    Position,
-    OnScreen,
-  ],
-  mapper: [
-    Color,
-  ],
-  exclude: [
-    DigestionComplete,
-  ],
-)
-class DigestiveSystem extends _$DigestiveSystem {
-  @override
-  void onDigestionComplete(Entity digester, Entity food) {
-    food
-      ..addComponent(DigestionComplete())
-      ..changedInWorld();
-  }
-
-  @override
-  void onDigestionInProgress(Entity digester, Entity food) {
-    final foodPosition = positionMapper[food];
-    final foodSize = sizeMapper[food];
-    final digesterColor = colorMapper[digester];
-    final foodColor = colorMapper[food];
-    final foodRadius = foodSize.radius;
-    for (var i = 0; i < foodRadius / 2; i++) {
-      final angle = random.nextDouble() * tau;
-      final entity = world.createAndAddEntity([
-        Renderable('digestion'),
-        Position(foodPosition.x + foodRadius * cos(angle),
-            foodPosition.y + foodRadius * sin(angle)),
-        Velocity(foodRadius, angle, 0),
-        Orientation(angle),
-        Acceleration(0, 0),
-        Size(max(0.2, min(1, foodRadius / 10))),
-        Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
-        ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
-            digesterColor.r, digesterColor.g, digesterColor.b, digesterColor.a),
-        Lifetime(0.5)
-      ]);
-      attractedByManager.setReference(entity, digester);
-    }
-  }
+  bool operator [](int entity) => _onScreenEntityIds[entity];
 }
 
 @Generate(
@@ -127,10 +71,10 @@ class DigestiveSystem extends _$DigestiveSystem {
 )
 class ExpirationSystem extends _$ExpirationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final l = lifetimeMapper[entity]..timeLeft -= world.delta;
     if (l.timeLeft <= 0) {
-      entity.deleteFromWorld();
+      deleteFromWorld(entity);
     }
   }
 }
@@ -143,7 +87,7 @@ class ExpirationSystem extends _$ExpirationSystem {
 )
 class WobbleSystem extends _$WobbleSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final w = wobbleMapper[entity];
 
     final wobbleFactor = w.wobbleFactor;
@@ -164,7 +108,7 @@ class WobbleSystem extends _$WobbleSystem {
 )
 class CellWallSystem extends _$CellWallSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final cw = cellWallMapper[entity];
 
     final strengthFactor = cw.strengthFactor;
@@ -184,7 +128,7 @@ class CellWallSystem extends _$CellWallSystem {
 )
 class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final cw = cellWallMapper[entity];
 
     final strengthFactor = cw.strengthFactor;
@@ -192,153 +136,6 @@ class CellWallDigestedBySystem extends _$CellWallDigestedBySystem {
       strengthFactor[i] = max(
           0.01, 1.0 + (strengthFactor[i] - 1.1) * (1.0 - 0.999 * world.delta));
     }
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
-    Position,
-    ChangedPosition,
-    Orientation,
-    Thruster,
-    Velocity,
-    Size,
-    Color,
-    Wobble,
-    OnScreen,
-    Booster,
-  ],
-)
-class ThrusterParticleEmissionSystem extends _$ThrusterParticleEmissionSystem {
-  @override
-  void processEntity(Entity entity) {
-    final p = positionMapper[entity];
-    final op = changedPositionMapper[entity];
-    final o = orientationMapper[entity];
-    final v = velocityMapper[entity];
-    final s = sizeMapper[entity];
-    final c = colorMapper[entity];
-    final w = wobbleMapper[entity];
-    final boosterFactor = boosterMapper[entity].inUse ? 1.5 : 1.0;
-    final oldAngle = o.angle - v.rotational * world.delta;
-
-    final leftThrusterAngle = o.angle + 3 / 4 * pi;
-    final rightThrusterAngle = o.angle - 3 / 4 * pi;
-    final oldLeftThrusterAngle = oldAngle + 3 / 4 * pi;
-    final oldRightThrusterAngle = oldAngle - 3 / 4 * pi;
-
-    spawnThrusterParticles(p, op, s, v, c, leftThrusterAngle,
-        oldLeftThrusterAngle, o, w, 1, boosterFactor);
-    spawnThrusterParticles(p, op, s, v, c, rightThrusterAngle,
-        oldRightThrusterAngle, o, w, -1, boosterFactor);
-  }
-
-  void spawnThrusterParticles(
-      Position position,
-      ChangedPosition oldPosition,
-      Size size,
-      Velocity velocity,
-      Color color,
-      double thrusterAngle,
-      double oldThrusterAngle,
-      Orientation orientation,
-      Wobble wobble,
-      int direction,
-      double boosterFactor) {
-    double w1, w2;
-    if (direction == 1) {
-      final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
-      w1 = wobble.wobbleFactor[leftThrusterIndex];
-      w2 = wobble.wobbleFactor[leftThrusterIndex + 1];
-    } else {
-      final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
-      w1 = wobble.wobbleFactor[rightThrusterIndex];
-      w2 = wobble.wobbleFactor[rightThrusterIndex - 1];
-    }
-
-    final x1 = position.x + size.radius * 1.1 * cos(thrusterAngle) * w1;
-    final y1 = position.y + size.radius * 1.1 * sin(thrusterAngle) * w1;
-    final oldX1 =
-        oldPosition.oldX + size.radius * 1.1 * cos(oldThrusterAngle) * w1;
-    final oldY1 =
-        oldPosition.oldY + size.radius * 1.1 * sin(oldThrusterAngle) * w1;
-    final x2 = position.x +
-        size.radius *
-            cos(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
-            w2;
-    final y2 = position.y +
-        size.radius *
-            sin(thrusterAngle + direction / (playerCircleFragments ~/ 2) * pi) *
-            w2;
-    final oldX2 = oldPosition.oldX +
-        size.radius *
-            cos(oldThrusterAngle +
-                direction / (playerCircleFragments ~/ 2) * pi) *
-            w2;
-    final oldY2 = oldPosition.oldY +
-        size.radius *
-            sin(oldThrusterAngle +
-                direction / (playerCircleFragments ~/ 2) * pi) *
-            w2;
-
-    final hsl = rgbToHsl(color.r, color.g, color.b);
-    hsl[1] += 0.1;
-    hsl[2] += 0.1;
-    final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
-    for (var i = 0; i < 4 * boosterFactor; i++) {
-      final posFactor = random.nextDouble();
-      final posFactorTime = random.nextDouble();
-      final x = x1 + posFactor * (x2 - x1);
-      final y = y1 + posFactor * (y2 - y1);
-      final oldX = oldX1 + posFactor * (oldX2 - oldX1);
-      final oldY = oldY1 + posFactor * (oldY2 - oldY1);
-      world.createAndAddEntity([
-        Position(
-            x + posFactorTime * (oldX - x), y + posFactorTime * (oldY - y)),
-        ThrusterParticle(),
-        Color(rgb[0], rgb[1], rgb[2], 1),
-        Lifetime(boosterFactor * (0.5 + random.nextDouble())),
-        Velocity(playerSpeedMultiplier * (0.05 + random.nextDouble() * 0.1),
-            (velocity.angle - pi) - pi / 64 + random.nextDouble() * pi / 32, 0),
-        Orientation(velocity.angle),
-        Renderable('propulsion', scale: 1 / 80),
-        Size(boosterFactor * size.radius / 10),
-      ]);
-    }
-  }
-}
-
-@Generate(
-  EntityProcessingSystem,
-  allOf: [
-    ThrusterParticle,
-    Color,
-    Lifetime,
-    Renderable,
-  ],
-)
-class ThrusterParticleColorModificationSystem
-    extends _$ThrusterParticleColorModificationSystem {
-  @override
-  void processEntity(Entity entity) {
-    final color = colorMapper[entity];
-    final lifetime = lifetimeMapper[entity];
-    final renderable = renderableMapper[entity];
-
-    final lifetimePercentage = lifetime.timeLeft / lifetime.timeMax;
-    final hsl = rgbToHsl(color.realR, color.realG, color.realB);
-    hsl[0] = (hsl[0] - 0.15 * (lifetime.timeMax - lifetime.timeLeft)) % 1.0;
-    hsl[1] = hsl[1] * lifetimePercentage;
-    hsl[2] = hsl[2] * lifetimePercentage;
-    renderable.scale += 3 * world.delta * renderable.scale * lifetimePercentage;
-    final rgb = hslToRgb(hsl[0], hsl[1], hsl[2]);
-
-    color
-      ..r = rgb[0]
-      ..g = rgb[1]
-      ..b = rgb[2]
-      ..a = lifetimePercentage;
   }
 }
 
@@ -354,7 +151,7 @@ class ThrusterParticleColorModificationSystem
 )
 class CameraPositionSystem extends _$CameraPositionSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final position = positionMapper[entity];
     positionMapper[tagManager.getEntity(cameraTag)]
       ..x = position.x
@@ -367,13 +164,18 @@ class CameraPositionSystem extends _$CameraPositionSystem {
   allOf: [
     CellWall,
     Thruster,
-    OnScreen,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class ThrusterCellWallWeakeningSystem
     extends _$ThrusterCellWallWeakeningSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
+    if (!onScreenTagSystem[entity]) {
+      return;
+    }
     final leftThrusterIndex = (3 / 8 * playerCircleFragments).truncate();
     final rightThrusterIndex = (5 / 8 * playerCircleFragments).truncate();
     cellWallMapper[entity]
@@ -389,12 +191,17 @@ class ThrusterCellWallWeakeningSystem
   allOf: [
     Food,
     Color,
-    OnScreen,
+  ],
+  systems: [
+    OnScreenTagSystem,
   ],
 )
 class FoodColoringSystem extends _$FoodColoringSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
+    if (!onScreenTagSystem[entity]) {
+      return;
+    }
     final food = foodMapper[entity];
     colorMapper[entity]
       ..r = 0.4 + 0.4 * sin(time + food.r)
@@ -415,7 +222,7 @@ class FoodColoringSystem extends _$FoodColoringSystem {
 )
 class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final position = positionMapper[entity];
     final velocity = velocityMapper[entity];
 
@@ -436,7 +243,7 @@ class MovementSystemWithoutQuadTree extends _$MovementSystemWithoutQuadTree {
 )
 class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final color = colorMapper[entity];
     final colorChanger = colorChangerMapper[entity];
     final lifeTime = lifetimeMapper[entity];
@@ -463,7 +270,7 @@ class ColorChangeOverLifetimeSystem extends _$ColorChangeOverLifetimeSystem {
 )
 class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final attractor = attractedByManager.refersTo(entity);
     final attractorPosition = positionMapper[attractor];
     final position = positionMapper[entity];
@@ -485,7 +292,7 @@ class AttractionAccelerationSystem extends _$AttractionAccelerationSystem {
 )
 class AccelerationSystem extends _$AccelerationSystem {
   @override
-  void processEntity(Entity entity) {
+  void processEntity(int entity) {
     final acceleration = accelerationMapper[entity];
     final velocity = velocityMapper[entity];
 
@@ -502,39 +309,5 @@ class AccelerationSystem extends _$AccelerationSystem {
       ..angle = angle
       ..value = sqrt(velXTotal * velXTotal + velYTotal * velYTotal);
     orientationMapper[entity].angle = angle;
-  }
-}
-
-@Generate(
-  BaseFoodSizeLossSystem,
-  allOf: [
-    Color,
-    Position,
-    Renderable,
-    Velocity,
-  ],
-)
-class FoodSizeLossSystem extends _$FoodSizeLossSystem {
-  @override
-  void onFoodSizeBelowMinimum(Entity entity) {}
-
-  @override
-  void onFoodSizeLoss(Entity entity, double foodRadius) {
-    final position = positionMapper[entity];
-    final velocity = velocityMapper[entity];
-    final foodColor = colorMapper[entity];
-    final angle = velocity.angle - pi - pi / 4 + random.nextDouble() * pi / 2;
-    world.createAndAddEntity([
-      Renderable('digestion'),
-      Position(position.x + foodRadius * cos(angle),
-          position.y + foodRadius * sin(angle)),
-      Velocity(foodRadius, angle, 0),
-      Orientation(angle),
-      Size(max(0.2, min(1, foodRadius / 10))),
-      Color(foodColor.r, foodColor.g, foodColor.b, foodColor.a),
-      ColorChanger(foodColor.r, foodColor.g, foodColor.b, foodColor.a,
-          foodColor.r, foodColor.g, foodColor.b, 0.1),
-      Lifetime(0.5)
-    ]);
   }
 }
