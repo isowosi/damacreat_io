@@ -3,7 +3,7 @@ version: 0.11.0-dev
 description: Client for damacreat
 publish_to: none
 environment:
-  sdk: '>=2.3.0 <3.0.0'
+  sdk: '>=2.9.0 <3.0.0'
 dependencies:
   dartemis: ^0.8.0
   gamedev_helpers:
