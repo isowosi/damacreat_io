@@ -1,16 +1,8 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
-$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,S,M,Q,D,L,O,V={
-AS:function(d,e){var y,x=new V.q_(d,S.at(3,C.r,e)),w=$.xC
-if(w==null)w=$.xC=O.d_($.Di,null)
-x.c=w
-y=document.createElement("game-changelog")
-x.a=y
-return x},
-q_:function q_(d,e){var _=this
-_.c=_.b=_.a=_.r=_.f=null
-_.d=d
-_.e=e}},R,A,E,U,T,N,Z,X,B,F
-a.setFunctionNamesIfNecessary([V])
+$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,M,S,Q,D,O,V,E,A,R,T,L,N,U={
+BA:function(d){return new U.lr(d)},
+lr:function lr(d){this.a=d}},X,Z,F,B
+a.setFunctionNamesIfNecessary([U])
 C=c[0]
 H=c[1]
 J=c[2]
@@ -19,50 +11,31 @@ W=c[4]
 G=c[5]
 Y=c[6]
 K=c[7]
-S=c[8]
-M=c[9]
+M=c[8]
+S=c[9]
 Q=c[10]
 D=c[11]
-L=c[12]
-O=c[13]
-V=a.updateHolder(c[14],V)
-R=c[15]
-A=c[16]
-E=c[17]
-U=c[18]
-T=c[19]
-N=c[20]
-Z=c[21]
-X=c[22]
-B=c[23]
-F=c[24]
-V.q_.prototype={
-S:function(){var y,x,w,v,u,t=this,s=t.b,r=t.bn(t.a),q=document,p=T.aI(q,r)
-t.ae(p,"exit")
-t.v(p)
-y=T.H(q,p,"button")
-t.v(y)
-T.E(y,"Close")
-x=T.aI(q,r)
-t.r=x
-t.v(x)
-w=T.aI(q,r)
-t.ae(w,"exit")
-t.v(w)
-v=T.H(q,w,"button")
-t.v(v)
-T.E(v,"Close")
-x=s.gfc()
-u=W.r
-J.ee(y,"click",t.aV(x,u))
-J.ee(v,"click",t.aV(x,u))
-t.bm()},
-a7:function(){var y=this,x=y.b.a,w=y.f
-if(w!=x){y.r.innerHTML=$.e5.c.jp(x)
-y.f=x}},
-$aO:function(){return[B.ey]}}
-var z=a.updateTypes([]);(function inheritance(){var y=a.inherit
-y(V.q_,S.O)})();(function staticFields(){$.xC=null
-$.Di=[$.yJ]})()}
-$__dart_deferred_initializers__["oFVOtwP99MvogIc3dBA3kpRaJU4="] = $__dart_deferred_initializers__.current
+O=c[12]
+V=c[13]
+E=c[14]
+A=c[15]
+R=c[16]
+T=c[17]
+L=c[18]
+N=c[19]
+U=a.updateHolder(c[20],U)
+X=c[21]
+Z=c[22]
+F=c[23]
+B=c[24]
+U.lr.prototype={
+cv:function(){return this.a.cv()},
+gcA:function(){return this.a.cx}}
+var z=a.updateTypes(["~()"]);(function installTearOffs(){var y=a._instance_0u
+y(U.lr.prototype,"gfE","cv",0)})();(function inheritance(){var y=a.inherit
+y(U.lr,P.n)})()
+H.j2(b.typeUniverse,JSON.parse('{"jo":"t","kj":"t","jn":"v","kw":"v","nN":"b_","ju":"y","l1":"y","n7":"C","mg":"bx","lq":"aE","mb":"aM","jS":"be","k1":"bf","jK":"av","lN":"av","kC":"bz","jU":"W","jX":"aL"}'))
+0
+0}
+$__dart_deferred_initializers__["/x/MAv9QuIecHbSRD85MW/Sj+gk="] = $__dart_deferred_initializers__.current
 //# sourceMappingURL=main.dart.js_2.part.js.map
