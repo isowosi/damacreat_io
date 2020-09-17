@@ -1,11 +1,13 @@
-# 0.11.0 (2019-07-??)
+# 0.11.0 (2020-09-17)
 
 ## Misc
 * improved performance
 * animated and more colorful background
+* better handling of clients that don't support webgl
 
 ## Bugfixes
 * size of moving dark energy off screen was not updated correctly
+* serverside bug that crashed the server after a several months
 
 # 0.10.1 (2019-05-23)
 
