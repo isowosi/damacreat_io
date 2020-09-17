@@ -73,7 +73,7 @@ class BlackHoleRenderingSystem extends _$BlackHoleRenderingSystem {
     var offset = index * 3;
     values[offset++] = position.x;
     values[offset++] = position.y;
-    values[offset++] = 2 *
+    values[offset++] = 1.2 *
         blackHoleGravityWellRadiusFactor *
         radius /
         cameraManager.scalingFactor;
