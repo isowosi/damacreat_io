@@ -38,6 +38,8 @@ class GameMenuComponent implements AfterViewInit {
   int get maxLength => maxLengthNickname;
   SettingsManager get settings => service.settings;
   ControllerManager get controller => service.controllerManager;
+  bool get gameCanStart => connected && supportsWebGl;
+  bool get supportsWebGl => service.webGlInitialized;
   bool get connected =>
       service.connectionState == ServerConnectionState.connected;
   bool get connecting =>

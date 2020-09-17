@@ -30,8 +30,11 @@ class GameService {
   final AnalyticsManager analyticsManager;
 
   final List<Element> inputs = [];
+
   GameService(this.settings, this.gameStateManager, this.controllerManager,
       this.analyticsManager);
+
+  bool get webGlInitialized => _game?.webGlInitialized ?? false;
 
   Future<void> init() async {
     hue = random.nextInt(256);
@@ -47,8 +50,10 @@ class GameService {
         connectionState = ServerConnectionState.connected;
         final webSocketHandler = WebSocketHandler(webSocket, debug: debug);
         _game = Game(webSocketHandler, settings, gameStateManager,
-            controllerManager, analyticsManager, inputs)
-          ..start();
+            controllerManager, analyticsManager, inputs);
+        if (_game.webGlInitialized) {
+          _game.start();
+        }
         window.onBeforeUnload.listen((_) {
           webSocket.close();
         });

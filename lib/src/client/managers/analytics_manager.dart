@@ -7,6 +7,7 @@ import 'package:dartemis/dartemis.dart';
 class AnalyticsManager extends Manager {
   final String categorySession = 'session';
   final String categoryGameplay = 'gameplay';
+  final String categoryCapabilities = 'capabilities';
   int deathCount = 0;
 
   final SettingsManager _settings;
@@ -87,7 +88,7 @@ class AnalyticsManager extends Manager {
   }
 
   void logCapabilities(String capability, {bool supported = true}) {
-    _log(capability, 'capabilities',
+    _log(capability, categoryCapabilities,
         eventLabel: supported ? 'supported' : 'unsupported');
   }
 }

@@ -101,7 +101,7 @@ color-picker {
   padding: 30px 20px;
 }
 
-.connecting, .connectionerror {
+.connecting, .connectionerror, .webglerror {
   width: 150px;
   height: 75px;
   border-radius: 10px;
@@ -114,7 +114,7 @@ color-picker {
   background-color: #bb5a00;
 }
 
-.connectionerror {
+.connectionerror, .webglerror {
   background-color: darkred;
 }
 
