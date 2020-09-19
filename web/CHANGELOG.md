@@ -1,3 +1,8 @@
+# 0.11.1 (2020-09-19)
+
+## Bugfix
+* pack shaders into the source to prevent errors because of caching issues (and reduce the amount of requests and improve loading times)
+
 # 0.11.0 (2020-09-17)
 
 ## Misc

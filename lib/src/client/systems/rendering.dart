@@ -2,8 +2,10 @@ import 'dart:html';
 import 'dart:typed_data';
 import 'dart:web_gl';
 
+import 'package:aspen_assets/aspen_assets.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/assets.dart';
 import 'package:damacreat_io/src/shared/managers/settings_manager.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -236,10 +238,10 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
   int get indicesPerItem => verticeCount * 3;
 
   @override
-  String get vShaderFile => 'PositionRenderingSystem';
+  TextAsset get vShaderAsset => vShaderPositionRendering;
 
   @override
-  String get fShaderFile => 'PositionRenderingSystem';
+  TextAsset get fShaderAsset => fShaderPositionRendering;
 
   int get circleFragments;
 
@@ -306,9 +308,9 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   }
 
   @override
-  String get vShaderFile => 'BackgroundRenderingSystem';
+  TextAsset get vShaderAsset => vShaderBackgroundRendering;
   @override
-  String get fShaderFile => 'BackgroundRenderingSystem';
+  TextAsset get fShaderAsset => fShaderBackgroundRendering;
 
   @override
   bool checkProcessing() => tagManager.isRegistered(cameraTag);
