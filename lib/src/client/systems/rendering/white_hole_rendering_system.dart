@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 import 'dart:web_gl';
 
+import 'package:aspen_assets/aspen_assets.dart';
 import 'package:damacreat/damacreat.dart';
 import 'package:damacreat_io/shared.dart';
+import 'package:damacreat_io/src/assets.dart';
 import 'package:dartemis/dartemis.dart';
 import 'package:gamedev_helpers/gamedev_helpers.dart';
 
@@ -109,10 +111,10 @@ class WhiteHoleRenderingSystem extends _$WhiteHoleRenderingSystem {
   }
 
   @override
-  String get vShaderFile => 'BlackHoleRenderingSystem';
+  TextAsset get vShaderAsset => vShaderBlackHoleRendering;
 
   @override
-  String get fShaderFile => 'WhiteHoleRenderingSystem';
+  TextAsset get fShaderAsset => fShaderWhiteHoleRendering;
 
   @override
   void initUniformLocations() {

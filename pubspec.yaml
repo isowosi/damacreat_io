@@ -1,5 +1,5 @@
 name: damacreat_io
-version: 0.11.0
+version: 0.11.1-dev
 description: Client for damacreat
 publish_to: none
 environment:
@@ -9,7 +9,7 @@ dependencies:
   gamedev_helpers:
     git:
       url: git://github.com/kayzgames/gamedev_helpers.git
-      ref: d442459fc33524a43b1ec8e9adce5b5809bf2108
+      ref: f4cd1becea0a141ef68131ba113fb69011f229e1
   damacreat:
     git:
       url: git@bitbucket.org:isowosi/damacreat.git
@@ -23,9 +23,12 @@ dependencies:
       url: git://github.com/denniskaselow/lawndart.git
       ref: b36d76770bf4771730fdcb00f925534c74be1d95
   bit_array: ^2.0.0
+  aspen: ^0.3.0
+  aspen_assets: ^0.3.0
 dev_dependencies:
   build_runner: ^1.0.0
   build_version: ^2.0.0
   build_web_compilers: any
   sass_builder: ^2.1.1
   dartemis_builder: ^0.1.0
+  aspen_builder: ^0.3.0

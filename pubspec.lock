@@ -50,6 +50,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.0"
+  aspen:
+    dependency: "direct main"
+    description:
+      name: aspen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0+1"
+  aspen_assets:
+    dependency: "direct main"
+    description:
+      name: aspen_assets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
+  aspen_builder:
+    dependency: "direct dev"
+    description:
+      name: aspen_builder
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   async:
     dependency: transitive
     description:
@@ -259,8 +280,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: d442459fc33524a43b1ec8e9adce5b5809bf2108
-      resolved-ref: d442459fc33524a43b1ec8e9adce5b5809bf2108
+      ref: f4cd1becea0a141ef68131ba113fb69011f229e1
+      resolved-ref: f4cd1becea0a141ef68131ba113fb69011f229e1
       url: "git://github.com/kayzgames/gamedev_helpers.git"
     source: git
     version: "0.0.1-dev"
@@ -484,7 +505,7 @@ packages:
       name: sass
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.26.10"
+    version: "1.26.11"
   sass_builder:
     dependency: "direct dev"
     description:
@@ -627,5 +648,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
+  z85:
+    dependency: transitive
+    description:
+      name: z85
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
 sdks:
   dart: ">=2.9.0 <3.0.0"
