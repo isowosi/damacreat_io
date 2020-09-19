@@ -1,5 +1,5 @@
 name: damacreat_io
-version: 0.11.0-dev
+version: 0.11.1-dev
 description: Client for damacreat
 publish_to: none
 environment:
