@@ -1,14 +1,13 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
-$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,M,S,Q,D,O,V={
-BX:function(d,e){var x,w=new V.m4(E.e9(d,e,3)),v=$.yn
-if(v==null)v=$.yn=O.dD($.EY,null)
+$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,M,S,Q,D,V={
+By:function(d,e){var x,w=new V.lA(E.dY(d,e,3)),v=$.Bz
 w.b=v
 x=document.createElement("game-changelog")
 w.c=x
 return w},
-m4:function m4(d){var _=this
+lA:function lA(d){var _=this
 _.c=_.b=_.a=_.f=_.e=null
-_.d=d}},E,A,R,T,L,N,U,X,Z,F,B
+_.d=d}},E,A,R,T,L,N,U,O,X,Z,F,B
 a.setFunctionNamesIfNecessary([V])
 C=c[0]
 H=c[1]
@@ -22,47 +21,46 @@ M=c[8]
 S=c[9]
 Q=c[10]
 D=c[11]
-O=c[12]
-V=a.updateHolder(c[13],V)
-E=c[14]
-A=c[15]
-R=c[16]
-T=c[17]
-L=c[18]
-N=c[19]
-U=c[20]
+V=a.updateHolder(c[12],V)
+E=c[13]
+A=c[14]
+R=c[15]
+T=c[16]
+L=c[17]
+N=c[18]
+U=c[19]
+O=c[20]
 X=c[21]
 Z=c[22]
 F=c[23]
 B=c[24]
-V.m4.prototype={
-S:function(){var x,w,v,u,t,s=this,r=s.a,q=s.bA(),p=document,o=T.aP(p,q)
-s.aa(o,"exit")
-s.u(o)
+V.lA.prototype={
+W:function(){var x,w,v,u,t,s=this,r=s.a,q=s.bx(),p=document,o=T.aJ(p,q)
+s.a9(o,"exit")
+s.v(o)
 x=T.J(p,o,"button")
-s.u(x)
-T.F(x,"Close")
-w=T.aP(p,q)
+s.v(x)
+T.G(x,"Close")
+w=T.aJ(p,q)
 s.f=w
-s.u(w)
-v=T.aP(p,q)
-s.aa(v,"exit")
-s.u(v)
+s.v(w)
+v=T.aJ(p,q)
+s.a9(v,"exit")
+s.v(v)
 u=T.J(p,v,"button")
-s.u(u)
-T.F(u,"Close")
-w=r.gfC()
+s.v(u)
+T.G(u,"Close")
+w=r.gfu()
 t=y.d
-J.fo(x,"click",s.b1(w,t))
-J.fo(u,"click",s.b1(w,t))},
+J.fb(x,"click",s.b0(w,t))
+J.fb(u,"click",s.b0(w,t))},
 a3:function(){var x=this,w=x.a.a,v=x.e
-if(v!=w){x.f.innerHTML=$.fk.c.jF(w)
+if(v!==w){x.f.innerHTML=$.j0.c.ju(w)
 x.e=w}}}
 var z=a.updateTypes([]);(function inheritance(){var x=a.inherit
-x(V.m4,E.dE)})()
-H.j2(b.typeUniverse,JSON.parse('{"jo":"t","kj":"t","jn":"v","kv":"v","nM":"b_","ju":"y","l0":"y","n6":"C","mf":"by","lp":"aE","ma":"aM","jS":"be","k1":"bf","jK":"av","lM":"av","kB":"bA","jU":"W","jX":"aL","m4":{"V":[],"a6":[]}}'))
+x(V.lA,E.ds)})()
+H.nG(b.typeUniverse,JSON.parse('{"op":"t","ps":"t","oo":"w","q9":"w","ui":"b2","oB":"y","qG":"y","tP":"D","tq":"bz","r6":"aE","ta":"aO","p3":"bk","pf":"bl","oW":"aC","rM":"aC","qd":"bD","p4":"X","p8":"aN","lA":{"U":[],"a3":[]}}'))
 0
-var y={d:H.aG("t*")};(function staticFields(){$.yn=null
-$.EY=[$.zx]})()}
-$__dart_deferred_initializers__["fkyD81N7sVohz0AlUA+GsX4qEKQ="] = $__dart_deferred_initializers__.current
+var y={d:H.aB("t*")};(function staticFields(){$.Bz=null})()}
+$__dart_deferred_initializers__["B19FzyRRa5FUEtj7XK5JQtJR2uI="] = $__dart_deferred_initializers__.current
 //# sourceMappingURL=main.dart.js_3.part.js.map
