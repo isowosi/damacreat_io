@@ -266,11 +266,9 @@ abstract class CircleRenderingSystem extends _$CircleRenderingSystem {
 class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   double offsetX = -500000 + random.nextDouble() * 1000000;
   double offsetY = -500000 + random.nextDouble() * 1000000;
-  Float32List rgb = Float32List.fromList([0, 0, 0]);
   double parallaxFactor = 1;
 
   UniformLocation uViewProjectionLocation;
-  UniformLocation uRgbLocation;
   UniformLocation uTimeLocation;
 
   BackgroundRenderingSystemBase(RenderingContext gl) : super(gl);
@@ -301,7 +299,6 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
     gl
       ..uniformMatrix4fv(
           uViewProjectionLocation, false, viewProjectionMatrix.storage)
-      ..uniform3fv(uRgbLocation, rgb)
       ..uniform1f(uTimeLocation, time);
     buffer('aPosition', background, 2);
     gl.drawArrays(WebGL.TRIANGLE_FAN, 0, 4);
@@ -318,16 +315,12 @@ class BackgroundRenderingSystemBase extends _$BackgroundRenderingSystemBase {
   @override
   void initUniformLocations() {
     uViewProjectionLocation = getUniformLocation('uViewProjection');
-    uRgbLocation = getUniformLocation('uRgb');
     uTimeLocation = getUniformLocation('uTime');
   }
 }
 
 class BackgroundRenderingSystemLayer0 extends BackgroundRenderingSystemBase {
   BackgroundRenderingSystemLayer0(RenderingContext gl) : super(gl) {
-    rgb[0] = random.nextDouble();
-    rgb[1] = random.nextDouble();
-    rgb[2] = random.nextDouble();
     parallaxFactor = 0.4;
   }
 }

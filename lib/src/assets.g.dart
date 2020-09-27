@@ -10,7 +10,6 @@ const String _fShaderBackgroundRendering$content = r'''#version 100
 precision highp float;
 
 uniform float uTime;
-uniform vec3 uRgb;
 varying vec4 vPos;
 
 
@@ -130,7 +129,7 @@ void main(){
     float g = total * 0.75 + sin(uTime / 17.0) * 0.15 + cos((vPos.y + uTime / 27.0) / 103.0) * 0.1;
     float b = total * 0.75 + sin(uTime / 19.0) * 0.15;
 
-    gl_FragColor = vec4(uRgb * 0.0 + vec3(r, g, b), 1.0);
+    gl_FragColor = vec4(vec3(r, g, b), 1.0);
 }''';
 
 const String _vShaderBackgroundRendering$content = r'''#version 100

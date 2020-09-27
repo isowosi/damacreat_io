@@ -1,3 +1,8 @@
+# 0.11.2 (2020-09-27)
+
+## Bugfix
+* fixed a bug in a shader that only happend on some systems
+
 # 0.11.1 (2020-09-19)
 
 ## Bugfix
