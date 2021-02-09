@@ -1,18 +1,18 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
-$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,S,M,Q={
-BW:function(d,e){var x,w=new Q.mp(E.e2(d,e,3)),v=$.yE
-if(v==null)v=$.yE=O.dx($.F0,null)
+$__dart_deferred_initializers__.current=function(a,b,c,$){var C,H,J,P,W,G,Y,K,M,Q={
+C3:function(d,e){var x,w=new Q.mb(E.ea(d,e,3)),v=$.yC
+if(v==null)v=$.yC=O.dE($.F7,null)
 w.b=v
 x=document.createElement("privacy-policy")
 w.c=x
 return w},
-Fn:function(d,e){return new Q.ja(E.bq(d,e))},
-mp:function mp(d){var _=this
+Fv:function(d,e){return new Q.j8(E.br(d,e))},
+mb:function mb(d){var _=this
 _.c=_.b=_.a=_.f=_.e=null
 _.d=d},
-ja:function ja(d){var _=this
+j8:function j8(d){var _=this
 _.d=_.c=_.b=null
-_.a=d}},D,L,O,V,E,B,A,R,U,T,N,X,Z,F
+_.a=d}},D,O,V,E,A,R,T,L,N,U,X,Z,F,B,S
 a.setFunctionNamesIfNecessary([Q])
 C=c[0]
 H=c[1]
@@ -22,132 +22,133 @@ W=c[4]
 G=c[5]
 Y=c[6]
 K=c[7]
-S=c[8]
-M=c[9]
-Q=a.updateHolder(c[10],Q)
-D=c[11]
-L=c[12]
-O=c[13]
-V=c[14]
-E=c[15]
-B=c[16]
-A=c[17]
-R=c[18]
+M=c[8]
+Q=a.updateHolder(c[9],Q)
+D=c[10]
+O=c[11]
+V=c[12]
+E=c[13]
+A=c[14]
+R=c[15]
+T=c[16]
+L=c[17]
+N=c[18]
 U=c[19]
-T=c[20]
-N=c[21]
-X=c[22]
-Z=c[23]
-F=c[24]
-Q.mp.prototype={
-T:function(){var x,w,v,u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,a0,a1,a2,a3,a4=this,a5="h4",a6="p",a7=a4.a,a8=a4.bA(),a9=document,b0=T.aN(a9,a8)
+X=c[20]
+Z=c[21]
+F=c[22]
+B=c[23]
+S=c[24]
+Q.mb.prototype={
+R:function(){var x,w,v,u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,a0,a1,a2,a3,a4=this,a5="h4",a6="p",a7=a4.a,a8=a4.bA(),a9=document,b0=T.aO(a9,a8)
 a4.aa(b0,"exit")
 a4.u(b0)
-x=T.I(a9,b0,"button")
+x=T.J(a9,b0,"button")
 a4.u(x)
-T.G(x,"Close")
-w=T.I(a9,a8,"h2")
+T.F(x,"Close")
+w=T.J(a9,a8,"h2")
 a4.L(w)
-T.G(w,"Privacy Policy")
-v=T.I(a9,a8,"h3")
+T.F(w,"Privacy Policy")
+v=T.J(a9,a8,"h3")
 a4.L(v)
-T.G(v,"General")
-u=T.I(a9,a8,a5)
+T.F(v,"General")
+u=T.J(a9,a8,a5)
 a4.L(u)
-T.G(u,"Data Processing by isowosi UG (haftungsbeschr\xe4nkt)")
-t=T.I(a9,a8,a6)
+T.F(u,"Data Processing by isowosi UG (haftungsbeschr\xe4nkt)")
+t=T.J(a9,a8,a6)
 a4.L(t)
-T.G(t,"While using this website, only the technical data required to deliver the requested resources and play the game is processed.")
-s=T.I(a9,t,"ul")
+T.F(t,"While using this website, only the technical data required to deliver the requested resources and play the game is processed.")
+s=T.J(a9,t,"ul")
 a4.u(s)
-r=T.I(a9,s,"li")
+r=T.J(a9,s,"li")
 a4.L(r)
-T.G(r,"IP-address to deliver resources to the user")
-q=T.I(a9,s,"li")
+T.F(r,"IP-address to deliver resources to the user")
+q=T.J(a9,s,"li")
 a4.L(q)
-T.G(q,"data which is send by the browser by default (HTTP Request Header)")
-p=T.I(a9,s,"li")
+T.F(q,"data which is send by the browser by default (HTTP Request Header)")
+p=T.J(a9,s,"li")
 a4.L(p)
-T.G(p,"inputs you provide to play the game (mouse movement, touch screen input, etc.)")
-o=T.I(a9,a8,a5)
+T.F(p,"inputs you provide to play the game (mouse movement, touch screen input, etc.)")
+o=T.J(a9,a8,a5)
 a4.L(o)
-T.G(o,"Data Storage by isowosi UG (haftungsbeschr\xe4nkt)")
-n=T.I(a9,a8,a6)
+T.F(o,"Data Storage by isowosi UG (haftungsbeschr\xe4nkt)")
+n=T.J(a9,a8,a6)
 a4.L(n)
-T.G(n,"No personally identifiable information (PII) is stored while using this website.")
-m=T.I(a9,a8,a6)
+T.F(n,"No personally identifiable information (PII) is stored while using this website.")
+m=T.J(a9,a8,a6)
 a4.L(m)
-T.G(m,"Game settings are stored using the browser storage.")
-l=T.I(a9,a8,"h3")
+T.F(m,"Game settings are stored using the browser storage.")
+l=T.J(a9,a8,"h3")
 a4.L(l)
-T.G(l,"Data Processing and Data Storage by third parties")
-k=T.I(a9,a8,a5)
+T.F(l,"Data Processing and Data Storage by third parties")
+k=T.J(a9,a8,a5)
 a4.L(k)
-T.G(k,"Hosting")
-j=T.I(a9,a8,a6)
+T.F(k,"Hosting")
+j=T.J(a9,a8,a6)
 a4.L(j)
-T.G(j,"To host this website, the infrastructure of GitHub is used. GitHub is certified under the US Privacy Shield and complies with the GDPR.")
-i=T.I(a9,a8,a6)
+T.F(j,"To host this website, the infrastructure of GitHub is used. GitHub is certified under the US Privacy Shield and complies with the GDPR.")
+i=T.J(a9,a8,a6)
 a4.L(i)
-T.G(i,"For the serverside game logic the game connects to the infrastructure of Digitial Ocean. Digitial Ocean is certified under the US Privacy Shield and complies with the GDPR.")
-h=T.I(a9,a8,a5)
+T.F(i,"For the serverside game logic the game connects to the infrastructure of Digitial Ocean. Digitial Ocean is certified under the US Privacy Shield and complies with the GDPR.")
+h=T.J(a9,a8,a5)
 a4.L(h)
-T.G(h,"Google Fonts")
-g=T.I(a9,a8,a6)
+T.F(h,"Google Fonts")
+g=T.J(a9,a8,a6)
 a4.L(g)
-T.G(g,"This website uses the font Roboto provided by Google Fonts. Google Fonts limits the processing and storing of personally identifiable information to the minimum needed to efficiently use fonts. No authentification is required and no cookies are stored. Google is certified under the US Privacy Shield and complies with the GDPR.")
-f=T.I(a9,a8,a5)
+T.F(g,"This website uses the font Roboto provided by Google Fonts. Google Fonts limits the processing and storing of personally identifiable information to the minimum needed to efficiently use fonts. No authentification is required and no cookies are stored. Google is certified under the US Privacy Shield and complies with the GDPR.")
+f=T.J(a9,a8,a5)
 a4.L(f)
-T.G(f,"Google Analytics")
-e=T.I(a9,a8,a6)
+T.F(f,"Google Analytics")
+e=T.J(a9,a8,a6)
 a4.L(e)
-T.G(e,"This website uses Google Analytics to collect usage statistics. Google Analytics stores cookies in your browser to distinguish between first time visitors and returning visitors. IP anonymization is configured for Google Analytics. Google is certified under the US Privacy Shield and complies with the GDPR.")
-d=T.I(a9,a8,a6)
+T.F(e,"This website uses Google Analytics to collect usage statistics. Google Analytics stores cookies in your browser to distinguish between first time visitors and returning visitors. IP anonymization is configured for Google Analytics. Google is certified under the US Privacy Shield and complies with the GDPR.")
+d=T.J(a9,a8,a6)
 a4.L(d)
-T.G(d,'If you have "do not track" (DNT) enabled in your browser, Google Analytics is disabled on this website (and can not be enabled).')
-a0=a4.e=new V.aL(42,a4,T.c_(a8))
-a4.f=new K.b9(new D.aW(a0,Q.EN()),a0)
-a1=T.aN(a9,a8)
+T.F(d,'If you have "do not track" (DNT) enabled in your browser, Google Analytics is disabled on this website (and can not be enabled).')
+a0=a4.e=new V.aM(42,a4,T.c0(a8))
+a4.f=new K.ba(new D.b_(a0,Q.EU()),a0)
+a1=T.aO(a9,a8)
 a4.aa(a1,"exit")
 a4.u(a1)
-a2=T.I(a9,a1,"button")
+a2=T.J(a9,a1,"button")
 a4.u(a2)
-T.G(a2,"Close")
-a0=a7.gfE()
+T.F(a2,"Close")
+a0=a7.gfG()
 a3=y.d
-J.fk(x,"click",a4.b2(a0,a3))
-J.fk(a2,"click",a4.b2(a0,a3))},
+J.fq(x,"click",a4.b0(a0,a3))
+J.fq(a2,"click",a4.b0(a0,a3))},
 a3:function(){var x=this.a
-this.f.saT(!x.a.cx.r)
-this.e.an()},
-aF:function(){this.e.au()}}
-Q.ja.prototype={
-T:function(){var x,w,v=this,u=document,t=u.createElement("label")
+this.f.saR(!x.gcz().r)
+this.e.am()},
+aE:function(){this.e.at()}}
+Q.j8.prototype={
+R:function(){var x,w,v=this,u=document,t=u.createElement("label")
 v.L(t)
-x=T.I(u,t,"input")
+x=T.J(u,t,"input")
 v.d=x
 T.O(x,"type","checkbox")
 v.u(v.d)
-T.G(t," allow Google Analytics to track you on this website")
+T.F(t," allow Google Analytics to track you on this website")
 x=v.d
-w=y.d;(x&&C.j).al(x,"change",v.bf(v.gmb(),w,w))
-v.aj(t)},
-a3:function(){var x=this,w=x.a.a.a.cx,v=w.r,u=!v&&w.x
-w=x.b
-if(w!=u){x.d.checked=u
-x.b=u}w=x.c
-if(w!==v){x.d.disabled=v
-x.c=v}},
-mc:function(d){var x=this.a.a.a.cx
-x.si7(!(!x.r&&x.x))}}
-var z=a.updateTypes(["~(@)","c2<~>*(V*,l*)"]);(function installTearOffs(){var x=a._static_2,w=a._instance_1u
-x(Q,"EN","Fn",1)
-w(Q.ja.prototype,"gmb","mc",0)})();(function inheritance(){var x=a.inherit
-x(Q.mp,E.dy)
-x(Q.ja,E.c2)})()
-H.j5(b.typeUniverse,JSON.parse('{"js":"t","kq":"t","jr":"v","kE":"v","o2":"bz","jy":"y","la":"y","nn":"F","mw":"bv","lB":"b0","mr":"aK","jY":"bd","k7":"be","jQ":"ax","m1":"ax","kK":"bx","k_":"X","k2":"aJ","mp":{"V":[],"W":[]},"ja":{"V":[],"ap":[],"W":[]}}'))
+w=y.d;(x&&C.j).ak(x,"change",v.bf(v.gmf(),w,w))
+v.ai(t)},
+a3:function(){var x,w=this,v=w.a.a,u=v.gcz(),t=!u.r&&u.x
+u=w.b
+if(u!=t){w.d.checked=t
+w.b=t}x=v.gcz().r
+u=w.c
+if(u!==x){w.d.disabled=x
+w.c=x}},
+mg:function(d){var x=this.a.a,w=x.gcz(),v=x.gcz()
+w.sib(!(!v.r&&v.x))}}
+var z=a.updateTypes(["~(@)","c5<~>*(W*,i*)"]);(function installTearOffs(){var x=a._static_2,w=a._instance_1u
+x(Q,"EU","Fv",1)
+w(Q.j8.prototype,"gmf","mg",0)})();(function inheritance(){var x=a.inherit
+x(Q.mb,E.dF)
+x(Q.j8,E.c5)})()
+H.j3(b.typeUniverse,JSON.parse('{"jr":"r","kn":"r","jq":"u","kz":"u","nP":"aZ","jy":"y","l1":"y","n9":"C","mi":"bw","lq":"aE","md":"aL","jW":"bd","k5":"be","jO":"av","lP":"av","kE":"by","jY":"X","k0":"aK","mb":{"W":[],"a6":[]},"j8":{"W":[],"aC":[],"a6":[]}}'))
 0
-var y={d:H.aS("t*")};(function staticFields(){$.yE=null
-$.F0=[$.zJ]})()}
-$__dart_deferred_initializers__["Khr7gvYFGHTM4Bkc6kXRu+8BiLI="] = $__dart_deferred_initializers__.current
+var y={d:H.az("r*")};(function staticFields(){$.yC=null
+$.F7=[$.zG]})()}
+$__dart_deferred_initializers__["eYQWuNAANyG5g/dmactXli5kIxQ="] = $__dart_deferred_initializers__.current
 //# sourceMappingURL=main.dart.js_1.part.js.map
